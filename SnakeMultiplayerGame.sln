@@ -5,10 +5,13 @@ VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnakeMultiplayerGame", "SnakeMultiplayerGame.vcxproj", "{844E9A11-C5B4-4498-82BA-1FCD01868BA8}"
 	ProjectSection(ProjectDependencies) = postProject
+		{375EE6B9-1DF5-4374-B585-D2C5314A1479} = {375EE6B9-1DF5-4374-B585-D2C5314A1479}
 		{9FAC4B00-759E-4262-ACD3-86795939B1BA} = {9FAC4B00-759E-4262-ACD3-86795939B1BA}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetworkCore", "NetworkCore\NetworkCore.vcxproj", "{9FAC4B00-759E-4262-ACD3-86795939B1BA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RenderCore", "RenderCore\RenderCore.vcxproj", "{375EE6B9-1DF5-4374-B585-D2C5314A1479}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +37,14 @@ Global
 		{9FAC4B00-759E-4262-ACD3-86795939B1BA}.Release|x64.Build.0 = Release|x64
 		{9FAC4B00-759E-4262-ACD3-86795939B1BA}.Release|x86.ActiveCfg = Release|Win32
 		{9FAC4B00-759E-4262-ACD3-86795939B1BA}.Release|x86.Build.0 = Release|Win32
+		{375EE6B9-1DF5-4374-B585-D2C5314A1479}.Debug|x64.ActiveCfg = Debug|x64
+		{375EE6B9-1DF5-4374-B585-D2C5314A1479}.Debug|x64.Build.0 = Debug|x64
+		{375EE6B9-1DF5-4374-B585-D2C5314A1479}.Debug|x86.ActiveCfg = Debug|Win32
+		{375EE6B9-1DF5-4374-B585-D2C5314A1479}.Debug|x86.Build.0 = Debug|Win32
+		{375EE6B9-1DF5-4374-B585-D2C5314A1479}.Release|x64.ActiveCfg = Release|x64
+		{375EE6B9-1DF5-4374-B585-D2C5314A1479}.Release|x64.Build.0 = Release|x64
+		{375EE6B9-1DF5-4374-B585-D2C5314A1479}.Release|x86.ActiveCfg = Release|Win32
+		{375EE6B9-1DF5-4374-B585-D2C5314A1479}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
