@@ -2,7 +2,7 @@
 
 #include "stdint.h"
 
-typedef BYTE TEX_PIXEL;
+typedef uint8_t TEX_PIXEL;
 
 typedef uint16_t RC_UINT;
 typedef int16_t RC_INT;
@@ -28,6 +28,8 @@ struct TEX_RECT
 	RC_UINT right;
 	RC_UINT bottom;
 };
+
+typedef TEX_RECT RC_RECT;
 
 inline uint16_t GetTexWidth(const TEX_RECT& texRect) { return texRect.right - texRect.left; }
 inline uint16_t GetTexHeight(const TEX_RECT& texRect) { return texRect.bottom - texRect.top; }

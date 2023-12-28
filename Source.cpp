@@ -7,8 +7,14 @@
 #include "Core/RenderTextureLibrary.h"
 #include "Draw/DrawConsoleLibrary.h"
 
+#include "Engine/GameEngine.h"
+#include "Engine/GameObject/GameObjectUtility.h"
+
+#include "SnakeLevels/StartupLevel.h"
+
 int main()
 {
+	#if 0
 	std::shared_ptr<RCTexture> testTex = std::make_shared<RCTexture>(8, 8);
 	#if 0
 	RenderTextureLibrary::FillTexture(testTex.get(), '0');
@@ -44,5 +50,13 @@ int main()
 	DrawConsoleLibrary::DrawTexture(testTex.get(), 3, 3);
 
 	DrawConsoleLibrary::SetCursorToBottom();
+	#endif
+
+	GameEngine gameEngine;
+
+	StartupLevel* openLevel = CreateNewObject<StartupLevel>();
+	gameEngine.Initialization(openLevel);
+	gameEngine.Run();
+
 	return 0;
 }

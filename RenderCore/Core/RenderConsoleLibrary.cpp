@@ -21,7 +21,7 @@ RC_SIZE RenderConsoleLibrary::GetConsoleDimensions()
 	return consoleSize;
 }
 
-void RenderConsoleLibrary::FillConsoleRegion(BYTE cCharacter, RC_INT x, RC_INT y, RC_UINT width, RC_UINT height)
+void RenderConsoleLibrary::FillConsoleRegion(TEX_PIXEL cCharacter, RC_INT x, RC_INT y, RC_UINT width, RC_UINT height)
 {
 	COORD coordScreen = { x, y };
 	DWORD cCharsWritten;
@@ -33,7 +33,7 @@ void RenderConsoleLibrary::FillConsoleRegion(BYTE cCharacter, RC_INT x, RC_INT y
 	}
 }
 
-void RenderConsoleLibrary::FillConsoleLineWithBlock(const BYTE* cBlock, RC_INT x, RC_INT y, RC_UINT blockLen)
+void RenderConsoleLibrary::FillConsoleLineWithBlock(const TEX_PIXEL* cBlock, RC_INT x, RC_INT y, RC_UINT blockLen)
 {
 	COORD coordScreen = { x, y };
 	for (RC_UINT i = 0; i < blockLen; ++i)

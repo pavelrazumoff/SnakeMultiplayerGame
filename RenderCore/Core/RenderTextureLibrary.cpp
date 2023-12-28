@@ -56,3 +56,22 @@ void RenderTextureLibrary::FillTexture(RCTexture* texture, const TEX_PIXEL* srcD
 		}
 	}
 }
+
+RCTexture* RenderTextureLibrary::StretchTexture(const RCTexture* srcTexture, const TEX_SIZE& newSize)
+{
+	RCTexture* newTexture = new RCTexture(newSize.cx, newSize.cy);
+
+	const float widthStep = (float)newSize.cx / (float)srcTexture->GetWidth();
+	const float heightStep = (float)newSize.cy / (float)srcTexture->GetHeight();
+
+	for (RC_UINT dstY = 0; dstY < newSize.cy; ++dstY)
+	{
+		for (RC_UINT dstX = 0; dstX < newSize.cx; ++dstX)
+		{
+			RC_UINT srcPixel = (RC_UINT)(dstY / heightStep) * srcTexture->GetWidth() + (RC_UINT)(dstX / widthStep);
+			newTexture->SetPixel(srcTexture->GetData()[srcPixel], { dstX, dstY });
+		}
+	}
+
+	return newTexture;
+}

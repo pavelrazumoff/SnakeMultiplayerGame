@@ -13,10 +13,198 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{627f96d9-d65e-4ac0-b191-93d98c195c12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{1565b97c-6ca1-4c80-b261-99cc6e912951}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\GameObject">
+      <UniqueIdentifier>{36369b67-4863-4bd9-877b-78775a4e70bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\GameObject">
+      <UniqueIdentifier>{c9a73994-c110-4f1a-8a46-8b66aff7a4e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SnakeLevels">
+      <UniqueIdentifier>{70a4c201-1bc2-44a7-8189-83fd76a2fe5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SnakeLevels">
+      <UniqueIdentifier>{b132e8b6-642b-4a27-af7b-b3c549548017}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\HUD">
+      <UniqueIdentifier>{e598b544-a800-4435-a629-d0fd34de0f9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\GameWidget">
+      <UniqueIdentifier>{bbbb1721-86c4-4b48-a946-6ebfab9d9cf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\GameWidget">
+      <UniqueIdentifier>{6d801af6-f470-4a05-b441-c24bfd9720f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\GameWidget\Components">
+      <UniqueIdentifier>{1bb2df1b-e25b-4cba-bffb-fbd171be1ec4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\GameWidget\Components">
+      <UniqueIdentifier>{6ef1c7a8-3c9b-4917-8879-87d7ea0267d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\GameWidget\Primitives">
+      <UniqueIdentifier>{a9bc7f50-2d66-46e2-be1c-2484c883567c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\GameWidget\Primitives">
+      <UniqueIdentifier>{9b132cb9-9ceb-4c17-a606-e62945acb209}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\GameWidget\Utility">
+      <UniqueIdentifier>{e441f4d5-9a8f-488e-9878-21e537ef6889}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\GameWidget\Utility">
+      <UniqueIdentifier>{db33712a-b0fc-4d0e-9bda-5efef29b3c32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SnakeWidgets">
+      <UniqueIdentifier>{6316757a-1f69-441d-877c-ba031f6ce3fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SnakeWidgets\Menu">
+      <UniqueIdentifier>{3a7b1e2b-5c70-4306-bc35-4c5d21f734f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SnakeWidgets">
+      <UniqueIdentifier>{6ebab058-ea2e-4cd3-9f82-e15d4a59dcb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SnakeWidgets\Menu">
+      <UniqueIdentifier>{f4b9648a-47b4-4144-9fd6-2562ce88e060}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Render">
+      <UniqueIdentifier>{4e4ccdd2-a7ec-4f5f-afe9-9f3586b1393e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Render">
+      <UniqueIdentifier>{36550c90-9f73-4bac-bb67-35c50765fd4d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\GameEngine.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameLevel.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GarbageCollector.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\MemoryReflectionSystem.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameObject\GameObject.cpp">
+      <Filter>Source Files\Engine\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakeLevels\StartupLevel.cpp">
+      <Filter>Source Files\SnakeLevels</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Components\GameWidget.cpp">
+      <Filter>Source Files\Engine\GameWidget\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Components\UserWidget.cpp">
+      <Filter>Source Files\Engine\GameWidget\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Primitives\BrushPrimitive.cpp">
+      <Filter>Source Files\Engine\GameWidget\Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Components\PanelWidget.cpp">
+      <Filter>Source Files\Engine\GameWidget\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Components\CanvasWidget.cpp">
+      <Filter>Source Files\Engine\GameWidget\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Components\WidgetTree.cpp">
+      <Filter>Source Files\Engine\GameWidget\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Utility\AlignmentSettings.cpp">
+      <Filter>Source Files\Engine\GameWidget\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakeWidgets\Menu\MainMenuWidget.cpp">
+      <Filter>Source Files\SnakeWidgets\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Render\RenderManager.cpp">
+      <Filter>Source Files\Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Components\VerticalBox.cpp">
+      <Filter>Source Files\Engine\GameWidget\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Utility\WidgetContainerComponent.cpp">
+      <Filter>Source Files\Engine\GameWidget\Utility</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine\GameEngine.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameLevel.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GarbageCollector.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\MemoryReflectionSystem.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameObject\GameObject.h">
+      <Filter>Header Files\Engine\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameObject\GameObjectPtr.h">
+      <Filter>Header Files\Engine\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameObject\GameObjectUtility.h">
+      <Filter>Header Files\Engine\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeLevels\StartupLevel.h">
+      <Filter>Header Files\SnakeLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Components\GameWidget.h">
+      <Filter>Header Files\Engine\GameWidget\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Components\UserWidget.h">
+      <Filter>Header Files\Engine\GameWidget\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Primitives\BrushPrimitive.h">
+      <Filter>Header Files\Engine\GameWidget\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Utility\BrushStyle.h">
+      <Filter>Header Files\Engine\GameWidget\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Components\PanelWidget.h">
+      <Filter>Header Files\Engine\GameWidget\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Utility\AlignmentSettings.h">
+      <Filter>Header Files\Engine\GameWidget\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Components\CanvasWidget.h">
+      <Filter>Header Files\Engine\GameWidget\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Components\WidgetTree.h">
+      <Filter>Header Files\Engine\GameWidget\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Utility\LayoutSettings.h">
+      <Filter>Header Files\Engine\GameWidget\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Utility\WidgetComponent.h">
+      <Filter>Header Files\Engine\GameWidget\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeWidgets\Menu\MainMenuWidget.h">
+      <Filter>Header Files\SnakeWidgets\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Render\RenderManager.h">
+      <Filter>Header Files\Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Render\Renderable.h">
+      <Filter>Header Files\Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\EngineUtility.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Components\VerticalBox.h">
+      <Filter>Header Files\Engine\GameWidget\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Utility\WidgetContainerComponent.h">
+      <Filter>Header Files\Engine\GameWidget\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
