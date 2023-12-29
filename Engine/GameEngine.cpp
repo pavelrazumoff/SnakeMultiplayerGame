@@ -80,6 +80,8 @@ void GameEngine::Run()
 	bIsRunning = true;
 	StartThreads();
 
+	RenderManager::GetInstance()->ReconstructRenderBuffer();
+
 	while (true)
 	{
 		std::unique_lock<std::shared_mutex> lock(EngineMainProcessMtx);
@@ -153,7 +155,7 @@ void GameEngine::WindowEventsThread()
 {
 	using namespace std::chrono;
 	auto WndEventStart = high_resolution_clock::now();
-	const float WndEventCheckWaitLimit = 0.05f;
+	const float WndEventCheckWaitLimit = 0.5f;//0.05f;
 
 	while (bIsRunning)
 	{
@@ -181,6 +183,8 @@ void GameEngine::OnWindowResizeEvent(const RC_SIZE& NewSize)
 	*/
 
 	std::unique_lock<std::shared_mutex> lock(EngineMainProcessMtx);
+
+	RenderManager::GetInstance()->ReconstructRenderBuffer();
 
 	if (CurrentLevel.Get())
 	{

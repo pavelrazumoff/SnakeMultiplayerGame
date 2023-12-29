@@ -12,9 +12,9 @@ public:
 	virtual ~UserWidget();
 
 	/** Extending the IRenderable interface. */
-	virtual void Render() override;
+	virtual void Render(RCTexture* RenderTargetTexture) override;
 
-	virtual void DrawWidget() override;
+	virtual void DrawWidget(RCTexture* RenderTargetTexture) override;
 
 	void SetCanvasDimensions(uint32_t width, uint32_t height);
 	void GetCanvasDimensions(uint32_t& width, uint32_t& height) const;
@@ -26,7 +26,7 @@ private:
 	void CalculateDirtySizeWidgetsRecursive(TreeNode* node);
 	void ClarifyUnderlaySizeWidgetsRecursive(TreeNode* node);
 
-	void DrawWidgetTreeRecursive(TreeNode* node);
+	void DrawWidgetTreeRecursive(TreeNode* node, RCTexture* RenderTargetTexture);
 
 protected:
 	WidgetTree Tree;

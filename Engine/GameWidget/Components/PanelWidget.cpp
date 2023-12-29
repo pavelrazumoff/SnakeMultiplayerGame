@@ -60,9 +60,9 @@ void PanelWidget::RepositionWidget(const RC_RECT& newRect)
 	BackgroundBrush->Construct();
 }
 
-void PanelWidget::DrawWidget()
+void PanelWidget::DrawWidget(RCTexture* RenderTargetTexture)
 {
-	BackgroundBrush->Draw();
+	BackgroundBrush->Draw(RenderTargetTexture);
 }
 
 RC_SIZE PanelWidget::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRecalc)

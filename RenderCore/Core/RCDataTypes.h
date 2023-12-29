@@ -33,3 +33,10 @@ typedef TEX_RECT RC_RECT;
 
 inline uint16_t GetTexWidth(const TEX_RECT& texRect) { return texRect.right - texRect.left; }
 inline uint16_t GetTexHeight(const TEX_RECT& texRect) { return texRect.bottom - texRect.top; }
+
+namespace RenderConstants {
+
+inline constexpr TEX_PIXEL ClearPixel = ' ';
+inline constexpr TEX_PIXEL AlphaZeroPixel = 0x00;
+
+} // namespace RenderConstants

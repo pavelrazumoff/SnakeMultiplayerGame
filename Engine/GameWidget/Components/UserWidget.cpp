@@ -13,14 +13,14 @@ UserWidget::~UserWidget()
 {
 }
 
-void UserWidget::Render()
+void UserWidget::Render(RCTexture* RenderTargetTexture)
 {
-	DrawWidget();
+	DrawWidget(RenderTargetTexture);
 }
 
-void UserWidget::DrawWidget()
+void UserWidget::DrawWidget(RCTexture* RenderTargetTexture)
 {
-	DrawWidgetTreeRecursive(Tree.GetRootNode());
+	DrawWidgetTreeRecursive(Tree.GetRootNode(), RenderTargetTexture);
 }
 
 void UserWidget::ReconstructWidgetTree()
@@ -102,18 +102,18 @@ void UserWidget::ClarifyUnderlaySizeWidgetsRecursive(TreeNode* node)
 	}
 }
 
-void UserWidget::DrawWidgetTreeRecursive(TreeNode* node)
+void UserWidget::DrawWidgetTreeRecursive(TreeNode* node, RCTexture* RenderTargetTexture)
 {
 	if (GameWidget* widget = node->GetWidget())
 	{
-		widget->DrawWidget();
+		widget->DrawWidget(RenderTargetTexture);
 	}
 
 	const size_t numChildren = node->GetChildrenCount();
 	for (size_t i = 0; i < numChildren; i++)
 	{
 		TreeNode* childNode = node->GetChild(i);
-		DrawWidgetTreeRecursive(childNode);
+		DrawWidgetTreeRecursive(childNode, RenderTargetTexture);
 	}
 }
 

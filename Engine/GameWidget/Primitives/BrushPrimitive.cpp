@@ -1,7 +1,6 @@
 #include "BrushPrimitive.h"
 
 #include "RenderCore/Core/RenderTextureLibrary.h"
-#include "RenderCore/Draw/DrawConsoleLibrary.h"
 
 BrushPrimitive::BrushPrimitive()
 {
@@ -38,9 +37,10 @@ void BrushPrimitive::Construct()
 	}
 }
 
-void BrushPrimitive::Draw()
+void BrushPrimitive::Draw(RCTexture* RenderTargetTexture)
 {
-	DrawConsoleLibrary::DrawTexture(BrushTexture.get(), DrawRect.left, DrawRect.top);
+	TEX_COORD coord = { DrawRect.left, DrawRect.top };
+	RenderTextureLibrary::FillTexture(RenderTargetTexture, BrushTexture.get(), coord);
 }
 
 void BrushPrimitive::UpdateDrawRect(const TEX_RECT& newRect)

@@ -19,7 +19,7 @@ void CanvasWidget::ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size
 	ApplyAlignmentSettings(this, underlayWidget);
 }
 
-void CanvasWidget::DrawWidget()
+void CanvasWidget::DrawWidget(RCTexture* RenderTargetTexture)
 {
 }
 

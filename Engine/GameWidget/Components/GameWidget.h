@@ -5,6 +5,8 @@
 #include "Core/RCDataTypes.h"
 #include "../Utility/WidgetComponent.h"
 
+class RCTexture;
+
 class GameWidget : public GameObject
 {
 public:
@@ -15,7 +17,7 @@ public:
 	virtual void ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size_t underlayWidgetsCount);
 	virtual void RepositionWidget(const RC_RECT& newRect);
 
-	virtual void DrawWidget() {}
+	virtual void DrawWidget(RCTexture* RenderTargetTexture) {}
 
 	RC_SIZE GetCachedDirtySize() const { return CachedDirtySize; }
 	bool IsSizeXNeedsToRecalc() const { return bSizeXNeedsToRecalc; }

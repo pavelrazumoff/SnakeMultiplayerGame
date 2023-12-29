@@ -28,16 +28,15 @@ void StartupLevel::OpenLevel()
 
 void StartupLevel::Update(float DeltaTime)
 {
+	Inherited::Update(DeltaTime);
+
+	RenderManager::GetInstance()->PushToRenderQueue(StartupMenuWidget.Get());
 }
 
 void StartupLevel::ReconstructLevel()
 {
-	RenderManager::GetInstance()->ClearRenderBuffer();
-
 	if (!StartupMenuWidget.Get()) return;
 	
 	RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
 	StartupMenuWidget->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
-
-	RenderManager::GetInstance()->PushToRenderQueue(StartupMenuWidget.Get());
 }

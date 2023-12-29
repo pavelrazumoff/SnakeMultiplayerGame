@@ -14,7 +14,7 @@ public:
 	virtual ~BrushPrimitive();
 
 	virtual void Construct();
-	virtual void Draw();
+	virtual void Draw(RCTexture* RenderTargetTexture);
 
 	void UpdateDrawRect(const TEX_RECT& newRect);
 

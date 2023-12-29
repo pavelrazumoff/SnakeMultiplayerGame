@@ -10,7 +10,7 @@ public:
 
 	virtual void ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size_t underlayWidgetsCount) override;
 
-	virtual void DrawWidget() override;
+	virtual void DrawWidget(RCTexture* RenderTargetTexture) override;
 
 	void SetWidth(uint32_t width);
 	void SetHeight(uint32_t height);

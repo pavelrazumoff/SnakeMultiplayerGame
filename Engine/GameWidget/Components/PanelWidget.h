@@ -18,7 +18,7 @@ public:
 	virtual void ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size_t underlayWidgetsCount) override;
 	virtual void RepositionWidget(const RC_RECT& newRect) override;
 
-	virtual void DrawWidget() override;
+	virtual void DrawWidget(RCTexture* RenderTargetTexture) override;
 
 	virtual RC_SIZE CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRecalc) override;
 
