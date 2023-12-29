@@ -34,6 +34,7 @@ void BrushPrimitive::Construct()
 	else
 	{
 		RenderTextureLibrary::FillTexture(BrushTexture.get(), Style.FillPixel);
+		RenderTextureLibrary::FillTextureColor(BrushTexture.get(), Style.FillColorRGB);
 	}
 }
 

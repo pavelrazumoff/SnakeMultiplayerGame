@@ -74,5 +74,8 @@
     <ClCompile Include="Core\RenderTextureLibrary.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Core\RCDataTypes.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -22,6 +22,27 @@ void RenderTextureLibrary::FillTexture(RCTexture* texture, TEX_PIXEL c, const TE
 	}
 }
 
+void RenderTextureLibrary::FillTextureColor(RCTexture* texture, const TEX_COLOR_RGB& c)
+{
+	if (!texture) return;
+
+	TEX_COORD texCoords = { 0, 0 };
+	TEX_SIZE texSize = { texture->GetWidth(), texture->GetHeight() };
+	FillTextureColor(texture, c, texCoords, texSize);
+}
+
+void RenderTextureLibrary::FillTextureColor(RCTexture* texture, const TEX_COLOR_RGB& c, const TEX_COORD& dstCoords, const TEX_SIZE& dstSize)
+{
+	if (!texture) return;
+
+	const RC_UINT bottomY = dstCoords.y + dstSize.cy;
+	for (RC_UINT posY = dstCoords.y; posY < bottomY; posY++)
+	{
+		TEX_COORD lineCoords = { dstCoords.x, posY };
+		texture->FillLineWithColor(c, lineCoords, dstSize.cx);
+	}
+}
+
 void RenderTextureLibrary::FillTexture(RCTexture* texture, const RCTexture* srcTexture, const TEX_COORD& dstCoords)
 {
 	if (!texture || !srcTexture) return;
@@ -35,6 +56,7 @@ void RenderTextureLibrary::FillTexture(RCTexture* texture, const RCTexture* srcT
 	if (!texture || !srcTexture) return;
 
 	FillTexture(texture, srcTexture->GetData(), srcRect, srcTexture->GetWidth(), dstCoords);
+	FillTextureColor(texture, srcTexture->GetColorData(), srcRect, srcTexture->GetWidth(), dstCoords);
 }
 
 void RenderTextureLibrary::FillTexture(RCTexture* texture, const TEX_PIXEL* srcData, const TEX_RECT& srcRect, RC_UINT srcStride, const TEX_COORD& dstCoords)
@@ -57,6 +79,26 @@ void RenderTextureLibrary::FillTexture(RCTexture* texture, const TEX_PIXEL* srcD
 	}
 }
 
+void RenderTextureLibrary::FillTextureColor(RCTexture* texture, const TEX_COLOR_RGB* srcColorData, const TEX_RECT& srcRect, RC_UINT srcStride, const TEX_COORD& dstCoords)
+{
+	if (!texture || !srcColorData) return;
+
+	const RC_UINT srcWidth = GetTexWidth(srcRect);
+	const RC_UINT srcHeight = GetTexHeight(srcRect);
+
+	for (RC_UINT srcPosY = 0; srcPosY < srcHeight; ++srcPosY)
+	{
+		for (RC_UINT srcPosX = 0; srcPosX < srcWidth; ++srcPosX)
+		{
+			TEX_COORD srcTexCoords = { static_cast<RC_UINT>(srcRect.left + srcPosX), static_cast<RC_UINT>(srcRect.top + srcPosY) };
+			TEX_COORD dstTexCoords = { static_cast<RC_UINT>(dstCoords.x + srcPosX), static_cast<RC_UINT>(dstCoords.y + srcPosY) };
+
+			TEX_COLOR_RGB srcColor = srcColorData[srcTexCoords.y * srcStride + srcTexCoords.x];
+			texture->SetColor(srcColor, dstTexCoords);
+		}
+	}
+}
+
 RCTexture* RenderTextureLibrary::StretchTexture(const RCTexture* srcTexture, const TEX_SIZE& newSize)
 {
 	RCTexture* newTexture = new RCTexture(newSize.cx, newSize.cy);
@@ -70,6 +112,7 @@ RCTexture* RenderTextureLibrary::StretchTexture(const RCTexture* srcTexture, con
 		{
 			RC_UINT srcPixel = (RC_UINT)(dstY / heightStep) * srcTexture->GetWidth() + (RC_UINT)(dstX / widthStep);
 			newTexture->SetPixel(srcTexture->GetData()[srcPixel], { dstX, dstY });
+			newTexture->SetColor(srcTexture->GetColorData()[srcPixel], { dstX, dstY });
 		}
 	}
 

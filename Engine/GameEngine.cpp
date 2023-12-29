@@ -80,7 +80,7 @@ void GameEngine::Run()
 	bIsRunning = true;
 	StartThreads();
 
-	RenderManager::GetInstance()->ReconstructRenderBuffer();
+	RenderManager::GetInstance()->Initialize();
 
 	while (true)
 	{

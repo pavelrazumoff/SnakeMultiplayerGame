@@ -159,6 +159,7 @@
     <ClInclude Include="RenderCore.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\RCDataTypes.cpp" />
     <ClCompile Include="Core\RCTexture.cpp" />
     <ClCompile Include="Core\RenderConsoleLibrary.cpp" />
     <ClCompile Include="Core\RenderTextureLibrary.cpp" />

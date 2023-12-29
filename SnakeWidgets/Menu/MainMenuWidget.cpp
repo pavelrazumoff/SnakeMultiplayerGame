@@ -19,6 +19,7 @@ MainMenuWidget::MainMenuWidget()
 		{
 			BrushStyle panelStyle;
 			panelStyle.FillPixel = '*';
+			panelStyle.FillColorRGB = RenderConstants::GreenPixelColorRGB;
 
 			pBrush->SetBrushStyle(panelStyle);
 		}
@@ -35,6 +36,14 @@ MainMenuWidget::MainMenuWidget()
 	BottomPanelWidget = GameObject::CloneObject(TopPanelWidget.Get());
 	if (BottomPanelWidget.Get())
 	{
+		if (auto pBrush = BottomPanelWidget->GetBackgroundBrush())
+		{
+			BrushStyle panelStyle = pBrush->GetBrushStyle();
+			panelStyle.FillColorRGB = RenderConstants::RedPixelColorRGB;
+
+			pBrush->SetBrushStyle(panelStyle);
+		}
+
 		BottomPanelWidget->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Bottom;
 	
 		Tree.PlaceWidgetOn(BottomPanelWidget.Get(), MainVerticalBox.Get());

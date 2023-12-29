@@ -16,6 +16,16 @@ RenderManager* RenderManager::GetInstance()
 	return &instance;
 }
 
+void RenderManager::Initialize()
+{
+	#if USE_VIRTUAL_TERMINAL_PROCESSING()
+	RenderConsoleLibrary::EnableVirtualTerminalProcessing();
+	RenderConsoleLibrary::ShowCursor(false);
+	#endif // USE_VIRTUAL_TERMINAL_PROCESSING()
+
+	ReconstructRenderBuffer();
+}
+
 void RenderManager::Render()
 {
 	#if USE_RENDER_LATENCY()
@@ -46,10 +56,7 @@ void RenderManager::Render()
 
 void RenderManager::DrawRenderBuffer()
 {
-	if (DrawConsoleLibrary::DrawTextureDifference(SecondRenderBuffer.get(), CurrentRenderBuffer.get(), 0, 0))
-	{
-		DrawConsoleLibrary::SetCursorToTopLeft();
-	}
+	DrawConsoleLibrary::DrawTextureDifference(SecondRenderBuffer.get(), CurrentRenderBuffer.get(), 0, 0);
 }
 
 void RenderManager::SwapRenderBuffers()

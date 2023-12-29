@@ -16,6 +16,8 @@ public:
 
 	static RenderManager* GetInstance();
 
+	void Initialize();
+
 	void Render();
 	void ReconstructRenderBuffer();
 
