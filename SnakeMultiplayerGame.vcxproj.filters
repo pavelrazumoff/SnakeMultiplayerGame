@@ -76,6 +76,15 @@
     <Filter Include="Source Files\Engine\Render">
       <UniqueIdentifier>{36550c90-9f73-4bac-bb67-35c50765fd4d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Input">
+      <UniqueIdentifier>{59dea378-2dac-4fc4-ad26-5415389878db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Input">
+      <UniqueIdentifier>{3384ac8f-cf81-48ef-8c39-45c5b1cfe48f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Events">
+      <UniqueIdentifier>{4376f009-a9c2-44b8-9d0e-13a4c8b56fa2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -131,6 +140,12 @@
     </ClCompile>
     <ClCompile Include="Engine\GameWidget\Utility\WidgetContainerComponent.cpp">
       <Filter>Source Files\Engine\GameWidget\Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Components\Button.cpp">
+      <Filter>Source Files\Engine\GameWidget\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Input\InputManager.cpp">
+      <Filter>Source Files\Engine\Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -205,6 +220,15 @@
     </ClInclude>
     <ClInclude Include="Engine\GameWidget\Utility\WidgetContainerComponent.h">
       <Filter>Header Files\Engine\GameWidget\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Components\Button.h">
+      <Filter>Header Files\Engine\GameWidget\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Input\InputManager.h">
+      <Filter>Header Files\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Events\EventManager.h">
+      <Filter>Header Files\Engine\Events</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

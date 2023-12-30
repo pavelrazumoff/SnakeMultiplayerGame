@@ -146,6 +146,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\GameEngine.cpp" />
     <ClCompile Include="Engine\GameLevel.cpp" />
     <ClCompile Include="Engine\GameObject\GameObject.cpp" />
+    <ClCompile Include="Engine\GameWidget\Components\Button.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\CanvasWidget.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\GameWidget.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\PanelWidget.cpp" />
@@ -156,6 +157,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\GameWidget\Utility\AlignmentSettings.cpp" />
     <ClCompile Include="Engine\GameWidget\Utility\WidgetContainerComponent.cpp" />
     <ClCompile Include="Engine\GarbageCollector.cpp" />
+    <ClCompile Include="Engine\Input\InputManager.cpp" />
     <ClCompile Include="Engine\MemoryReflectionSystem.cpp" />
     <ClCompile Include="Engine\Render\RenderManager.cpp" />
     <ClCompile Include="SnakeLevels\StartupLevel.cpp" />
@@ -164,11 +166,13 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\EngineUtility.h" />
+    <ClInclude Include="Engine\Events\EventManager.h" />
     <ClInclude Include="Engine\GameEngine.h" />
     <ClInclude Include="Engine\GameLevel.h" />
     <ClInclude Include="Engine\GameObject\GameObject.h" />
     <ClInclude Include="Engine\GameObject\GameObjectPtr.h" />
     <ClInclude Include="Engine\GameObject\GameObjectUtility.h" />
+    <ClInclude Include="Engine\GameWidget\Components\Button.h" />
     <ClInclude Include="Engine\GameWidget\Components\CanvasWidget.h" />
     <ClInclude Include="Engine\GameWidget\Components\GameWidget.h" />
     <ClInclude Include="Engine\GameWidget\Components\PanelWidget.h" />
@@ -182,6 +186,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\GameWidget\Utility\WidgetComponent.h" />
     <ClInclude Include="Engine\GameWidget\Utility\WidgetContainerComponent.h" />
     <ClInclude Include="Engine\GarbageCollector.h" />
+    <ClInclude Include="Engine\Input\InputManager.h" />
     <ClInclude Include="Engine\MemoryReflectionSystem.h" />
     <ClInclude Include="Engine\Render\Renderable.h" />
     <ClInclude Include="Engine\Render\RenderManager.h" />

@@ -6,23 +6,29 @@
 #include "../Utility/AlignmentSettings.h"
 #include "../Utility/LayoutSettings.h"
 
-class PanelWidget : public GameWidget
+enum class ButtonState
+{
+	Default,
+	Hovered,
+	Pressed,
+	Disabled
+};
+
+class Button : public GameWidget
 {
 	typedef GameWidget Inheried;
 
 public:
-	PanelWidget();
-	virtual ~PanelWidget();
+	Button();
+	virtual ~Button();
 
-	virtual void ReconstructWidget() override;
-	virtual void ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size_t underlayWidgetsCount) override;
 	virtual void RepositionWidget(const RC_RECT& newRect) override;
-
 	virtual void DrawWidget(RCTexture* RenderTargetTexture) override;
 
 	virtual RC_SIZE CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRecalc) override;
 
-	BrushPrimitive* GetBackgroundBrush() { return BackgroundBrush.Get(); }
+	void ChangeButtonState(ButtonState newState) { State = newState; }
+
 	AlignmentSettings& GetAlignment() { return Alignment; }
 	LayoutSettings& GetLayout() { return Layout; }
 
@@ -30,8 +36,14 @@ protected:
 	virtual GameObject* Clone() const override;
 
 protected:
-	TObjectPtr<BrushPrimitive> BackgroundBrush;
+	TObjectPtr<BrushPrimitive> DefaultStyle;
+	TObjectPtr<BrushPrimitive> HoveredStyle;
+	TObjectPtr<BrushPrimitive> PressedStyle;
+	TObjectPtr<BrushPrimitive> DisabledStyle;
 
 	AlignmentSettings Alignment;
 	LayoutSettings Layout;
+
+private:
+	ButtonState State = ButtonState::Default;
 };

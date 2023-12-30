@@ -23,6 +23,9 @@ public:
 	const BrushStyle& GetBrushStyle() const { return Style; }
 
 protected:
+	virtual GameObject* Clone() const override;
+
+protected:
 	BrushStyle Style;
 
 private:

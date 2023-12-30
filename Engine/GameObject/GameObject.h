@@ -11,8 +11,9 @@ public:
 
 	virtual ~GameObject();
 
-	void SetAsOwner(GameObject* _owner) { Owner = _owner; }
+	void SetAsOwner(GameObject* _owner);
 	virtual void AddAsChild(GameObject* Child);
+	virtual void RemoveChild(GameObject* Child);
 
 	virtual void NotifyChildDestroy(GameObject* Child);
 	virtual void Destroy();

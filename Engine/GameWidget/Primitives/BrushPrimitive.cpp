@@ -1,6 +1,7 @@
 #include "BrushPrimitive.h"
 
 #include "RenderCore/Core/RenderTextureLibrary.h"
+#include "Engine/GameObject/GameObjectUtility.h"
 
 BrushPrimitive::BrushPrimitive()
 {
@@ -47,4 +48,12 @@ void BrushPrimitive::Draw(RCTexture* RenderTargetTexture)
 void BrushPrimitive::UpdateDrawRect(const TEX_RECT& newRect)
 {
 	DrawRect = newRect;
+}
+
+GameObject* BrushPrimitive::Clone() const
+{
+	BrushPrimitive* newBrush = CreateNewObject<BrushPrimitive>(GetOwner());
+	newBrush->SetBrushStyle(Style);
+
+	return newBrush;
 }

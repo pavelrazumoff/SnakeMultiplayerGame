@@ -2,6 +2,7 @@
 
 #include "GarbageCollector.h"
 #include "Render/RenderManager.h"
+#include "Input/InputManager.h"
 
 #include "Core/RenderConsoleLibrary.h"
 
@@ -65,17 +66,14 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 {
 	FillEngineProperties();
 
-	// TODO: Maybe move into another library like we did with render console library.
-	// Enable mouse input events
+	InputManager::GetInstance()->Initialize();
 	{
-		HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
-
-		DWORD prevMode;
-		GetConsoleMode(hInput, &prevMode);
-		SetConsoleMode(hInput, prevMode | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT);
+		InputManager::GetInstance()->RegisterInputCallback("KeyPressEvent", this, &GameEngine::HandleKeyPressEvent);
+		InputManager::GetInstance()->RegisterInputCallback("WindowResizeEvent", this, &GameEngine::HandleWindowResizeEvent);
 	}
 
 	RenderManager::GetInstance()->Initialize();
+
 	RenderConsoleLibrary::SetConsoleCaption(GameProperties.GameName.c_str());
 
 	CurrentLevel = StartupLevel;
@@ -153,8 +151,6 @@ void GameEngine::StartThreads()
 	// Handle close app events.
 	SetConsoleCtrlHandler(ConsoleHandlerRoutine, TRUE);
 
-	// Window resize events.
-	//WindowEventsThreadHandle = std::thread(&GameEngine::WindowEventsThread, this);
 	InputEventsThreadHandle = std::thread(&GameEngine::InputEventsThread, this);
 }
 
@@ -165,35 +161,9 @@ void GameEngine::StopThreads()
 
 void GameEngine::InputEventsThread()
 {
-	INPUT_RECORD irInBuf[128];
-	DWORD numEvents;
-
 	while (bIsRunning)
 	{
-		if (!ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), irInBuf, 128, &numEvents))
-		{
-			DWORD err = GetLastError();
-			// TODO: Handle error.
-			continue;
-		}
-
-		for (DWORD i = 0; i < numEvents; ++i)
-		{
-			switch (irInBuf[i].EventType)
-			{
-				case KEY_EVENT:
-					OnWindowKeyEvent(irInBuf[i].Event.KeyEvent);
-					break;
-				case MOUSE_EVENT:
-					OnWindowMouseEvent(irInBuf[i].Event.MouseEvent);
-					break;
-				case WINDOW_BUFFER_SIZE_EVENT:
-					OnWindowResizeEvent(irInBuf[i].Event.WindowBufferSizeEvent);
-					break;
-				default:
-					break;
-			}
-		}
+		InputManager::GetInstance()->ReadInput();
 	}
 }
 
@@ -201,9 +171,12 @@ void GameEngine::InputEventsThread()
 	Events.
 */
 
-void GameEngine::OnWindowKeyEvent(KEY_EVENT_RECORD ker)
+void GameEngine::HandleKeyPressEvent(void* KeyCode)
 {
-	switch (ker.wVirtualKeyCode)
+	if (!KeyCode) { engine_assert(false); return; }
+
+	WORD virtualKeyCode = *reinterpret_cast<WORD*>(KeyCode);
+	switch (virtualKeyCode)
 	{
 		case VK_ESCAPE:
 			StopEngine();
@@ -213,50 +186,25 @@ void GameEngine::OnWindowKeyEvent(KEY_EVENT_RECORD ker)
 	}
 }
 
-void GameEngine::OnWindowMouseEvent(MOUSE_EVENT_RECORD mer)
-{
-	switch (mer.dwEventFlags)
-	{
-		case 0:
-			if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
-			{
-
-			}
-			else if (mer.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
-			{
-
-			}
-			else
-			{
-				// Some other button pressed.
-			}
-			break;
-		case DOUBLE_CLICK:
-			break;
-		case MOUSE_MOVED:
-			break;
-		case MOUSE_WHEELED:
-			break;
-		default:
-			break;
-	}
-}
-
-void GameEngine::OnWindowResizeEvent(WINDOW_BUFFER_SIZE_RECORD wbsr)
+void GameEngine::HandleWindowResizeEvent(void* wbsr)
 {
 	/*
 		There is an issue when the console app window's size is being reduced.
 		There appears the scroll bar, that hides prev drawing buffer.
 	*/
 
+	if (!wbsr) { engine_assert(false); return; }
+
+	WINDOW_BUFFER_SIZE_RECORD _wbsr = *reinterpret_cast<WINDOW_BUFFER_SIZE_RECORD*>(wbsr);
+
 	const RC_SIZE currentWndSize = LastWndDimension.load();
-	if (wbsr.dwSize.X == currentWndSize.cx &&
-		wbsr.dwSize.Y == currentWndSize.cy)
+	if (_wbsr.dwSize.X == currentWndSize.cx &&
+		_wbsr.dwSize.Y == currentWndSize.cy)
 	{
 		return;
 	}
 
-	LastWndDimension = { (RC_UINT)wbsr.dwSize.X, (RC_UINT)wbsr.dwSize.Y };
+	LastWndDimension = { (RC_UINT)_wbsr.dwSize.X, (RC_UINT)_wbsr.dwSize.Y };
 
 	std::unique_lock<std::shared_mutex> lock(EngineMainProcessMtx);
 

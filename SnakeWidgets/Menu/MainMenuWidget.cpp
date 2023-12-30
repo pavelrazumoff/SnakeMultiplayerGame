@@ -2,6 +2,7 @@
 
 #include "Engine/GameWidget/Components/VerticalBox.h"
 #include "Engine/GameWidget/Components/PanelWidget.h"
+#include "Engine/GameWidget/Components/Button.h"
 #include "Engine/GameObject/GameObjectUtility.h"
 
 MainMenuWidget::MainMenuWidget()
@@ -31,6 +32,19 @@ MainMenuWidget::MainMenuWidget()
 		TopPanelWidget->GetLayout().DimensionsOverride.cy = 2;
 
 		Tree.PlaceWidgetOn(TopPanelWidget.Get(), MainVerticalBox.Get());
+	}
+
+	StartGameButton = CreateNewObject<Button>(this);
+	if (StartGameButton.Get())
+	{
+		StartGameButton->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
+		StartGameButton->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Center;
+		StartGameButton->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
+
+		StartGameButton->GetLayout().DimensionsOverride.cx = 10;
+		StartGameButton->GetLayout().DimensionsOverride.cy = 3;
+
+		Tree.PlaceWidgetOn(StartGameButton.Get(), MainVerticalBox.Get());
 	}
 
 	BottomPanelWidget = GameObject::CloneObject(TopPanelWidget.Get());

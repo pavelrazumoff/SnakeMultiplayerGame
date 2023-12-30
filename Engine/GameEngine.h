@@ -3,7 +3,6 @@
 #include "GameLevel.h"
 #include "Core/RCDataTypes.h"
 
-#include <windows.h>
 #include <thread>
 
 // TODO: Move to another place.
@@ -35,10 +34,8 @@ protected:
 
 	/** Events. */
 
-	void OnWindowKeyEvent(KEY_EVENT_RECORD ker);
-	void OnWindowMouseEvent(MOUSE_EVENT_RECORD mer);
-
-	void OnWindowResizeEvent(WINDOW_BUFFER_SIZE_RECORD wbsr);
+	void HandleKeyPressEvent(void* KeyCode);
+	void HandleWindowResizeEvent(void* wbsr);
 
 	/** Engine Stop and Cleanup. */
 

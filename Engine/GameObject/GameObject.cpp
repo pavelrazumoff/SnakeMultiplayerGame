@@ -18,10 +18,26 @@ GameObject::~GameObject()
 	}
 }
 
+void GameObject::SetAsOwner(GameObject* _owner)
+{
+	if (Owner) Owner->RemoveChild(this);
+	Owner = _owner;
+}
+
 void GameObject::AddAsChild(GameObject* Child)
 {
 	Child->SetAsOwner(this);
 	ChildObjects.push_back(Child);
+}
+
+void GameObject::RemoveChild(GameObject* Child)
+{
+	auto it = std::find_if(ChildObjects.begin(), ChildObjects.end(), [Child](GameObject* Other) -> bool {
+		return Child == Other;
+		});
+
+	if (it != ChildObjects.end())
+		ChildObjects.erase(it);
 }
 
 void GameObject::PostDestroy()
