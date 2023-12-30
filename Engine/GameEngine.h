@@ -3,12 +3,19 @@
 #include "GameLevel.h"
 #include "Core/RCDataTypes.h"
 
+#include <windows.h>
 #include <thread>
+
+// TODO: Move to another place.
+struct GamePropertiesInfo
+{
+	std::string GameName = "Game";
+};
 
 class GameEngine
 {
 public:
-	GameEngine();
+	GameEngine(const GamePropertiesInfo& props);
 	virtual ~GameEngine();
 
 	void Initialization(GameLevel* StartupLevel);
@@ -24,31 +31,33 @@ protected:
 	void StartThreads();
 	void StopThreads();
 
-	void WindowEventsThread();
+	void InputEventsThread();
 
 	/** Events. */
 
-	void OnWindowResizeEvent(const RC_SIZE& NewSize);
+	void OnWindowKeyEvent(KEY_EVENT_RECORD ker);
+	void OnWindowMouseEvent(MOUSE_EVENT_RECORD mer);
 
-	/** Check for Events. */
+	void OnWindowResizeEvent(WINDOW_BUFFER_SIZE_RECORD wbsr);
 
-	void CheckForWindowSizeChanged();
+	/** Engine Stop and Cleanup. */
 
-	/** Cleanup. */
-
+	void StopEngine();
 	void Cleanup();
 
 protected:
+	GamePropertiesInfo GameProperties;
+
 	TObjectPtr<GameLevel> CurrentLevel;
 
 private:
-	bool bIsRunning = false;
+	std::atomic<bool> bIsRunning = false;
 
 	/** Threads. */
 
-	std::thread WindowEventsThreadHandle;
+	std::thread InputEventsThreadHandle;
 
 	/** Engine Properties. */
 
-	RC_SIZE LastWndDimension = { 0 };
+	std::atomic<RC_SIZE> LastWndDimension;
 };

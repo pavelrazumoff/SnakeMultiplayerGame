@@ -6,7 +6,6 @@
 #include "Core/RenderConsoleLibrary.h"
 
 #include <chrono>
-#include <windows.h>
 #include <shared_mutex>
 
 /*
@@ -49,8 +48,11 @@ static BOOL WINAPI ConsoleHandlerRoutine(DWORD dwCtrlType)
 	return FALSE;
 }
 
-GameEngine::GameEngine()
+GameEngine::GameEngine(const GamePropertiesInfo& props)
+	: GameProperties(props)
 {
+	LastWndDimension = { 0, 0 };
+
 	InitializeRootObject();
 }
 
@@ -62,6 +64,19 @@ GameEngine::~GameEngine()
 void GameEngine::Initialization(GameLevel* StartupLevel)
 {
 	FillEngineProperties();
+
+	// TODO: Maybe move into another library like we did with render console library.
+	// Enable mouse input events
+	{
+		HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
+
+		DWORD prevMode;
+		GetConsoleMode(hInput, &prevMode);
+		SetConsoleMode(hInput, prevMode | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT);
+	}
+
+	RenderManager::GetInstance()->Initialize();
+	RenderConsoleLibrary::SetConsoleCaption(GameProperties.GameName.c_str());
 
 	CurrentLevel = StartupLevel;
 	if (CurrentLevel.Get()) CurrentLevel->OpenLevel();
@@ -80,9 +95,7 @@ void GameEngine::Run()
 	bIsRunning = true;
 	StartThreads();
 
-	RenderManager::GetInstance()->Initialize();
-
-	while (true)
+	while (bIsRunning)
 	{
 		std::unique_lock<std::shared_mutex> lock(EngineMainProcessMtx);
 
@@ -95,8 +108,6 @@ void GameEngine::Run()
 
 			CurrentLevel->Update(DeltaTime);
 		}
-
-		// TODO: Handle Exit Game after user input.
 
 		RenderManager::GetInstance()->Render();
 
@@ -120,7 +131,7 @@ void GameEngine::Run()
 		}
 	}
 
-	bIsRunning = false;
+	bIsRunning = false; // In case we did exit the loop with break.
 	StopThreads();
 }
 
@@ -143,30 +154,45 @@ void GameEngine::StartThreads()
 	SetConsoleCtrlHandler(ConsoleHandlerRoutine, TRUE);
 
 	// Window resize events.
-	WindowEventsThreadHandle = std::thread(&GameEngine::WindowEventsThread, this);
+	//WindowEventsThreadHandle = std::thread(&GameEngine::WindowEventsThread, this);
+	InputEventsThreadHandle = std::thread(&GameEngine::InputEventsThread, this);
 }
 
 void GameEngine::StopThreads()
 {
-	WindowEventsThreadHandle.join();
+	InputEventsThreadHandle.join();
 }
 
-void GameEngine::WindowEventsThread()
+void GameEngine::InputEventsThread()
 {
-	using namespace std::chrono;
-	auto WndEventStart = high_resolution_clock::now();
-	const float WndEventCheckWaitLimit = 0.5f;//0.05f;
+	INPUT_RECORD irInBuf[128];
+	DWORD numEvents;
 
 	while (bIsRunning)
 	{
-		auto Now = high_resolution_clock::now();
-		float TimePassed = duration_cast<duration<float>>(Now - WndEventStart).count();
-
-		if (TimePassed >= WndEventCheckWaitLimit)
+		if (!ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), irInBuf, 128, &numEvents))
 		{
-			WndEventStart = Now;
+			DWORD err = GetLastError();
+			// TODO: Handle error.
+			continue;
+		}
 
-			CheckForWindowSizeChanged();
+		for (DWORD i = 0; i < numEvents; ++i)
+		{
+			switch (irInBuf[i].EventType)
+			{
+				case KEY_EVENT:
+					OnWindowKeyEvent(irInBuf[i].Event.KeyEvent);
+					break;
+				case MOUSE_EVENT:
+					OnWindowMouseEvent(irInBuf[i].Event.MouseEvent);
+					break;
+				case WINDOW_BUFFER_SIZE_EVENT:
+					OnWindowResizeEvent(irInBuf[i].Event.WindowBufferSizeEvent);
+					break;
+				default:
+					break;
+			}
 		}
 	}
 }
@@ -175,12 +201,62 @@ void GameEngine::WindowEventsThread()
 	Events.
 */
 
-void GameEngine::OnWindowResizeEvent(const RC_SIZE& NewSize)
+void GameEngine::OnWindowKeyEvent(KEY_EVENT_RECORD ker)
+{
+	switch (ker.wVirtualKeyCode)
+	{
+		case VK_ESCAPE:
+			StopEngine();
+			break;
+		default:
+			break;
+	}
+}
+
+void GameEngine::OnWindowMouseEvent(MOUSE_EVENT_RECORD mer)
+{
+	switch (mer.dwEventFlags)
+	{
+		case 0:
+			if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+			{
+
+			}
+			else if (mer.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
+			{
+
+			}
+			else
+			{
+				// Some other button pressed.
+			}
+			break;
+		case DOUBLE_CLICK:
+			break;
+		case MOUSE_MOVED:
+			break;
+		case MOUSE_WHEELED:
+			break;
+		default:
+			break;
+	}
+}
+
+void GameEngine::OnWindowResizeEvent(WINDOW_BUFFER_SIZE_RECORD wbsr)
 {
 	/*
 		There is an issue when the console app window's size is being reduced.
 		There appears the scroll bar, that hides prev drawing buffer.
 	*/
+
+	const RC_SIZE currentWndSize = LastWndDimension.load();
+	if (wbsr.dwSize.X == currentWndSize.cx &&
+		wbsr.dwSize.Y == currentWndSize.cy)
+	{
+		return;
+	}
+
+	LastWndDimension = { (RC_UINT)wbsr.dwSize.X, (RC_UINT)wbsr.dwSize.Y };
 
 	std::unique_lock<std::shared_mutex> lock(EngineMainProcessMtx);
 
@@ -193,24 +269,13 @@ void GameEngine::OnWindowResizeEvent(const RC_SIZE& NewSize)
 }
 
 /*
-	Check for Events.
+	Engine Stop and Cleanup.
 */
 
-void GameEngine::CheckForWindowSizeChanged()
+void GameEngine::StopEngine()
 {
-	RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
-
-	if (consoleDim.cx != LastWndDimension.cx ||
-		consoleDim.cy != LastWndDimension.cy)
-	{
-		LastWndDimension = consoleDim;
-		OnWindowResizeEvent(consoleDim);
-	}
+	bIsRunning = false;
 }
-
-/*
-	Cleanup.
-*/
 
 void GameEngine::Cleanup()
 {

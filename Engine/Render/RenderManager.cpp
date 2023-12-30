@@ -20,6 +20,7 @@ void RenderManager::Initialize()
 {
 	#if USE_VIRTUAL_TERMINAL_PROCESSING()
 	RenderConsoleLibrary::EnableVirtualTerminalProcessing();
+
 	RenderConsoleLibrary::ShowCursor(false);
 	#endif // USE_VIRTUAL_TERMINAL_PROCESSING()
 
@@ -57,6 +58,7 @@ void RenderManager::Render()
 void RenderManager::DrawRenderBuffer()
 {
 	DrawConsoleLibrary::DrawTextureDifference(SecondRenderBuffer.get(), CurrentRenderBuffer.get(), 0, 0);
+	RenderConsoleLibrary::RestoreConsoleRenderMode();
 }
 
 void RenderManager::SwapRenderBuffers()
@@ -70,6 +72,8 @@ void RenderManager::SwapRenderBuffers()
 
 void RenderManager::ReconstructRenderBuffer()
 {
+	ClearRenderQueue();
+
 	RC_SIZE bufferDimension = RenderConsoleLibrary::GetConsoleDimensions();
 
 	CurrentRenderBuffer = std::make_shared<RCTexture>(bufferDimension.cx, bufferDimension.cy);

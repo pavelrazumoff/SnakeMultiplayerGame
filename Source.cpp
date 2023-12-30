@@ -52,7 +52,10 @@ int main()
 	DrawConsoleLibrary::SetCursorToBottom();
 	#endif
 
-	GameEngine gameEngine;
+	GamePropertiesInfo gameProps;
+	gameProps.GameName = "Snake Game";
+
+	GameEngine gameEngine(gameProps);
 
 	StartupLevel* openLevel = CreateNewObject<StartupLevel>();
 	gameEngine.Initialization(openLevel);
