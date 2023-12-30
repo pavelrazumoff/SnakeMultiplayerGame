@@ -1,5 +1,7 @@
 #include "InputManager.h"
 
+#include <unordered_set>
+
 InputManager::InputManager()
 {
 }
@@ -21,9 +23,18 @@ void InputManager::Initialize()
 
 void InputManager::ReadInput()
 {
-	INPUT_RECORD irInBuf[128];
-	DWORD numEvents;
+	HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
 
+	DWORD numEvents;
+	if (!GetNumberOfConsoleInputEvents(hInput, &numEvents))
+	{
+		DWORD err = GetLastError();
+		return;
+	}
+
+	if (!numEvents) return;
+
+	INPUT_RECORD irInBuf[128];
 	if (!ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), irInBuf, 128, &numEvents))
 	{
 		DWORD err = GetLastError();
@@ -31,27 +42,31 @@ void InputManager::ReadInput()
 		return;
 	}
 
-	int savedIndexOfLastResizeEvent = -1;
-	for (DWORD i = 0; i < numEvents; ++i)
+	std::unordered_set<WORD> HandledTypes;
+	for (int i = numEvents - 1; i >= 0; --i)
 	{
-		switch (irInBuf[i].EventType)
+		WORD eventType = irInBuf[i].EventType;
+
+		auto result = HandledTypes.insert(eventType);
+		if (!result.second) continue;
+
+		HandledTypes.insert(eventType);
+
+		switch (eventType)
 		{
-		case KEY_EVENT:
-			OnKeyEvent(irInBuf[i].Event.KeyEvent);
-			break;
-		case MOUSE_EVENT:
-			OnMouseEvent(irInBuf[i].Event.MouseEvent);
-			break;
-		case WINDOW_BUFFER_SIZE_EVENT:
-			savedIndexOfLastResizeEvent = i;
-			break;
-		default:
-			break;
+			case KEY_EVENT:
+				OnKeyEvent(irInBuf[i].Event.KeyEvent);
+				break;
+			case MOUSE_EVENT:
+				OnMouseEvent(irInBuf[i].Event.MouseEvent);
+				break;
+			case WINDOW_BUFFER_SIZE_EVENT:
+				OnWindowResizeEvent(irInBuf[i].Event.WindowBufferSizeEvent);
+				break;
+			default:
+				break;
 		}
 	}
-
-	if (savedIndexOfLastResizeEvent >= 0)
-		OnWindowResizeEvent(irInBuf[savedIndexOfLastResizeEvent].Event.WindowBufferSizeEvent);
 }
 
 void InputManager::OnKeyEvent(KEY_EVENT_RECORD ker)
@@ -62,27 +77,43 @@ void InputManager::OnKeyEvent(KEY_EVENT_RECORD ker)
 
 void InputManager::OnMouseEvent(MOUSE_EVENT_RECORD mer)
 {
+	static bool bLeftButtonDown = false;
+	static bool bRightButtonDown = false;
+
 	switch (mer.dwEventFlags)
 	{
 		case 0:
 			if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
 			{
-
+				bLeftButtonDown = true;
 			}
 			else if (mer.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
 			{
-
+				bRightButtonDown = true;
 			}
 			else
 			{
-				// Some other button pressed.
+				if (bLeftButtonDown)
+				{
+					InputEventsManager.Trigger("MouseButtonClickEvent", reinterpret_cast<void*>(&mer));
+					bLeftButtonDown = false;
+				}
+
+				if (bRightButtonDown)
+				{
+					InputEventsManager.Trigger("MouseButtonClickEvent", reinterpret_cast<void*>(&mer));
+					bRightButtonDown = false;
+				}
 			}
 			break;
 		case DOUBLE_CLICK:
+			InputEventsManager.Trigger("MouseDoubleClickEvent", reinterpret_cast<void*>(&mer));
 			break;
 		case MOUSE_MOVED:
+			InputEventsManager.Trigger("MouseMoveEvent", reinterpret_cast<void*>(&mer));
 			break;
 		case MOUSE_WHEELED:
+			InputEventsManager.Trigger("MouseWheelEvent", reinterpret_cast<void*>(&mer));
 			break;
 		default:
 			break;

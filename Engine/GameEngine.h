@@ -35,6 +35,11 @@ protected:
 	/** Events. */
 
 	void HandleKeyPressEvent(void* KeyCode);
+
+	void HandleMouseMoveEvent(void* mer);
+	void HandleMouseButtonClickEvent(void* mer);
+	void HandleMouseDoubleClickEvent(void* mer);
+
 	void HandleWindowResizeEvent(void* wbsr);
 
 	/** Engine Stop and Cleanup. */

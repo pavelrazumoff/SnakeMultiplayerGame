@@ -69,6 +69,11 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 	InputManager::GetInstance()->Initialize();
 	{
 		InputManager::GetInstance()->RegisterInputCallback("KeyPressEvent", this, &GameEngine::HandleKeyPressEvent);
+
+		InputManager::GetInstance()->RegisterInputCallback("MouseMoveEvent", this, &GameEngine::HandleMouseMoveEvent);
+		InputManager::GetInstance()->RegisterInputCallback("MouseButtonClickEvent", this, &GameEngine::HandleMouseButtonClickEvent);
+		InputManager::GetInstance()->RegisterInputCallback("MouseDoubleClickEvent", this, &GameEngine::HandleMouseDoubleClickEvent);
+
 		InputManager::GetInstance()->RegisterInputCallback("WindowResizeEvent", this, &GameEngine::HandleWindowResizeEvent);
 	}
 
@@ -184,6 +189,38 @@ void GameEngine::HandleKeyPressEvent(void* KeyCode)
 		default:
 			break;
 	}
+}
+
+void GameEngine::HandleMouseMoveEvent(void* mer)
+{
+	if (!mer) { engine_assert(false); return; }
+
+	MOUSE_EVENT_RECORD _mer = *reinterpret_cast<MOUSE_EVENT_RECORD*>(mer);
+
+
+}
+
+void GameEngine::HandleMouseButtonClickEvent(void* mer)
+{
+	if (!mer) { engine_assert(false); return; }
+
+	MOUSE_EVENT_RECORD _mer = *reinterpret_cast<MOUSE_EVENT_RECORD*>(mer);
+
+	// TODO: Come up with some kind of engine input mode, where there's mode that let player to interact only with widgets,
+	// or only with game level (ignoring widgets), or both.
+
+	// So there should be some thing called input consumption.
+	// If user chooses the mode where he can interact with widgets and objects on level itself, we should track, if some widgets
+	// can really handle the input, or we should just let it pass through and let the level handle it.
+
+	// Introduce Hit-Testable mode, that has options like: OnlySelf, SelfAndChildren, NoHitTest.
+}
+
+void GameEngine::HandleMouseDoubleClickEvent(void* mer)
+{
+	if (!mer) { engine_assert(false); return; }
+
+	MOUSE_EVENT_RECORD _mer = *reinterpret_cast<MOUSE_EVENT_RECORD*>(mer);
 }
 
 void GameEngine::HandleWindowResizeEvent(void* wbsr)
