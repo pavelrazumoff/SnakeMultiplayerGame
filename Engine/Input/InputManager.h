@@ -12,8 +12,9 @@
 
 DECLARE_EVENT_DELEGATE(KeyDelegate, WORD);
 
-DECLARE_EVENT_DELEGATE(MouseClickDelegate, const MOUSE_EVENT_RECORD&, InputMouseButton);
 DECLARE_EVENT_DELEGATE(MouseDoubleClickDelegate, const MOUSE_EVENT_RECORD&);
+
+DECLARE_EVENT_DELEGATE(MousePressDelegate, const MOUSE_EVENT_RECORD&, InputMouseButton);
 
 DECLARE_EVENT_DELEGATE(MouseMoveDelegate, const MOUSE_EVENT_RECORD&);
 DECLARE_EVENT_DELEGATE(MouseWheelDelegate, const MOUSE_EVENT_RECORD&);
@@ -44,7 +45,9 @@ public:
 	KeyDelegate& OnKeyPressEvent() { return KeyPressEvent; }
 	KeyDelegate& OnKeyReleaseEvent() { return KeyReleaseEvent; }
 
-	MouseClickDelegate& OnMouseClickEvent() { return MouseClickEvent; }
+	MousePressDelegate& OnMouseBtnPressEvent() { return MouseBtnPressEvent; }
+	MousePressDelegate& OnMouseBtnReleaseEvent() { return MouseBtnReleaseEvent; }
+
 	MouseDoubleClickDelegate& OnMouseDoubleClickEvent() { return MouseDoubleClickEvent; }
 
 	MouseMoveDelegate& OnMouseMoveEvent() { return MouseMoveEvent; }
@@ -62,8 +65,10 @@ protected:
 	KeyDelegate KeyPressEvent;
 	KeyDelegate KeyReleaseEvent;
 
-	MouseClickDelegate MouseClickEvent;
 	MouseDoubleClickDelegate MouseDoubleClickEvent;
+
+	MousePressDelegate MouseBtnPressEvent;
+	MousePressDelegate MouseBtnReleaseEvent;
 
 	MouseMoveDelegate MouseMoveEvent;
 	MouseWheelDelegate MouseWheelEvent;

@@ -73,7 +73,9 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 		InputManager::GetInstance().OnKeyPressEvent().Subscribe(this, &GameEngine::HandleKeyPressEvent);
 		InputManager::GetInstance().OnKeyReleaseEvent().Subscribe(this, &GameEngine::HandleKeyReleaseEvent);
 
-		InputManager::GetInstance().OnMouseClickEvent().Subscribe(this, &GameEngine::HandleMouseClickEvent);
+		InputManager::GetInstance().OnMouseBtnPressEvent().Subscribe(this, &GameEngine::HandleMouseButtonPressEvent);
+		InputManager::GetInstance().OnMouseBtnReleaseEvent().Subscribe(this, &GameEngine::HandleMouseButtonReleaseEvent);
+
 		InputManager::GetInstance().OnMouseDoubleClickEvent().Subscribe(this, &GameEngine::HandleMouseDoubleClickEvent);
 
 		InputManager::GetInstance().OnMouseMoveEvent().Subscribe(this, &GameEngine::HandleMouseMoveEvent);
@@ -190,7 +192,7 @@ void GameEngine::RefreshInputState()
 	std::lock_guard<std::mutex> lock(InputStateMutex);
 
 	LastInputState = ActualInputState;
-	ActualInputState.Reset();
+	ActualInputState.ResetFrameState();
 }
 
 /*
@@ -213,7 +215,34 @@ void GameEngine::HandleKeyReleaseEvent(WORD keyCode)
 	}
 }
 
-void GameEngine::HandleMouseClickEvent(const MOUSE_EVENT_RECORD& mer, InputMouseButton imb)
+void GameEngine::HandleMouseButtonPressEvent(const MOUSE_EVENT_RECORD& mer, InputMouseButton imb)
+{
+	using namespace std::chrono;
+
+	switch (imb)
+	{
+		case InputMouseButton::None:
+			break;
+		case InputMouseButton::Left:
+			LastLMBPressTime = high_resolution_clock::now();
+			break;
+		case InputMouseButton::Right:
+			LastRMBPressTime = high_resolution_clock::now();
+			break;
+		case InputMouseButton::Middle:
+			LastMMBPressTime = high_resolution_clock::now();
+			break;
+		default:
+			break;
+	}
+
+	std::lock_guard<std::mutex> lock(InputStateMutex);
+
+	ActualInputState.InitialMousePressPos = { mer.dwMousePosition.X, mer.dwMousePosition.Y };
+	ActualInputState.MouseBtnPressedMask |= ENUM2BIT(imb);
+}
+
+void GameEngine::HandleMouseButtonReleaseEvent(const MOUSE_EVENT_RECORD& mer, InputMouseButton imb)
 {
 	// TODO: Come up with some kind of engine input mode, where there's mode that let player to interact only with widgets,
 	// or only with game level (ignoring widgets), or both.
@@ -224,7 +253,37 @@ void GameEngine::HandleMouseClickEvent(const MOUSE_EVENT_RECORD& mer, InputMouse
 
 	// Introduce Hit-Testable mode, that has options like: OnlySelf, SelfAndChildren, NoHitTest.
 
-	
+	using namespace std::chrono;
+
+	steady_clock::time_point Now = high_resolution_clock::now();
+	float DeltaBtnPressTime = 0.0f;
+
+	switch (imb)
+	{
+		case InputMouseButton::None:
+			break;
+		case InputMouseButton::Left:
+			DeltaBtnPressTime = duration_cast<duration<float>>(Now - LastLMBPressTime).count();
+			break;
+		case InputMouseButton::Right:
+			DeltaBtnPressTime = duration_cast<duration<float>>(Now - LastRMBPressTime).count();
+			break;
+		case InputMouseButton::Middle:
+			DeltaBtnPressTime = duration_cast<duration<float>>(Now - LastMMBPressTime).count();
+			break;
+		default:
+			break;
+	}
+
+	const bool bIsPressedLongEnough = DeltaBtnPressTime >= 0.2f;
+
+	std::lock_guard<std::mutex> lock(InputStateMutex);
+
+	ActualInputState.MouseBtnPressedMask &= ~ENUM2BIT(imb);
+	if (!bIsPressedLongEnough)
+	{
+		ActualInputState.MouseBtnClicked = imb;
+	}
 }
 
 void GameEngine::HandleMouseDoubleClickEvent(const MOUSE_EVENT_RECORD& mer)

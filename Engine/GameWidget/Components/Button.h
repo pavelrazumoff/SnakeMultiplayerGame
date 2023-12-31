@@ -16,6 +16,26 @@ enum class ButtonState
 	Disabled
 };
 
+struct ButtonWidgetSettings
+{
+public:
+	ButtonWidgetSettings();
+
+protected:
+	void RepositionBrushes(const RC_RECT& newRect);
+
+protected:
+	friend class Button;
+
+public:
+	bool bPressedOnClick = false;
+
+	TObjectPtr<BrushPrimitive> DefaultStyle;
+	TObjectPtr<BrushPrimitive> HoveredStyle;
+	TObjectPtr<BrushPrimitive> PressedStyle;
+	TObjectPtr<BrushPrimitive> DisabledStyle;
+};
+
 class Button : public GameWidget, public IInputHandler
 {
 	typedef GameWidget Inheried;
@@ -32,10 +52,9 @@ public:
 
 	virtual RC_SIZE CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRecalc) override;
 
-	void SetPressOnClick(bool _bPressOnClick) { bPressOnClick = _bPressOnClick; }
-
 	AlignmentSettings& GetAlignment() { return Alignment; }
 	LayoutSettings& GetLayout() { return Layout; }
+	ButtonWidgetSettings& GetButtonSettings() { return ButtonSettings; }
 
 protected:
 	virtual GameObject* Clone() const override;
@@ -43,15 +62,10 @@ protected:
 	BrushPrimitive* GetCurrentBrush();
 
 protected:
-	TObjectPtr<BrushPrimitive> DefaultStyle;
-	TObjectPtr<BrushPrimitive> HoveredStyle;
-	TObjectPtr<BrushPrimitive> PressedStyle;
-	TObjectPtr<BrushPrimitive> DisabledStyle;
-
 	AlignmentSettings Alignment;
 	LayoutSettings Layout;
+	ButtonWidgetSettings ButtonSettings;
 
 private:
 	ButtonState State = ButtonState::Default;
-	bool bPressOnClick = false;
 };

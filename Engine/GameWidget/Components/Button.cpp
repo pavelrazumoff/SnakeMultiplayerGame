@@ -3,9 +3,9 @@
 #include "Engine/GameObject/GameObjectUtility.h"
 #include "Core/RenderTextureLibrary.h"
 
-Button::Button()
+ButtonWidgetSettings::ButtonWidgetSettings()
 {
-	DefaultStyle = CreateNewObject<BrushPrimitive>(this);
+	DefaultStyle = CreateNewObject<BrushPrimitive>();
 	{
 		BrushStyle style;
 		style.Image = std::make_shared<RCTexture>(8, 3);
@@ -40,6 +40,32 @@ Button::Button()
 		auto disabledStyle = DisabledStyle->GetBrushStyle();
 		RenderTextureLibrary::FillTextureColor(disabledStyle.Image.get(), RenderConstants::DarkGrayPixelColorRGB);
 	}
+}
+
+void ButtonWidgetSettings::RepositionBrushes(const RC_RECT& newRect)
+{
+	BrushPrimitive* buttonBrushes[] = { DefaultStyle.Get(), HoveredStyle.Get(), PressedStyle.Get(), DisabledStyle.Get() };
+	for (BrushPrimitive* brush : buttonBrushes)
+	{
+		if (!brush)
+		{
+			DebugEngineTrap();
+			continue;
+		}
+
+		brush->UpdateDrawRect(newRect);
+		brush->Construct();
+	}
+}
+
+// *****************************************************************************************************
+
+Button::Button()
+{
+	ButtonSettings.DefaultStyle->ChangeOwner(this);
+	ButtonSettings.HoveredStyle->ChangeOwner(this);
+	ButtonSettings.PressedStyle->ChangeOwner(this);
+	ButtonSettings.DisabledStyle->ChangeOwner(this);
 
 	AddWidgetComponent(&Alignment);
 	AddWidgetComponent(&Layout);
@@ -53,18 +79,7 @@ void Button::RepositionWidget(const RC_RECT& newRect)
 {
 	Inheried::RepositionWidget(newRect);
 
-	BrushPrimitive* buttonBrushes[] = { DefaultStyle.Get(), HoveredStyle.Get(), PressedStyle.Get(), DisabledStyle.Get() };
-	for (BrushPrimitive* brush : buttonBrushes)
-	{
-		if (!brush)
-		{
-			DebugEngineTrap();
-			continue;
-		}
-
-		brush->UpdateDrawRect(newRect);
-		brush->Construct();
-	}
+	ButtonSettings.RepositionBrushes(newRect);
 }
 
 void Button::DrawWidget(RCTexture* RenderTargetTexture)
@@ -84,16 +99,46 @@ bool Button::PassInput(const InputState& is)
 	const BrushPrimitive* brush = GetCurrentBrush();
 	if (!brush) return false;
 
-	if (is.bMouseMoved &&
-		(State != ButtonState::Pressed))
-	{
-		const RC_RECT& drawRect = brush->GetDrawRect();
-		const MouseCoords& mousePos = is.LastMousePos;
+	const RC_RECT& drawRect = brush->GetDrawRect();
+	const MouseCoords& mousePos = is.LastMousePos;
 
-		if (IsPointInsideRect(mousePos, drawRect))
+	const bool bMouseIntersect = IsPointInsideRect(mousePos, drawRect);
+	const bool bMouseStillPressed = (is.MouseBtnPressedMask != 0);
+
+	if (is.bMouseMoved && 
+		!bMouseStillPressed)
+	{
+		if (bMouseIntersect)
 			State = ButtonState::Hovered;
 		else if (State != ButtonState::Default)
 			State = ButtonState::Default;
+
+		return true;
+	}
+
+	if (State == ButtonState::Pressed &&
+		!bMouseStillPressed)
+	{
+		State = ButtonState::Default;
+	}
+
+	if (bMouseIntersect)
+	{
+		if (is.MouseBtnClicked != InputMouseButton::None)
+		{
+			// TODO: Handle click event. Produce some event.
+		}
+
+		if (bMouseStillPressed)
+		{
+			if (State != ButtonState::Pressed)
+			{
+				if (IsPointInsideRect(is.InitialMousePressPos, drawRect))
+					State = ButtonState::Pressed;
+			}
+		}
+		else
+			State = ButtonState::Hovered;
 
 		return true;
 	}
@@ -117,10 +162,10 @@ RC_SIZE Button::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRec
 GameObject* Button::Clone() const
 {
 	Button* newWidget = CreateNewObject<Button>(GetOwner());
-	newWidget->DefaultStyle.Get()->SetBrushStyle(DefaultStyle.Get()->GetBrushStyle());
-	newWidget->HoveredStyle.Get()->SetBrushStyle(HoveredStyle.Get()->GetBrushStyle());
-	newWidget->PressedStyle.Get()->SetBrushStyle(PressedStyle.Get()->GetBrushStyle());
-	newWidget->DisabledStyle.Get()->SetBrushStyle(DisabledStyle.Get()->GetBrushStyle());
+	newWidget->ButtonSettings.DefaultStyle.Get()->SetBrushStyle(ButtonSettings.DefaultStyle.Get()->GetBrushStyle());
+	newWidget->ButtonSettings.HoveredStyle.Get()->SetBrushStyle(ButtonSettings.HoveredStyle.Get()->GetBrushStyle());
+	newWidget->ButtonSettings.PressedStyle.Get()->SetBrushStyle(ButtonSettings.PressedStyle.Get()->GetBrushStyle());
+	newWidget->ButtonSettings.DisabledStyle.Get()->SetBrushStyle(ButtonSettings.DisabledStyle.Get()->GetBrushStyle());
 
 	newWidget->Alignment = this->Alignment;
 	newWidget->Layout = this->Layout;
@@ -134,13 +179,13 @@ BrushPrimitive* Button::GetCurrentBrush()
 	switch (State)
 	{
 		case ButtonState::Default:
-			return DefaultStyle.Get();
+			return ButtonSettings.DefaultStyle.Get();
 		case ButtonState::Hovered:
-			return HoveredStyle.Get();
+			return ButtonSettings.HoveredStyle.Get();
 		case ButtonState::Pressed:
-			return PressedStyle.Get();
+			return ButtonSettings.PressedStyle.Get();
 		case ButtonState::Disabled:
-			return  DisabledStyle.Get();
+			return ButtonSettings.DisabledStyle.Get();
 		default:
 			break;
 	}

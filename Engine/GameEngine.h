@@ -44,7 +44,9 @@ protected:
 	void HandleKeyPressEvent(WORD keyCode);
 	void HandleKeyReleaseEvent(WORD keyCode);
 
-	void HandleMouseClickEvent(const MOUSE_EVENT_RECORD& mer, InputMouseButton imb);
+	void HandleMouseButtonPressEvent(const MOUSE_EVENT_RECORD& mer, InputMouseButton imb);
+	void HandleMouseButtonReleaseEvent(const MOUSE_EVENT_RECORD& mer, InputMouseButton imb);
+	
 	void HandleMouseDoubleClickEvent(const MOUSE_EVENT_RECORD& mer);
 
 	void HandleMouseMoveEvent(const MOUSE_EVENT_RECORD& mer);
@@ -68,6 +70,12 @@ private:
 	/** Threads. */
 
 	std::thread InputEventsThreadHandle;
+
+	/** Input. */
+
+	std::chrono::steady_clock::time_point LastLMBPressTime;
+	std::chrono::steady_clock::time_point LastRMBPressTime;
+	std::chrono::steady_clock::time_point LastMMBPressTime;
 
 	/** Engine Properties. */
 

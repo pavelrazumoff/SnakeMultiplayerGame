@@ -1,6 +1,7 @@
 #include "InputManager.h"
 
 #include "Engine/EngineUtility.h"
+
 #include <unordered_set>
 
 InputManager::InputManager()
@@ -98,22 +99,24 @@ void InputManager::_OnMouseEvent(const MOUSE_EVENT_RECORD& mer)
 			if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
 			{
 				bLeftButtonDown = true;
+				MouseBtnPressEvent.Trigger(mer, InputMouseButton::Left);
 			}
 			else if (mer.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
 			{
 				bRightButtonDown = true;
+				MouseBtnPressEvent.Trigger(mer, InputMouseButton::Right);
 			}
 			else
 			{
 				if (bLeftButtonDown)
 				{
-					MouseClickEvent.Trigger(mer, InputMouseButton::Left);
+					MouseBtnReleaseEvent.Trigger(mer, InputMouseButton::Left);
 					bLeftButtonDown = false;
 				}
 
 				if (bRightButtonDown)
 				{
-					MouseClickEvent.Trigger(mer, InputMouseButton::Right);
+					MouseBtnReleaseEvent.Trigger(mer, InputMouseButton::Right);
 					bRightButtonDown = false;
 				}
 			}

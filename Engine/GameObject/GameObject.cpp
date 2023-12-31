@@ -10,7 +10,7 @@ GameObject::GameObject()
 GameObject::~GameObject()
 {
 	for (auto child : ChildObjects)
-		if (child) child->SetAsOwner(nullptr);
+		if (child) child->_SetAsOwner(nullptr);
 
 	if (!bWaitForDestroy)
 	{
@@ -18,7 +18,13 @@ GameObject::~GameObject()
 	}
 }
 
-void GameObject::SetAsOwner(GameObject* _owner)
+void GameObject::ChangeOwner(GameObject* _owner)
+{
+	if (_owner)
+		_owner->AddAsChild(this);
+}
+
+void GameObject::_SetAsOwner(GameObject* _owner)
 {
 	if (Owner) Owner->RemoveChild(this);
 	Owner = _owner;
@@ -26,7 +32,7 @@ void GameObject::SetAsOwner(GameObject* _owner)
 
 void GameObject::AddAsChild(GameObject* Child)
 {
-	Child->SetAsOwner(this);
+	Child->_SetAsOwner(this);
 	ChildObjects.push_back(Child);
 }
 

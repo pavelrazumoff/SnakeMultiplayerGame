@@ -11,7 +11,7 @@ public:
 
 	virtual ~GameObject();
 
-	void SetAsOwner(GameObject* _owner);
+	virtual void ChangeOwner(GameObject* _owner);
 	virtual void AddAsChild(GameObject* Child);
 	virtual void RemoveChild(GameObject* Child);
 
@@ -37,6 +37,8 @@ public:
 	}
 
 protected:
+	void _SetAsOwner(GameObject* _owner);
+
 	virtual GameObject* Clone() const { return nullptr; }
 
 private:

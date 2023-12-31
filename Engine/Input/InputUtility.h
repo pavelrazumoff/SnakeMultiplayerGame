@@ -23,7 +23,8 @@ struct InputState
 public:
 	InputState& operator=(const InputState& other);
 
-	void Reset();
+	void ResetFrameState();
+	void ResetAll();
 
 	void ConsumeInput() { bConsumed = true; }
 
@@ -33,7 +34,6 @@ public:
 	/** Mouse Input. */
 
 	uint64_t MouseBtnPressedMask = 0;
-	uint64_t MouseBtnReleasedMask = 0;
 	InputMouseButton MouseBtnClicked = InputMouseButton::None;
 	InputMouseButton MouseBtnDoubleClicked = InputMouseButton::None;
 
@@ -44,7 +44,6 @@ public:
 	/** Keyboard Input. */
 
 	std::queue<uint_least16_t> KeyPressedQueue;
-	std::queue< uint_least16_t> KeyReleasedQueue;
 
 private:
 	bool bConsumed = false;

@@ -6,7 +6,6 @@ InputState& InputState::operator=(const InputState& other)
 
 	// Mouse Input.
 	MouseBtnPressedMask = other.MouseBtnPressedMask;
-	MouseBtnReleasedMask = other.MouseBtnReleasedMask;
 	MouseBtnClicked = other.MouseBtnClicked;
 	MouseBtnDoubleClicked = other.MouseBtnDoubleClicked;
 
@@ -16,7 +15,6 @@ InputState& InputState::operator=(const InputState& other)
 
 	// Keyboard Input.
 	KeyPressedQueue = other.KeyPressedQueue;
-	KeyReleasedQueue = other.KeyReleasedQueue;
 
 	// Consumption.
 	bConsumed = other.bConsumed;
@@ -24,25 +22,27 @@ InputState& InputState::operator=(const InputState& other)
 	return *this;
 }
 
-void InputState::Reset()
+void InputState::ResetFrameState()
 {
 	// Mouse Input.
-	MouseBtnPressedMask = 0;
-	MouseBtnReleasedMask = 0;
 	MouseBtnClicked = InputMouseButton::None;
 	MouseBtnDoubleClicked = InputMouseButton::None;
 
 	bMouseMoved = false;
+
+	// Reset consumed flag.
+	bConsumed = false;
+}
+
+void InputState::ResetAll()
+{
+	ResetFrameState();
+
+	MouseBtnPressedMask = 0;
 	LastMousePos = { 0, 0 };
 	InitialMousePressPos = { 0, 0 };
 
 	// Keyboard Input.
 	while (!KeyPressedQueue.empty())
 		KeyPressedQueue.pop();
-
-	while (!KeyReleasedQueue.empty())
-		KeyReleasedQueue.pop();
-
-	// Reset consumed flag.
-	bConsumed = false;
 }
