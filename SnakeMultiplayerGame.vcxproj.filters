@@ -230,5 +230,11 @@
     <ClInclude Include="Engine\Events\EventManager.h">
       <Filter>Header Files\Engine\Events</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Events\EventDelegate.h">
+      <Filter>Header Files\Engine\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Input\InputUtility.h">
+      <Filter>Header Files\Engine\Input</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

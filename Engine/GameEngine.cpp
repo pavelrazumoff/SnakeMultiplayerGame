@@ -41,6 +41,7 @@ static BOOL WINAPI ConsoleHandlerRoutine(DWORD dwCtrlType)
 		case CTRL_LOGOFF_EVENT:
 		case CTRL_SHUTDOWN_EVENT:
 		{
+			InputManager::GetInstance().Release();
 			GarbageCollector::GetInstance().Free();
 			return TRUE;
 		}
@@ -66,15 +67,18 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 {
 	FillEngineProperties();
 
-	InputManager::GetInstance()->Initialize();
+	InputManager::GetInstance().Initialize();
 	{
-		InputManager::GetInstance()->RegisterInputCallback("KeyPressEvent", this, &GameEngine::HandleKeyPressEvent);
+		InputManager::GetInstance().OnKeyPressEvent().Subscribe(this, &GameEngine::HandleKeyPressEvent);
+		InputManager::GetInstance().OnKeyReleaseEvent().Subscribe(this, &GameEngine::HandleKeyReleaseEvent);
 
-		InputManager::GetInstance()->RegisterInputCallback("MouseMoveEvent", this, &GameEngine::HandleMouseMoveEvent);
-		InputManager::GetInstance()->RegisterInputCallback("MouseButtonClickEvent", this, &GameEngine::HandleMouseButtonClickEvent);
-		InputManager::GetInstance()->RegisterInputCallback("MouseDoubleClickEvent", this, &GameEngine::HandleMouseDoubleClickEvent);
+		InputManager::GetInstance().OnMouseClickEvent().Subscribe(this, &GameEngine::HandleMouseClickEvent);
+		InputManager::GetInstance().OnMouseDoubleClickEvent().Subscribe(this, &GameEngine::HandleMouseDoubleClickEvent);
 
-		InputManager::GetInstance()->RegisterInputCallback("WindowResizeEvent", this, &GameEngine::HandleWindowResizeEvent);
+		InputManager::GetInstance().OnMouseMoveEvent().Subscribe(this, &GameEngine::HandleMouseMoveEvent);
+		InputManager::GetInstance().OnMouseWheelEvent().Subscribe(this, &GameEngine::HandleMouseWheelEvent);
+
+		InputManager::GetInstance().OnWindowResizeEvent().Subscribe(this, &GameEngine::HandleWindowResizeEvent);
 	}
 
 	RenderManager::GetInstance()->Initialize();
@@ -168,7 +172,7 @@ void GameEngine::InputEventsThread()
 {
 	while (bIsRunning)
 	{
-		InputManager::GetInstance()->ReadInput();
+		InputManager::GetInstance().ReadInput();
 	}
 }
 
@@ -176,12 +180,13 @@ void GameEngine::InputEventsThread()
 	Events.
 */
 
-void GameEngine::HandleKeyPressEvent(void* KeyCode)
+void GameEngine::HandleKeyPressEvent(WORD keyCode)
 {
-	if (!KeyCode) { engine_assert(false); return; }
+}
 
-	WORD virtualKeyCode = *reinterpret_cast<WORD*>(KeyCode);
-	switch (virtualKeyCode)
+void GameEngine::HandleKeyReleaseEvent(WORD keyCode)
+{
+	switch (keyCode)
 	{
 		case VK_ESCAPE:
 			StopEngine();
@@ -191,21 +196,8 @@ void GameEngine::HandleKeyPressEvent(void* KeyCode)
 	}
 }
 
-void GameEngine::HandleMouseMoveEvent(void* mer)
+void GameEngine::HandleMouseClickEvent(const MOUSE_EVENT_RECORD& mer, InputMouseButton imb)
 {
-	if (!mer) { engine_assert(false); return; }
-
-	MOUSE_EVENT_RECORD _mer = *reinterpret_cast<MOUSE_EVENT_RECORD*>(mer);
-
-
-}
-
-void GameEngine::HandleMouseButtonClickEvent(void* mer)
-{
-	if (!mer) { engine_assert(false); return; }
-
-	MOUSE_EVENT_RECORD _mer = *reinterpret_cast<MOUSE_EVENT_RECORD*>(mer);
-
 	// TODO: Come up with some kind of engine input mode, where there's mode that let player to interact only with widgets,
 	// or only with game level (ignoring widgets), or both.
 
@@ -214,34 +206,37 @@ void GameEngine::HandleMouseButtonClickEvent(void* mer)
 	// can really handle the input, or we should just let it pass through and let the level handle it.
 
 	// Introduce Hit-Testable mode, that has options like: OnlySelf, SelfAndChildren, NoHitTest.
+
+	
 }
 
-void GameEngine::HandleMouseDoubleClickEvent(void* mer)
+void GameEngine::HandleMouseDoubleClickEvent(const MOUSE_EVENT_RECORD& mer)
 {
-	if (!mer) { engine_assert(false); return; }
-
-	MOUSE_EVENT_RECORD _mer = *reinterpret_cast<MOUSE_EVENT_RECORD*>(mer);
 }
 
-void GameEngine::HandleWindowResizeEvent(void* wbsr)
+void GameEngine::HandleMouseMoveEvent(const MOUSE_EVENT_RECORD& mer)
+{
+}
+
+void GameEngine::HandleMouseWheelEvent(const MOUSE_EVENT_RECORD& mer)
+{
+}
+
+void GameEngine::HandleWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr)
 {
 	/*
 		There is an issue when the console app window's size is being reduced.
 		There appears the scroll bar, that hides prev drawing buffer.
 	*/
 
-	if (!wbsr) { engine_assert(false); return; }
-
-	WINDOW_BUFFER_SIZE_RECORD _wbsr = *reinterpret_cast<WINDOW_BUFFER_SIZE_RECORD*>(wbsr);
-
 	const RC_SIZE currentWndSize = LastWndDimension.load();
-	if (_wbsr.dwSize.X == currentWndSize.cx &&
-		_wbsr.dwSize.Y == currentWndSize.cy)
+	if (wbsr.dwSize.X == currentWndSize.cx &&
+		wbsr.dwSize.Y == currentWndSize.cy)
 	{
 		return;
 	}
 
-	LastWndDimension = { (RC_UINT)_wbsr.dwSize.X, (RC_UINT)_wbsr.dwSize.Y };
+	LastWndDimension = { (RC_UINT)wbsr.dwSize.X, (RC_UINT)wbsr.dwSize.Y };
 
 	std::unique_lock<std::shared_mutex> lock(EngineMainProcessMtx);
 
@@ -264,6 +259,7 @@ void GameEngine::StopEngine()
 
 void GameEngine::Cleanup()
 {
+	InputManager::GetInstance().Release();
 	GarbageCollector::GetInstance().Free();
 	DestroyRootObject();
 }

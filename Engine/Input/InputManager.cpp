@@ -1,24 +1,34 @@
 #include "InputManager.h"
 
+#include "Engine/EngineUtility.h"
 #include <unordered_set>
 
 InputManager::InputManager()
 {
 }
 
-InputManager* InputManager::GetInstance()
+InputManager& InputManager::GetInstance()
 {
 	static InputManager instance;
-	return &instance;
+	return instance;
 }
 
 void InputManager::Initialize()
 {
 	HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
 
-	DWORD prevMode;
-	GetConsoleMode(hInput, &prevMode);
-	SetConsoleMode(hInput, prevMode | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT);
+	GetConsoleMode(hInput, &fdwSaveOldMode);
+
+	const DWORD fdwMode = ENABLE_EXTENDED_FLAGS | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT;
+	if (!SetConsoleMode(hInput, fdwMode))
+	{
+		engine_assert(false);
+	}
+}
+
+void InputManager::Release()
+{
+	SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), fdwSaveOldMode);
 }
 
 void InputManager::ReadInput()
@@ -55,13 +65,13 @@ void InputManager::ReadInput()
 		switch (eventType)
 		{
 			case KEY_EVENT:
-				OnKeyEvent(irInBuf[i].Event.KeyEvent);
+				_OnKeyEvent(irInBuf[i].Event.KeyEvent);
 				break;
 			case MOUSE_EVENT:
-				OnMouseEvent(irInBuf[i].Event.MouseEvent);
+				_OnMouseEvent(irInBuf[i].Event.MouseEvent);
 				break;
 			case WINDOW_BUFFER_SIZE_EVENT:
-				OnWindowResizeEvent(irInBuf[i].Event.WindowBufferSizeEvent);
+				_OnWindowResizeEvent(irInBuf[i].Event.WindowBufferSizeEvent);
 				break;
 			default:
 				break;
@@ -69,13 +79,15 @@ void InputManager::ReadInput()
 	}
 }
 
-void InputManager::OnKeyEvent(KEY_EVENT_RECORD ker)
+void InputManager::_OnKeyEvent(KEY_EVENT_RECORD ker)
 {
 	if (ker.bKeyDown == 1)
-		InputEventsManager.Trigger("KeyPressEvent", reinterpret_cast<void*>(&ker.wVirtualKeyCode));
+		KeyPressEvent.Trigger(ker.wVirtualKeyCode);
+	else
+		KeyReleaseEvent.Trigger(ker.wVirtualKeyCode);
 }
 
-void InputManager::OnMouseEvent(MOUSE_EVENT_RECORD mer)
+void InputManager::_OnMouseEvent(MOUSE_EVENT_RECORD mer)
 {
 	static bool bLeftButtonDown = false;
 	static bool bRightButtonDown = false;
@@ -95,32 +107,32 @@ void InputManager::OnMouseEvent(MOUSE_EVENT_RECORD mer)
 			{
 				if (bLeftButtonDown)
 				{
-					InputEventsManager.Trigger("MouseButtonClickEvent", reinterpret_cast<void*>(&mer));
+					MouseClickEvent.Trigger(mer, InputMouseButton::Left);
 					bLeftButtonDown = false;
 				}
 
 				if (bRightButtonDown)
 				{
-					InputEventsManager.Trigger("MouseButtonClickEvent", reinterpret_cast<void*>(&mer));
+					MouseClickEvent.Trigger(mer, InputMouseButton::Right);
 					bRightButtonDown = false;
 				}
 			}
 			break;
 		case DOUBLE_CLICK:
-			InputEventsManager.Trigger("MouseDoubleClickEvent", reinterpret_cast<void*>(&mer));
+			MouseDoubleClickEvent.Trigger(mer);
 			break;
 		case MOUSE_MOVED:
-			InputEventsManager.Trigger("MouseMoveEvent", reinterpret_cast<void*>(&mer));
+			MouseMoveEvent.Trigger(mer);
 			break;
 		case MOUSE_WHEELED:
-			InputEventsManager.Trigger("MouseWheelEvent", reinterpret_cast<void*>(&mer));
+			MouseWheelEvent.Trigger(mer);
 			break;
 		default:
 			break;
 	}
 }
 
-void InputManager::OnWindowResizeEvent(WINDOW_BUFFER_SIZE_RECORD wbsr)
+void InputManager::_OnWindowResizeEvent(WINDOW_BUFFER_SIZE_RECORD wbsr)
 {
-	InputEventsManager.Trigger("WindowResizeEvent", reinterpret_cast<void*>(&wbsr));
+	WindowResizeEvent.Trigger(wbsr);
 }

@@ -166,6 +166,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\EngineUtility.h" />
+    <ClInclude Include="Engine\Events\EventDelegate.h" />
     <ClInclude Include="Engine\Events\EventManager.h" />
     <ClInclude Include="Engine\GameEngine.h" />
     <ClInclude Include="Engine\GameLevel.h" />
@@ -187,6 +188,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\GameWidget\Utility\WidgetContainerComponent.h" />
     <ClInclude Include="Engine\GarbageCollector.h" />
     <ClInclude Include="Engine\Input\InputManager.h" />
+    <ClInclude Include="Engine\Input\InputUtility.h" />
     <ClInclude Include="Engine\MemoryReflectionSystem.h" />
     <ClInclude Include="Engine\Render\Renderable.h" />
     <ClInclude Include="Engine\Render\RenderManager.h" />

@@ -5,6 +5,13 @@
 #include <vector>
 #include <string>
 
+/*
+	DEPRECATED. USE EventDelegate.h INSTEAD.
+*/
+
+#define USE_EVENT_MANAGER() 0
+
+#if USE_EVENT_MANAGER()
 class EventManager 
 {
 public:
@@ -26,3 +33,4 @@ public:
 private:
 	std::map<std::string, std::vector<Listener>> Listeners;
 };
+#endif // USE_EVENT_MANAGER()

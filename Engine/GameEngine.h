@@ -3,6 +3,9 @@
 #include "GameLevel.h"
 #include "Core/RCDataTypes.h"
 
+#include "Input/InputUtility.h"
+
+#include <windows.h>
 #include <thread>
 
 // TODO: Move to another place.
@@ -34,13 +37,16 @@ protected:
 
 	/** Events. */
 
-	void HandleKeyPressEvent(void* KeyCode);
+	void HandleKeyPressEvent(WORD keyCode);
+	void HandleKeyReleaseEvent(WORD keyCode);
 
-	void HandleMouseMoveEvent(void* mer);
-	void HandleMouseButtonClickEvent(void* mer);
-	void HandleMouseDoubleClickEvent(void* mer);
+	void HandleMouseClickEvent(const MOUSE_EVENT_RECORD& mer, InputMouseButton imb);
+	void HandleMouseDoubleClickEvent(const MOUSE_EVENT_RECORD& mer);
 
-	void HandleWindowResizeEvent(void* wbsr);
+	void HandleMouseMoveEvent(const MOUSE_EVENT_RECORD& mer);
+	void HandleMouseWheelEvent(const MOUSE_EVENT_RECORD& mer);
+
+	void HandleWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr);
 
 	/** Engine Stop and Cleanup. */
 
