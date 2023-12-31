@@ -58,7 +58,7 @@ void Button::RepositionWidget(const RC_RECT& newRect)
 	{
 		if (!brush)
 		{
-			engine_assert(false);
+			DebugEngineTrap();
 			continue;
 		}
 
@@ -69,32 +69,36 @@ void Button::RepositionWidget(const RC_RECT& newRect)
 
 void Button::DrawWidget(RCTexture* RenderTargetTexture)
 {
-	BrushPrimitive* brush = nullptr;
-	switch (State)
-	{
-		case ButtonState::Default:
-			brush = DefaultStyle.Get();
-			break;
-		case ButtonState::Hovered:
-			brush = HoveredStyle.Get();
-			break;
-		case ButtonState::Pressed:
-			brush = PressedStyle.Get();
-			break;
-		case ButtonState::Disabled:
-			brush = DisabledStyle.Get();
-			break;
-		default:
-			break;
-	}
-
+	BrushPrimitive* brush = GetCurrentBrush();
 	if (!brush)
 	{
-		engine_assert(false);
+		DebugEngineTrap();
 		return;
 	}
 
 	brush->Draw(RenderTargetTexture);
+}
+
+bool Button::PassInput(const InputState& is)
+{
+	const BrushPrimitive* brush = GetCurrentBrush();
+	if (!brush) return false;
+
+	if (is.bMouseMoved &&
+		(State != ButtonState::Pressed))
+	{
+		const RC_RECT& drawRect = brush->GetDrawRect();
+		const MouseCoords& mousePos = is.LastMousePos;
+
+		if (IsPointInsideRect(mousePos, drawRect))
+			State = ButtonState::Hovered;
+		else if (State != ButtonState::Default)
+			State = ButtonState::Default;
+
+		return true;
+	}
+
+	return false;
 }
 
 RC_SIZE Button::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRecalc)
@@ -122,4 +126,24 @@ GameObject* Button::Clone() const
 	newWidget->Layout = this->Layout;
 
 	return newWidget;
+}
+
+BrushPrimitive* Button::GetCurrentBrush()
+{
+	BrushPrimitive* brush = nullptr;
+	switch (State)
+	{
+		case ButtonState::Default:
+			return DefaultStyle.Get();
+		case ButtonState::Hovered:
+			return HoveredStyle.Get();
+		case ButtonState::Pressed:
+			return PressedStyle.Get();
+		case ButtonState::Disabled:
+			return  DisabledStyle.Get();
+		default:
+			break;
+	}
+
+	return nullptr;
 }

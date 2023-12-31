@@ -28,6 +28,7 @@
 */
 
 static std::shared_mutex EngineMainProcessMtx;
+static std::mutex InputStateMutex;
 
 static BOOL WINAPI ConsoleHandlerRoutine(DWORD dwCtrlType)
 {
@@ -106,6 +107,9 @@ void GameEngine::Run()
 	{
 		std::unique_lock<std::shared_mutex> lock(EngineMainProcessMtx);
 
+		// Input state.
+		RefreshInputState();
+
 		// Do the game logic here.
 		{
 			if (!CurrentLevel.Get())
@@ -113,6 +117,7 @@ void GameEngine::Run()
 				break;
 			}
 
+			CurrentLevel->PassInput(LastInputState);
 			CurrentLevel->Update(DeltaTime);
 		}
 
@@ -177,6 +182,18 @@ void GameEngine::InputEventsThread()
 }
 
 /*
+	Input.
+*/
+
+void GameEngine::RefreshInputState()
+{
+	std::lock_guard<std::mutex> lock(InputStateMutex);
+
+	LastInputState = ActualInputState;
+	ActualInputState.Reset();
+}
+
+/*
 	Events.
 */
 
@@ -216,6 +233,10 @@ void GameEngine::HandleMouseDoubleClickEvent(const MOUSE_EVENT_RECORD& mer)
 
 void GameEngine::HandleMouseMoveEvent(const MOUSE_EVENT_RECORD& mer)
 {
+	std::lock_guard<std::mutex> lock(InputStateMutex);
+ 
+	ActualInputState.bMouseMoved = true;
+	ActualInputState.LastMousePos = { mer.dwMousePosition.X, mer.dwMousePosition.Y };
 }
 
 void GameEngine::HandleMouseWheelEvent(const MOUSE_EVENT_RECORD& mer)

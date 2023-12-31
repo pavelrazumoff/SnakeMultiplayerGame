@@ -6,6 +6,8 @@
 #include "../Utility/AlignmentSettings.h"
 #include "../Utility/LayoutSettings.h"
 
+#include "Engine/Input/InputHandler.h"
+
 enum class ButtonState
 {
 	Default,
@@ -14,7 +16,7 @@ enum class ButtonState
 	Disabled
 };
 
-class Button : public GameWidget
+class Button : public GameWidget, public IInputHandler
 {
 	typedef GameWidget Inheried;
 
@@ -25,15 +27,20 @@ public:
 	virtual void RepositionWidget(const RC_RECT& newRect) override;
 	virtual void DrawWidget(RCTexture* RenderTargetTexture) override;
 
+	/** Extending the IInputHandler interface. */
+	virtual bool PassInput(const InputState& is) override;
+
 	virtual RC_SIZE CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRecalc) override;
 
-	void ChangeButtonState(ButtonState newState) { State = newState; }
+	void SetPressOnClick(bool _bPressOnClick) { bPressOnClick = _bPressOnClick; }
 
 	AlignmentSettings& GetAlignment() { return Alignment; }
 	LayoutSettings& GetLayout() { return Layout; }
 
 protected:
 	virtual GameObject* Clone() const override;
+
+	BrushPrimitive* GetCurrentBrush();
 
 protected:
 	TObjectPtr<BrushPrimitive> DefaultStyle;
@@ -46,4 +53,5 @@ protected:
 
 private:
 	ButtonState State = ButtonState::Default;
+	bool bPressOnClick = false;
 };

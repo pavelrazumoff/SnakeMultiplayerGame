@@ -22,7 +22,7 @@ void InputManager::Initialize()
 	const DWORD fdwMode = ENABLE_EXTENDED_FLAGS | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT;
 	if (!SetConsoleMode(hInput, fdwMode))
 	{
-		engine_assert(false);
+		DebugEngineTrap();
 	}
 }
 
@@ -79,7 +79,7 @@ void InputManager::ReadInput()
 	}
 }
 
-void InputManager::_OnKeyEvent(KEY_EVENT_RECORD ker)
+void InputManager::_OnKeyEvent(const KEY_EVENT_RECORD& ker)
 {
 	if (ker.bKeyDown == 1)
 		KeyPressEvent.Trigger(ker.wVirtualKeyCode);
@@ -87,7 +87,7 @@ void InputManager::_OnKeyEvent(KEY_EVENT_RECORD ker)
 		KeyReleaseEvent.Trigger(ker.wVirtualKeyCode);
 }
 
-void InputManager::_OnMouseEvent(MOUSE_EVENT_RECORD mer)
+void InputManager::_OnMouseEvent(const MOUSE_EVENT_RECORD& mer)
 {
 	static bool bLeftButtonDown = false;
 	static bool bRightButtonDown = false;
@@ -132,7 +132,7 @@ void InputManager::_OnMouseEvent(MOUSE_EVENT_RECORD mer)
 	}
 }
 
-void InputManager::_OnWindowResizeEvent(WINDOW_BUFFER_SIZE_RECORD wbsr)
+void InputManager::_OnWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr)
 {
 	WindowResizeEvent.Trigger(wbsr);
 }

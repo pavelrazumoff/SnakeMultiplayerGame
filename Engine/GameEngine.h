@@ -35,6 +35,10 @@ protected:
 
 	void InputEventsThread();
 
+	/** Input. */
+
+	void RefreshInputState();
+
 	/** Events. */
 
 	void HandleKeyPressEvent(WORD keyCode);
@@ -68,4 +72,7 @@ private:
 	/** Engine Properties. */
 
 	std::atomic<RC_SIZE> LastWndDimension;
+
+	InputState ActualInputState;
+	InputState LastInputState;
 };

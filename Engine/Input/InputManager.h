@@ -53,10 +53,10 @@ public:
 	WindowResizeDelegate& OnWindowResizeEvent() { return WindowResizeEvent; }
 
 private:
-	void _OnKeyEvent(KEY_EVENT_RECORD ker);
-	void _OnMouseEvent(MOUSE_EVENT_RECORD mer);
+	void _OnKeyEvent(const KEY_EVENT_RECORD& ker);
+	void _OnMouseEvent(const MOUSE_EVENT_RECORD& mer);
 
-	void _OnWindowResizeEvent(WINDOW_BUFFER_SIZE_RECORD wbsr);
+	void _OnWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr);
 
 protected:
 	KeyDelegate KeyPressEvent;

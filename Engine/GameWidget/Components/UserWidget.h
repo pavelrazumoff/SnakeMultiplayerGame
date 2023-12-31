@@ -4,8 +4,11 @@
 #include "WidgetTree.h"
 
 #include "Engine/Render/Renderable.h"
+#include "Engine/Input/InputHandler.h"
 
-class UserWidget : public GameWidget, public IRenderable
+#include <functional>
+
+class UserWidget : public GameWidget, public IRenderable, public IInputHandler
 {
 public:
 	UserWidget();
@@ -13,6 +16,9 @@ public:
 
 	/** Extending the IRenderable interface. */
 	virtual void Render(RCTexture* RenderTargetTexture) override;
+
+	/** Extending the IInputHandler interface. */
+	virtual bool PassInput(const InputState& is) override;
 
 	virtual void DrawWidget(RCTexture* RenderTargetTexture) override;
 
@@ -26,7 +32,7 @@ private:
 	void CalculateDirtySizeWidgetsRecursive(TreeNode* node);
 	void ClarifyUnderlaySizeWidgetsRecursive(TreeNode* node);
 
-	void DrawWidgetTreeRecursive(TreeNode* node, RCTexture* RenderTargetTexture);
+	bool ProceedWidgetTreeRecursive(TreeNode* node, std::function<bool(GameWidget*)> func);
 
 protected:
 	WidgetTree Tree;

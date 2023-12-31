@@ -18,9 +18,27 @@ void UserWidget::Render(RCTexture* RenderTargetTexture)
 	DrawWidget(RenderTargetTexture);
 }
 
+bool UserWidget::PassInput(const InputState& is)
+{
+	return ProceedWidgetTreeRecursive(Tree.GetRootNode(), [&is](GameWidget* widget) -> bool {
+
+		if (auto inputHandler = dynamic_cast<IInputHandler*>(widget))
+		{
+			bool bConsumed = inputHandler->PassInput(is);
+			return true;
+		}
+
+		return false;
+	});
+}
+
 void UserWidget::DrawWidget(RCTexture* RenderTargetTexture)
 {
-	DrawWidgetTreeRecursive(Tree.GetRootNode(), RenderTargetTexture);
+	ProceedWidgetTreeRecursive(Tree.GetRootNode(), [&RenderTargetTexture](GameWidget* widget) -> bool {
+
+		widget->DrawWidget(RenderTargetTexture);
+		return false;
+	});
 }
 
 void UserWidget::ReconstructWidgetTree()
@@ -102,19 +120,22 @@ void UserWidget::ClarifyUnderlaySizeWidgetsRecursive(TreeNode* node)
 	}
 }
 
-void UserWidget::DrawWidgetTreeRecursive(TreeNode* node, RCTexture* RenderTargetTexture)
+bool UserWidget::ProceedWidgetTreeRecursive(TreeNode* node, std::function<bool(GameWidget*)> func)
 {
 	if (GameWidget* widget = node->GetWidget())
 	{
-		widget->DrawWidget(RenderTargetTexture);
+		if (func(widget))
+			return true;
 	}
 
 	const size_t numChildren = node->GetChildrenCount();
 	for (size_t i = 0; i < numChildren; i++)
 	{
 		TreeNode* childNode = node->GetChild(i);
-		DrawWidgetTreeRecursive(childNode, RenderTargetTexture);
+		if (ProceedWidgetTreeRecursive(childNode, func)) return true;
 	}
+
+	return false;
 }
 
 void UserWidget::SetCanvasDimensions(uint32_t width, uint32_t height)

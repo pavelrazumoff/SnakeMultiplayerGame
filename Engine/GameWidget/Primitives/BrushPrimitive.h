@@ -17,6 +17,7 @@ public:
 	virtual void Draw(RCTexture* RenderTargetTexture);
 
 	void UpdateDrawRect(const TEX_RECT& newRect);
+	TEX_RECT GetDrawRect() const { return DrawRect; }
 
 public:
 	void SetBrushStyle(const BrushStyle& newStyle) { Style = newStyle; }

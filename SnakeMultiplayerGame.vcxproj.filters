@@ -147,6 +147,9 @@
     <ClCompile Include="Engine\Input\InputManager.cpp">
       <Filter>Source Files\Engine\Input</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Input\InputUtility.cpp">
+      <Filter>Source Files\Engine\Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameEngine.h">
@@ -234,6 +237,9 @@
       <Filter>Header Files\Engine\Events</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Input\InputUtility.h">
+      <Filter>Header Files\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Input\InputHandler.h">
       <Filter>Header Files\Engine\Input</Filter>
     </ClInclude>
   </ItemGroup>

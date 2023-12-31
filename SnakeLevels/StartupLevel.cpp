@@ -21,6 +21,7 @@ void StartupLevel::OpenLevel()
 	if (!StartupMenuWidget.Get())
 	{
 		StartupMenuWidget = CreateNewObject<MainMenuWidget>(this);
+		PlaceObjectOnLevel(StartupMenuWidget.Get());
 	}
 
 	ReconstructLevel();

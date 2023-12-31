@@ -158,6 +158,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\GameWidget\Utility\WidgetContainerComponent.cpp" />
     <ClCompile Include="Engine\GarbageCollector.cpp" />
     <ClCompile Include="Engine\Input\InputManager.cpp" />
+    <ClCompile Include="Engine\Input\InputUtility.cpp" />
     <ClCompile Include="Engine\MemoryReflectionSystem.cpp" />
     <ClCompile Include="Engine\Render\RenderManager.cpp" />
     <ClCompile Include="SnakeLevels\StartupLevel.cpp" />
@@ -187,6 +188,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\GameWidget\Utility\WidgetComponent.h" />
     <ClInclude Include="Engine\GameWidget\Utility\WidgetContainerComponent.h" />
     <ClInclude Include="Engine\GarbageCollector.h" />
+    <ClInclude Include="Engine\Input\InputHandler.h" />
     <ClInclude Include="Engine\Input\InputManager.h" />
     <ClInclude Include="Engine\Input\InputUtility.h" />
     <ClInclude Include="Engine\MemoryReflectionSystem.h" />

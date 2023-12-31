@@ -54,7 +54,7 @@ void DrawConsoleLibrary::DrawTextureDifference(const RCTexture* texture, const R
 
 		for (RC_UINT j = 0; j < texWidth; ++j)
 		{
-			if ((pTextureData[j] == pPrevTextureData[j]) ||
+			if ((pTextureData[j] == pPrevTextureData[j]) &&
 				(pTextureColorData[j] == pPrevTextureColorData[j]))
 			{
 				if (startPixelPosX != -1)
