@@ -3,6 +3,8 @@
 #include "Engine/GameWidget/Components/VerticalBox.h"
 #include "Engine/GameWidget/Components/PanelWidget.h"
 #include "Engine/GameWidget/Components/Button.h"
+#include "Engine/GameWidget/Components/TextBlock.h"
+
 #include "Engine/GameObject/GameObjectUtility.h"
 
 MainMenuWidget::MainMenuWidget()
@@ -41,10 +43,22 @@ MainMenuWidget::MainMenuWidget()
 		StartGameButton->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Center;
 		StartGameButton->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
 
-		StartGameButton->GetLayout().DimensionsOverride.cx = 10;
+		StartGameButton->GetLayout().DimensionsOverride.cx = 12;
 		StartGameButton->GetLayout().DimensionsOverride.cy = 3;
 
 		Tree.PlaceWidgetOn(StartGameButton.Get(), MainVerticalBox.Get());
+	}
+
+	StartGameButtonText = CreateNewObject<TextBlock>(this);
+	if (StartGameButtonText.Get())
+	{
+		StartGameButtonText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::NoAlignment;
+		StartGameButtonText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::NoAlignment;
+		StartGameButtonText->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
+
+		StartGameButtonText->GetText().SetText("Start Game");
+
+		Tree.PlaceWidgetOn(StartGameButtonText.Get(), StartGameButton.Get());
 	}
 
 	BottomPanelWidget = GameObject::CloneObject(TopPanelWidget.Get());

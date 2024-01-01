@@ -5,6 +5,7 @@
 class PanelWidget;
 class VerticalBox;
 class Button;
+class TextBlock;
 
 class MainMenuWidget : public UserWidget
 {
@@ -21,4 +22,5 @@ protected:
 	TObjectPtr<PanelWidget> BottomPanelWidget;
 
 	TObjectPtr<Button> StartGameButton;
+	TObjectPtr<TextBlock> StartGameButtonText;
 };

@@ -45,6 +45,8 @@ public:
 	virtual ~Button();
 
 	virtual void RepositionWidget(const RC_RECT& newRect) override;
+	virtual void ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size_t underlayWidgetsCount) override;
+
 	virtual void DrawWidget(RCTexture* RenderTargetTexture) override;
 
 	/** Extending the IInputHandler interface. */

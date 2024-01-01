@@ -82,6 +82,16 @@ void Button::RepositionWidget(const RC_RECT& newRect)
 	ButtonSettings.RepositionBrushes(newRect);
 }
 
+void Button::ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size_t underlayWidgetsCount)
+{
+	if (!underlayWidgetsCount) return;
+
+	engine_assert(underlayWidgetsCount == 1);
+
+	GameWidget* underlayWidget = underlayWidgets[0];
+	ApplyAlignmentSettings(this, underlayWidget);
+}
+
 void Button::DrawWidget(RCTexture* RenderTargetTexture)
 {
 	BrushPrimitive* brush = GetCurrentBrush();

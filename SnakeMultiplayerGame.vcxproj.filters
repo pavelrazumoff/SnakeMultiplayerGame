@@ -150,6 +150,12 @@
     <ClCompile Include="Engine\Input\InputUtility.cpp">
       <Filter>Source Files\Engine\Input</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Components\TextBlock.cpp">
+      <Filter>Source Files\Engine\GameWidget\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Primitives\TextPrimitive.cpp">
+      <Filter>Source Files\Engine\GameWidget\Primitives</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameEngine.h">
@@ -241,6 +247,15 @@
     </ClInclude>
     <ClInclude Include="Engine\Input\InputHandler.h">
       <Filter>Header Files\Engine\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Components\TextBlock.h">
+      <Filter>Header Files\Engine\GameWidget\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Primitives\TextPrimitive.h">
+      <Filter>Header Files\Engine\GameWidget\Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Utility\FontStyle.h">
+      <Filter>Header Files\Engine\GameWidget\Utility</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

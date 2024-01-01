@@ -77,9 +77,11 @@ void RenderManager::ReconstructRenderBuffer()
 	RC_SIZE bufferDimension = RenderConsoleLibrary::GetConsoleDimensions();
 
 	CurrentRenderBuffer = std::make_shared<RCTexture>(bufferDimension.cx, bufferDimension.cy);
+	CurrentRenderBuffer->SetAllowAlphaPixelWrite(false);
 	RenderTextureLibrary::FillTexture(CurrentRenderBuffer.get(), RenderConstants::ClearPixel);
 
 	SecondRenderBuffer = std::make_shared<RCTexture>(bufferDimension.cx, bufferDimension.cy);
+	SecondRenderBuffer->SetAllowAlphaPixelWrite(false);
 	RenderTextureLibrary::FillTexture(SecondRenderBuffer.get(), RenderConstants::ClearPixel);
 
 	DrawConsoleLibrary::DrawTexture(CurrentRenderBuffer.get(), 0, 0);

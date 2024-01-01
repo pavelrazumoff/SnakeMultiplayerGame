@@ -54,8 +54,24 @@ void DrawConsoleLibrary::DrawTextureDifference(const RCTexture* texture, const R
 
 		for (RC_UINT j = 0; j < texWidth; ++j)
 		{
-			if ((pTextureData[j] == pPrevTextureData[j]) &&
-				(pTextureColorData[j] == pPrevTextureColorData[j]))
+			const bool bPixelIsSameWithPrevFrame = pTextureData[j] == pPrevTextureData[j];
+			const bool bColorIsSameWithPrevFrame = pTextureColorData[j] == pPrevTextureColorData[j];
+			const bool bColorIsSameWithPrevPixel = (j > 0) ? (pTextureColorData[j] == pTextureColorData[j - 1]) : false;
+
+			if (!bColorIsSameWithPrevPixel && (!bColorIsSameWithPrevFrame || startPixelPosX != -1))
+			{
+				if (startPixelPosX != -1)
+				{
+					RenderConsoleLibrary::SetPixelRenderColor(pTextureColorData[startPixelPosX]);
+					RenderConsoleLibrary::FillConsoleLineWithBlock(pTextureData + startPixelPosX, x + startPixelPosX, y + i, j - startPixelPosX);
+					startPixelPosX = -1;
+				}
+
+				if (startPixelPosX == -1) startPixelPosX = j;
+				continue;
+			}
+
+			if (bPixelIsSameWithPrevFrame && bColorIsSameWithPrevFrame)
 			{
 				if (startPixelPosX != -1)
 				{

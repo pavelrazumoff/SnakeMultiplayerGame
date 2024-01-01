@@ -10,7 +10,7 @@ RCTexture::RCTexture(RC_UINT _width, RC_UINT _height)
 	memset(data, ' ', width * height * sizeof(TEX_PIXEL));
 
 	colorData = new TEX_COLOR_RGB[width * height];
-	std::fill_n(colorData, width * height, RenderConstants::WhitePixelColorRGB);
+	std::fill_n(colorData, width * height, RenderConstants::BlackPixelColorRGB);
 }
 
 RCTexture::~RCTexture()

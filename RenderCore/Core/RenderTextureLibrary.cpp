@@ -58,7 +58,7 @@ void RenderTextureLibrary::FillTexture(RCTexture* texture, const RCTexture* srcT
 	if (!texture || !srcTexture) return;
 
 	FillTexture(texture, srcTexture->GetData(), srcRect, srcTexture->GetWidth(), dstCoords);
-	FillTextureColor(texture, srcTexture->GetColorData(), srcRect, srcTexture->GetWidth(), dstCoords);
+	FillTextureColor(texture, srcTexture->GetData(), srcTexture->GetColorData(), srcRect, srcTexture->GetWidth(), dstCoords);
 }
 
 void RenderTextureLibrary::FillTexture(RCTexture* texture, const TEX_PIXEL* srcData, const TEX_RECT& srcRect, RC_UINT srcStride, const TEX_COORD& dstCoords)
@@ -76,12 +76,14 @@ void RenderTextureLibrary::FillTexture(RCTexture* texture, const TEX_PIXEL* srcD
 			TEX_COORD dstTexCoords = { static_cast<RC_UINT>(dstCoords.x + srcPosX), static_cast<RC_UINT>(dstCoords.y + srcPosY) };
 
 			TEX_PIXEL srcPixel = srcData[srcTexCoords.y * srcStride + srcTexCoords.x];
+			if (!texture->DoesAllowAlphaPixelWrite() && srcPixel == RenderConstants::AlphaZeroPixel) continue;
+
 			texture->SetPixel(srcPixel, dstTexCoords);
 		}
 	}
 }
 
-void RenderTextureLibrary::FillTextureColor(RCTexture* texture, const TEX_COLOR_RGB* srcColorData, const TEX_RECT& srcRect, RC_UINT srcStride, const TEX_COORD& dstCoords)
+void RenderTextureLibrary::FillTextureColor(RCTexture* texture, const TEX_PIXEL* srcPixelData, const TEX_COLOR_RGB* srcColorData, const TEX_RECT& srcRect, RC_UINT srcStride, const TEX_COORD& dstCoords)
 {
 	if (!texture || !srcColorData) return;
 
@@ -94,6 +96,9 @@ void RenderTextureLibrary::FillTextureColor(RCTexture* texture, const TEX_COLOR_
 		{
 			TEX_COORD srcTexCoords = { static_cast<RC_UINT>(srcRect.left + srcPosX), static_cast<RC_UINT>(srcRect.top + srcPosY) };
 			TEX_COORD dstTexCoords = { static_cast<RC_UINT>(dstCoords.x + srcPosX), static_cast<RC_UINT>(dstCoords.y + srcPosY) };
+
+			TEX_PIXEL srcPixel = srcPixelData[srcTexCoords.y * srcStride + srcTexCoords.x];
+			if (!texture->DoesAllowAlphaPixelWrite() && srcPixel == RenderConstants::AlphaZeroPixel) continue;
 
 			TEX_COLOR_RGB srcColor = srcColorData[srcTexCoords.y * srcStride + srcTexCoords.x];
 			texture->SetColor(srcColor, dstTexCoords);

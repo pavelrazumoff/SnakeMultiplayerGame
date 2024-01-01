@@ -17,6 +17,9 @@ public:
 	void SetColor(TEX_COLOR_RGB color, TEX_COORD texCoord);
 	void FillLineWithColor(TEX_COLOR_RGB color, TEX_COORD texCoord, RC_UINT lnWidth);
 
+	void SetAllowAlphaPixelWrite(bool bAllow) { bAllowAlphaPixelWrite = bAllow; }
+	bool DoesAllowAlphaPixelWrite() const { return bAllowAlphaPixelWrite; }
+
 	RC_UINT GetWidth() const { return width; }
 	RC_UINT GetHeight() const { return height; }
 
@@ -26,6 +29,7 @@ public:
 private:
 	TEX_PIXEL* data = nullptr;
 	TEX_COLOR_RGB* colorData = nullptr;
+	bool bAllowAlphaPixelWrite = true;
 
 	RC_UINT width = 0;
 	RC_UINT height = 0;
