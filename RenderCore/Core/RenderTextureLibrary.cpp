@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "RenderTextureLibrary.h"
 
+#include <cmath>
+
 void RenderTextureLibrary::FillTexture(RCTexture* texture, TEX_PIXEL c)
 {
 	if (!texture) return;
@@ -110,7 +112,8 @@ RCTexture* RenderTextureLibrary::StretchTexture(const RCTexture* srcTexture, con
 	{
 		for (RC_UINT dstX = 0; dstX < newSize.cx; ++dstX)
 		{
-			RC_UINT srcPixel = (RC_UINT)(dstY / heightStep) * srcTexture->GetWidth() + (RC_UINT)(dstX / widthStep);
+			RC_UINT srcPixel = (RC_UINT)(round((float)dstY / heightStep)) * srcTexture->GetWidth() +
+				(RC_UINT)(round((float)dstX / widthStep));
 			newTexture->SetPixel(srcTexture->GetData()[srcPixel], { dstX, dstY });
 			newTexture->SetColor(srcTexture->GetColorData()[srcPixel], { dstX, dstY });
 		}
