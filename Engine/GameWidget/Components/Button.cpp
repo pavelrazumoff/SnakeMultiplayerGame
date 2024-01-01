@@ -103,6 +103,7 @@ bool Button::PassInput(const InputState& is)
 	const MouseCoords& mousePos = is.LastMousePos;
 
 	const bool bMouseIntersect = IsPointInsideRect(mousePos, drawRect);
+	const bool bLastMousePressIntersect = IsPointInsideRect(is.LastMousePressPos, drawRect);
 	const bool bMouseStillPressed = (is.MouseBtnPressedMask != 0);
 
 	if (is.bMouseMoved && 
@@ -119,21 +120,28 @@ bool Button::PassInput(const InputState& is)
 	if (State == ButtonState::Pressed &&
 		!bMouseStillPressed)
 	{
-		State = ButtonState::Default;
+		if (!ButtonSettings.bPressedOnClick) // TODO: Figure out what to do if it's true.
+			State = ButtonState::Default;
+
+		// Pressed and Released some mouse button in the same area of this button widget.
+		if (bMouseIntersect /* && bLastMousePressIntersect*/) // If it was pressed, then it was initially clicked on intersection.
+		{
+			// TODO: Handle press event. Produce some event.
+
+			if (is.MouseBtnClicked != InputMouseButton::None)
+			{
+				// TODO: Handle click event. Produce some event.
+			}
+		}
 	}
 
 	if (bMouseIntersect)
 	{
-		if (is.MouseBtnClicked != InputMouseButton::None)
-		{
-			// TODO: Handle click event. Produce some event.
-		}
-
 		if (bMouseStillPressed)
 		{
 			if (State != ButtonState::Pressed)
 			{
-				if (IsPointInsideRect(is.InitialMousePressPos, drawRect))
+				if (bLastMousePressIntersect)
 					State = ButtonState::Pressed;
 			}
 		}

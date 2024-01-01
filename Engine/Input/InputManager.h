@@ -12,9 +12,9 @@
 
 DECLARE_EVENT_DELEGATE(KeyDelegate, WORD);
 
-DECLARE_EVENT_DELEGATE(MouseDoubleClickDelegate, const MOUSE_EVENT_RECORD&);
+DECLARE_EVENT_DELEGATE(MousePressDelegate, const MOUSE_EVENT_RECORD&, uint64_t);
 
-DECLARE_EVENT_DELEGATE(MousePressDelegate, const MOUSE_EVENT_RECORD&, InputMouseButton);
+DECLARE_EVENT_DELEGATE(MouseDoubleClickDelegate, const MOUSE_EVENT_RECORD&, uint64_t);
 
 DECLARE_EVENT_DELEGATE(MouseMoveDelegate, const MOUSE_EVENT_RECORD&);
 DECLARE_EVENT_DELEGATE(MouseWheelDelegate, const MOUSE_EVENT_RECORD&);

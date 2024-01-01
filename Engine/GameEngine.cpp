@@ -215,34 +215,24 @@ void GameEngine::HandleKeyReleaseEvent(WORD keyCode)
 	}
 }
 
-void GameEngine::HandleMouseButtonPressEvent(const MOUSE_EVENT_RECORD& mer, InputMouseButton imb)
+void GameEngine::HandleMouseButtonPressEvent(const MOUSE_EVENT_RECORD& mer, uint64_t imbMask)
 {
 	using namespace std::chrono;
 
-	switch (imb)
-	{
-		case InputMouseButton::None:
-			break;
-		case InputMouseButton::Left:
-			LastLMBPressTime = high_resolution_clock::now();
-			break;
-		case InputMouseButton::Right:
-			LastRMBPressTime = high_resolution_clock::now();
-			break;
-		case InputMouseButton::Middle:
-			LastMMBPressTime = high_resolution_clock::now();
-			break;
-		default:
-			break;
-	}
+	if (imbMask & ENUM2BIT(InputMouseButton::Left))
+		LastLMBPressTime = high_resolution_clock::now();
+	if (imbMask & ENUM2BIT(InputMouseButton::Right))
+		LastRMBPressTime = high_resolution_clock::now();
+	if (imbMask & ENUM2BIT(InputMouseButton::Middle))
+		LastMMBPressTime = high_resolution_clock::now();
 
 	std::lock_guard<std::mutex> lock(InputStateMutex);
 
-	ActualInputState.InitialMousePressPos = { mer.dwMousePosition.X, mer.dwMousePosition.Y };
-	ActualInputState.MouseBtnPressedMask |= ENUM2BIT(imb);
+	ActualInputState.LastMousePressPos = { mer.dwMousePosition.X, mer.dwMousePosition.Y };
+	ActualInputState.MouseBtnPressedMask = imbMask;
 }
 
-void GameEngine::HandleMouseButtonReleaseEvent(const MOUSE_EVENT_RECORD& mer, InputMouseButton imb)
+void GameEngine::HandleMouseButtonReleaseEvent(const MOUSE_EVENT_RECORD& mer, uint64_t imbReleaseMask)
 {
 	// TODO: Come up with some kind of engine input mode, where there's mode that let player to interact only with widgets,
 	// or only with game level (ignoring widgets), or both.
@@ -258,36 +248,49 @@ void GameEngine::HandleMouseButtonReleaseEvent(const MOUSE_EVENT_RECORD& mer, In
 	steady_clock::time_point Now = high_resolution_clock::now();
 	float DeltaBtnPressTime = 0.0f;
 
-	switch (imb)
+	const InputMouseButton imbReleaseCheck[] = { InputMouseButton::Left, InputMouseButton::Right, InputMouseButton::Middle };
+	steady_clock::time_point btnPressTimeCheck[] = { LastLMBPressTime, LastRMBPressTime, LastMMBPressTime };
+
+	InputMouseButton clickTestBtn = imbReleaseCheck[0];
+	steady_clock::time_point recentTime = btnPressTimeCheck[0];
+
+	for (int i = 1; i < SIZEOFARRAY(imbReleaseCheck); ++i)
 	{
-		case InputMouseButton::None:
-			break;
-		case InputMouseButton::Left:
-			DeltaBtnPressTime = duration_cast<duration<float>>(Now - LastLMBPressTime).count();
-			break;
-		case InputMouseButton::Right:
-			DeltaBtnPressTime = duration_cast<duration<float>>(Now - LastRMBPressTime).count();
-			break;
-		case InputMouseButton::Middle:
-			DeltaBtnPressTime = duration_cast<duration<float>>(Now - LastMMBPressTime).count();
-			break;
-		default:
-			break;
+		if (imbReleaseMask & ENUM2BIT(imbReleaseCheck[i]))
+		{
+			if (btnPressTimeCheck[i] > recentTime)
+			{
+				recentTime = btnPressTimeCheck[i];
+				clickTestBtn = imbReleaseCheck[i];
+			}
+		}
 	}
 
+	DeltaBtnPressTime = duration_cast<duration<float>>(Now - recentTime).count();
 	const bool bIsPressedLongEnough = DeltaBtnPressTime >= 0.2f;
 
 	std::lock_guard<std::mutex> lock(InputStateMutex);
 
-	ActualInputState.MouseBtnPressedMask &= ~ENUM2BIT(imb);
+	ActualInputState.MouseBtnPressedMask &= ~imbReleaseMask;
 	if (!bIsPressedLongEnough)
 	{
-		ActualInputState.MouseBtnClicked = imb;
+		ActualInputState.MouseBtnClicked = clickTestBtn;
 	}
 }
 
-void GameEngine::HandleMouseDoubleClickEvent(const MOUSE_EVENT_RECORD& mer)
+void GameEngine::HandleMouseDoubleClickEvent(const MOUSE_EVENT_RECORD& mer, uint64_t imbMask)
 {
+	std::lock_guard<std::mutex> lock(InputStateMutex);
+
+	InputMouseButton dblClickTestBtn = InputMouseButton::None;
+	if (imbMask & ENUM2BIT(InputMouseButton::Left))
+		dblClickTestBtn = InputMouseButton::Left;
+	if (imbMask & ENUM2BIT(InputMouseButton::Right))
+		dblClickTestBtn = InputMouseButton::Right;
+	if (imbMask & ENUM2BIT(InputMouseButton::Middle))
+		dblClickTestBtn = InputMouseButton::Middle;
+
+	ActualInputState.MouseBtnDoubleClicked = dblClickTestBtn;
 }
 
 void GameEngine::HandleMouseMoveEvent(const MOUSE_EVENT_RECORD& mer)

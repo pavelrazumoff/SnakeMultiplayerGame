@@ -90,39 +90,34 @@ void InputManager::_OnKeyEvent(const KEY_EVENT_RECORD& ker)
 
 void InputManager::_OnMouseEvent(const MOUSE_EVENT_RECORD& mer)
 {
-	static bool bLeftButtonDown = false;
-	static bool bRightButtonDown = false;
+	static uint64_t imbMaskPrev = 0;
+	uint64_t imbMask = 0;
+
+	if (mer.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED)
+		imbMask |= ENUM2BIT(InputMouseButton::Left);
+	if (mer.dwButtonState & RIGHTMOST_BUTTON_PRESSED)
+		imbMask |= ENUM2BIT(InputMouseButton::Right);
+	if (mer.dwButtonState & FROM_LEFT_2ND_BUTTON_PRESSED)
+		imbMask |= ENUM2BIT(InputMouseButton::Middle);
 
 	switch (mer.dwEventFlags)
 	{
 		case 0:
-			if (mer.dwButtonState == FROM_LEFT_1ST_BUTTON_PRESSED)
 			{
-				bLeftButtonDown = true;
-				MouseBtnPressEvent.Trigger(mer, InputMouseButton::Left);
-			}
-			else if (mer.dwButtonState == RIGHTMOST_BUTTON_PRESSED)
-			{
-				bRightButtonDown = true;
-				MouseBtnPressEvent.Trigger(mer, InputMouseButton::Right);
-			}
-			else
-			{
-				if (bLeftButtonDown)
+				if (imbMask != 0)
 				{
-					MouseBtnReleaseEvent.Trigger(mer, InputMouseButton::Left);
-					bLeftButtonDown = false;
+					MouseBtnPressEvent.Trigger(mer, imbMask);
 				}
 
-				if (bRightButtonDown)
+				const uint64_t imbReleaseMaskDiff = imbMaskPrev & (imbMask ^ imbMaskPrev);
+				if (imbReleaseMaskDiff)
 				{
-					MouseBtnReleaseEvent.Trigger(mer, InputMouseButton::Right);
-					bRightButtonDown = false;
+					MouseBtnReleaseEvent.Trigger(mer, imbReleaseMaskDiff);
 				}
 			}
 			break;
 		case DOUBLE_CLICK:
-			MouseDoubleClickEvent.Trigger(mer);
+			MouseDoubleClickEvent.Trigger(mer, imbMask);
 			break;
 		case MOUSE_MOVED:
 			MouseMoveEvent.Trigger(mer);
@@ -133,6 +128,8 @@ void InputManager::_OnMouseEvent(const MOUSE_EVENT_RECORD& mer)
 		default:
 			break;
 	}
+
+	imbMaskPrev = imbMask;
 }
 
 void InputManager::_OnWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr)

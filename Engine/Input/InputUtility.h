@@ -39,7 +39,7 @@ public:
 
 	bool bMouseMoved = false;
 	MouseCoords LastMousePos = { 0, 0 };
-	MouseCoords InitialMousePressPos = { 0, 0 };
+	MouseCoords LastMousePressPos = { 0, 0 };
 
 	/** Keyboard Input. */
 

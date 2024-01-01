@@ -11,7 +11,7 @@ InputState& InputState::operator=(const InputState& other)
 
 	bMouseMoved = other.bMouseMoved;
 	LastMousePos = other.LastMousePos;
-	InitialMousePressPos = other.InitialMousePressPos;
+	LastMousePressPos = other.LastMousePressPos;
 
 	// Keyboard Input.
 	KeyPressedQueue = other.KeyPressedQueue;
@@ -30,7 +30,7 @@ void InputState::ResetFrameState()
 
 	bMouseMoved = false;
 
-	// Reset consumed flag.
+	// Consumption.
 	bConsumed = false;
 }
 
@@ -40,7 +40,7 @@ void InputState::ResetAll()
 
 	MouseBtnPressedMask = 0;
 	LastMousePos = { 0, 0 };
-	InitialMousePressPos = { 0, 0 };
+	LastMousePressPos = { 0, 0 };
 
 	// Keyboard Input.
 	while (!KeyPressedQueue.empty())

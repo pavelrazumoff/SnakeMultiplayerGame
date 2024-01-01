@@ -28,7 +28,7 @@ protected:
 	friend class Button;
 
 public:
-	bool bPressedOnClick = false;
+	bool bPressedOnClick = false; // If we press and then release the button, will it be pressed?
 
 	TObjectPtr<BrushPrimitive> DefaultStyle;
 	TObjectPtr<BrushPrimitive> HoveredStyle;
