@@ -7,6 +7,11 @@
 #include "../Utility/LayoutSettings.h"
 
 #include "Engine/Input/InputHandler.h"
+#include "Engine/Events/EventDelegate.h"
+
+class Button;
+
+DECLARE_EVENT_DELEGATE(ButtonClickDelegate, Button*);
 
 enum class ButtonState
 {
@@ -50,7 +55,10 @@ public:
 	virtual void DrawWidget(RCTexture* RenderTargetTexture) override;
 
 	/** Extending the IInputHandler interface. */
+
 	virtual bool PassInput(const InputState& is) override;
+
+	/**  */
 
 	virtual RC_SIZE CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRecalc) override;
 
@@ -58,8 +66,12 @@ public:
 	LayoutSettings& GetLayout() { return Layout; }
 	ButtonWidgetSettings& GetButtonSettings() { return ButtonSettings; }
 
+	/** Events. */
+
+	ButtonClickDelegate& OnClickEvent() { return ClickEvent; }
+
 protected:
-	virtual GameObject* Clone() const override;
+	virtual GameObject* Clone(GameObject* _owner) const override;
 
 	BrushPrimitive* GetCurrentBrush();
 
@@ -67,6 +79,8 @@ protected:
 	AlignmentSettings Alignment;
 	LayoutSettings Layout;
 	ButtonWidgetSettings ButtonSettings;
+
+	ButtonClickDelegate ClickEvent;
 
 private:
 	ButtonState State = ButtonState::Default;

@@ -25,6 +25,9 @@ public:
 	RC_SIZE GetTextDrawSize() const;
 
 protected:
+	virtual GameObject* Clone(GameObject* _owner) const override;
+
+protected:
 	std::string Text;
 
 	FontStyle Font;

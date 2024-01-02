@@ -82,9 +82,9 @@ RC_SIZE PanelWidget::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeed
 	return dirtySize;
 }
 
-GameObject* PanelWidget::Clone() const
+GameObject* PanelWidget::Clone(GameObject* _owner) const
 {
-	PanelWidget* newWidget = CreateNewObject<PanelWidget>(GetOwner());
+	PanelWidget* newWidget = CreateNewObject<PanelWidget>(_owner);
 	newWidget->BackgroundBrush.Get()->SetBrushStyle(BackgroundBrush.Get()->GetBrushStyle());
 
 	newWidget->Alignment = this->Alignment;

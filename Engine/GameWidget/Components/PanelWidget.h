@@ -27,7 +27,7 @@ public:
 	LayoutSettings& GetLayout() { return Layout; }
 
 protected:
-	virtual GameObject* Clone() const override;
+	virtual GameObject* Clone(GameObject* _owner) const override;
 
 protected:
 	TObjectPtr<BrushPrimitive> BackgroundBrush;

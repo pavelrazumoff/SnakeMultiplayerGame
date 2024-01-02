@@ -21,6 +21,9 @@ void StartupLevel::OpenLevel()
 	if (!StartupMenuWidget.Get())
 	{
 		StartupMenuWidget = CreateNewObject<MainMenuWidget>(this);
+		if(StartupMenuWidget.Get())
+			StartupMenuWidget->OnResponseEvent().Subscribe(this, &StartupLevel::HandleMainMenuResponse);
+
 		PlaceObjectOnLevel(StartupMenuWidget.Get());
 	}
 
@@ -40,4 +43,19 @@ void StartupLevel::ReconstructLevel()
 	
 	RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
 	StartupMenuWidget->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
+}
+
+void StartupLevel::HandleMainMenuResponse(uint8_t responseType)
+{
+	MainMenuResponse mainMenuResponse = static_cast<MainMenuResponse>(responseType);
+	switch (mainMenuResponse)
+	{
+		case MainMenuResponse::StartGame:
+			break;
+		case MainMenuResponse::ExitGame:
+			LevelCloseEvent.Trigger(this);
+			break;
+		default:
+			break;
+	}
 }

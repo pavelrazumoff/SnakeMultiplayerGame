@@ -24,13 +24,13 @@ public:
 
 public:
 	template<typename T>
-	static T* CloneObject(const T* object)
+	static T* CloneObject(const T* object, GameObject* Owner)
 	{
 		static_assert(std::is_base_of<GameObject, T>::value, "T must be derived from GameObject.");
 
 		GameObject* _castedObj = (GameObject*)object;
 
-		T* clonedObject = _castedObj ? dynamic_cast<T*>(_castedObj->Clone()) : nullptr;
+		T* clonedObject = _castedObj ? dynamic_cast<T*>(_castedObj->Clone(Owner)) : nullptr;
 		engine_assert(clonedObject != nullptr);
 
 		return clonedObject;
@@ -39,7 +39,7 @@ public:
 protected:
 	void _SetAsOwner(GameObject* _owner);
 
-	virtual GameObject* Clone() const { return nullptr; }
+	virtual GameObject* Clone(GameObject* _owner) const { return nullptr; }
 
 private:
 	void PostDestroy();

@@ -56,10 +56,12 @@ MainMenuWidget::MainMenuWidget()
 		StartGameButton->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Top;
 		StartGameButton->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
 
-		StartGameButton->GetLayout().DimensionsOverride.cx = 12;
+		StartGameButton->GetLayout().DimensionsOverride.cx = 14;
 		StartGameButton->GetLayout().DimensionsOverride.cy = 3;
 
 		Tree.PlaceWidgetOn(StartGameButton.Get(), MainVerticalBox.Get());
+
+		StartGameButton->OnClickEvent().Subscribe(this, &MainMenuWidget::HandleStartGameButtonClick);
 	}
 
 	StartGameButtonText = CreateNewObject<TextBlock>(this);
@@ -75,7 +77,23 @@ MainMenuWidget::MainMenuWidget()
 		Tree.PlaceWidgetOn(StartGameButtonText.Get(), StartGameButton.Get());
 	}
 
-	BottomPanelWidget = GameObject::CloneObject(TopPanelWidget.Get());
+	ExitGameButton = GameObject::CloneObject<Button>(StartGameButton.Get(), this);
+	if (ExitGameButton.Get())
+	{
+		Tree.PlaceWidgetOn(ExitGameButton.Get(), MainVerticalBox.Get());
+
+		ExitGameButton->OnClickEvent().Subscribe(this, &MainMenuWidget::HandleExitGameButtonClick);
+	}
+
+	ExitGameButtonText = GameObject::CloneObject<TextBlock>(StartGameButtonText.Get(), this);
+	if (ExitGameButtonText.Get())
+	{
+		Tree.PlaceWidgetOn(ExitGameButtonText.Get(), ExitGameButton.Get());
+
+		ExitGameButtonText->GetText().SetText("Exit Game");
+	}
+
+	BottomPanelWidget = GameObject::CloneObject(TopPanelWidget.Get(), this);
 	if (BottomPanelWidget.Get())
 	{
 		if (auto pBrush = BottomPanelWidget->GetBackgroundBrush())
@@ -94,4 +112,14 @@ MainMenuWidget::MainMenuWidget()
 
 MainMenuWidget::~MainMenuWidget()
 {
+}
+
+void MainMenuWidget::HandleStartGameButtonClick(Button* instigator)
+{
+	ResponseEvent.Trigger(static_cast<uint8_t>(MainMenuResponse::StartGame));
+}
+
+void MainMenuWidget::HandleExitGameButtonClick(Button* instigator)
+{
+	ResponseEvent.Trigger(static_cast<uint8_t>(MainMenuResponse::ExitGame));
 }

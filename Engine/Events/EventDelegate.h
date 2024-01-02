@@ -25,3 +25,6 @@ public:
 private:
 	std::vector<Listener> Listeners;
 };
+
+#define DECLARE_EVENT_DELEGATE(EventType, ...) \
+	using EventType = EventDelegate<__VA_ARGS__> 

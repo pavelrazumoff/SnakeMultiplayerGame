@@ -25,7 +25,7 @@ bool UserWidget::PassInput(const InputState& is)
 		if (auto inputHandler = dynamic_cast<IInputHandler*>(widget))
 		{
 			bool bConsumed = inputHandler->PassInput(is);
-			return true;
+			return bConsumed;
 		}
 
 		return false;

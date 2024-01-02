@@ -46,7 +46,11 @@ RC_SIZE TextBlock::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedTo
 	return dirtySize;
 }
 
-GameObject* TextBlock::Clone() const
+GameObject* TextBlock::Clone(GameObject* _owner) const
 {
-	return nullptr;
+	TextBlock* newWidget = CreateNewObject<TextBlock>(_owner);
+	newWidget->Text.Get()->SetFontStyle(Text.Get()->GetFontStyle());
+	newWidget->Text.Get()->SetText(Text.Get()->GetText());
+
+	return newWidget;
 }

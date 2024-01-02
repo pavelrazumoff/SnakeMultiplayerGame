@@ -14,10 +14,16 @@ void DrawConsoleLibrary::SetCursorToTopLeft()
 	RenderConsoleLibrary::SetCursorPosition(0, 0);
 }
 
-void DrawConsoleLibrary::SetCursorToBottom()
+void DrawConsoleLibrary::SetCursorToBottomLeft()
 {
 	RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
-	RenderConsoleLibrary::SetCursorPosition(0, consoleDim.cy - 1);
+	RenderConsoleLibrary::SetCursorPosition(0, consoleDim.cy);
+}
+
+void DrawConsoleLibrary::SetCursorToBottomRight()
+{
+	RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
+	RenderConsoleLibrary::SetCursorPosition(consoleDim.cx, consoleDim.cy);
 }
 
 void DrawConsoleLibrary::DrawTexture(const RCTexture* texture, RC_INT x, RC_INT y)

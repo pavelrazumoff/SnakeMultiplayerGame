@@ -23,19 +23,19 @@ ButtonWidgetSettings::ButtonWidgetSettings()
 		DefaultStyle->SetBrushStyle(style);
 	}
 
-	HoveredStyle = GameObject::CloneObject(DefaultStyle.Get());
+	HoveredStyle = GameObject::CloneObject(DefaultStyle.Get(), nullptr);
 	{
 		auto hoverStyle = HoveredStyle->GetBrushStyle();
 		RenderTextureLibrary::FillTextureColor(hoverStyle.Image.get(), RenderConstants::LightGrayPixelColorRGB);
 	}
 
-	PressedStyle = GameObject::CloneObject(DefaultStyle.Get());
+	PressedStyle = GameObject::CloneObject(DefaultStyle.Get(), nullptr);
 	{
 		auto pressedStyle = PressedStyle->GetBrushStyle();
 		RenderTextureLibrary::FillTextureColor(pressedStyle.Image.get(), RenderConstants::BluePixelColorRGB);
 	}
 
-	DisabledStyle = GameObject::CloneObject(DefaultStyle.Get());
+	DisabledStyle = GameObject::CloneObject(DefaultStyle.Get(), nullptr);
 	{
 		auto disabledStyle = DisabledStyle->GetBrushStyle();
 		RenderTextureLibrary::FillTextureColor(disabledStyle.Image.get(), RenderConstants::DarkGrayPixelColorRGB);
@@ -115,6 +115,8 @@ bool Button::PassInput(const InputState& is)
 	const bool bMouseIntersect = IsPointInsideRect(mousePos, drawRect);
 	const bool bLastMousePressIntersect = IsPointInsideRect(is.LastMousePressPos, drawRect);
 	const bool bMouseStillPressed = (is.MouseBtnPressedMask != 0);
+	
+	bool bConsumeInput = false;
 
 	if (is.bMouseMoved && 
 		!bMouseStillPressed)
@@ -124,23 +126,26 @@ bool Button::PassInput(const InputState& is)
 		else if (State != ButtonState::Default)
 			State = ButtonState::Default;
 
-		return true;
+		return bConsumeInput;
 	}
 
 	if (State == ButtonState::Pressed &&
 		!bMouseStillPressed)
 	{
+		bConsumeInput = true;
+
 		if (!ButtonSettings.bPressedOnClick) // TODO: Figure out what to do if it's true.
 			State = ButtonState::Default;
 
 		// Pressed and Released some mouse button in the same area of this button widget.
 		if (bMouseIntersect /* && bLastMousePressIntersect*/) // If it was pressed, then it was initially clicked on intersection.
 		{
-			// TODO: Handle press event. Produce some event.
+			ClickEvent.Trigger(this);
 
 			if (is.MouseBtnClicked != InputMouseButton::None)
 			{
 				// TODO: Handle click event. Produce some event.
+				// It seems like it's useless. We should be fine with press and release.
 			}
 		}
 	}
@@ -152,16 +157,17 @@ bool Button::PassInput(const InputState& is)
 			if (State != ButtonState::Pressed)
 			{
 				if (bLastMousePressIntersect)
+				{
 					State = ButtonState::Pressed;
+					bConsumeInput = true;
+				}
 			}
 		}
 		else
 			State = ButtonState::Hovered;
-
-		return true;
 	}
 
-	return false;
+	return bConsumeInput;
 }
 
 RC_SIZE Button::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRecalc)
@@ -177,9 +183,9 @@ RC_SIZE Button::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRec
 	return dirtySize;
 }
 
-GameObject* Button::Clone() const
+GameObject* Button::Clone(GameObject* _owner) const
 {
-	Button* newWidget = CreateNewObject<Button>(GetOwner());
+	Button* newWidget = CreateNewObject<Button>(_owner);
 	newWidget->ButtonSettings.DefaultStyle.Get()->SetBrushStyle(ButtonSettings.DefaultStyle.Get()->GetBrushStyle());
 	newWidget->ButtonSettings.HoveredStyle.Get()->SetBrushStyle(ButtonSettings.HoveredStyle.Get()->GetBrushStyle());
 	newWidget->ButtonSettings.PressedStyle.Get()->SetBrushStyle(ButtonSettings.PressedStyle.Get()->GetBrushStyle());

@@ -18,5 +18,8 @@ public:
 	virtual void ReconstructLevel() override;
 
 protected:
+	void HandleMainMenuResponse(uint8_t responseType);
+
+protected:
 	TObjectPtr<MainMenuWidget> StartupMenuWidget;
 };

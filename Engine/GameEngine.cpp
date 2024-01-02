@@ -5,6 +5,7 @@
 #include "Input/InputManager.h"
 
 #include "Core/RenderConsoleLibrary.h"
+#include "Draw/DrawConsoleLibrary.h"
 
 #include <chrono>
 #include <shared_mutex>
@@ -89,7 +90,11 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 	RenderConsoleLibrary::SetConsoleCaption(GameProperties.GameName.c_str());
 
 	CurrentLevel = StartupLevel;
-	if (CurrentLevel.Get()) CurrentLevel->OpenLevel();
+	if (CurrentLevel.Get())
+	{
+		CurrentLevel->OnLevelCloseEvent().Subscribe(this, &GameEngine::HandleLevelCloseEvent);
+		CurrentLevel->OpenLevel();
+	}
 }
 
 void GameEngine::Run()
@@ -146,6 +151,7 @@ void GameEngine::Run()
 	}
 
 	bIsRunning = false; // In case we did exit the loop with break.
+
 	StopThreads();
 }
 
@@ -331,6 +337,12 @@ void GameEngine::HandleWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr)
 	}
 }
 
+void GameEngine::HandleLevelCloseEvent(GameLevel* instigator)
+{
+	if (instigator == CurrentLevel.Get())
+		StopEngine();
+}
+
 /*
 	Engine Stop and Cleanup.
 */
@@ -342,6 +354,9 @@ void GameEngine::StopEngine()
 
 void GameEngine::Cleanup()
 {
+	// Reset the cursor to the bottom left corner so the service info starts to be printed from there.
+	DrawConsoleLibrary::SetCursorToBottomLeft();
+
 	InputManager::GetInstance().Release();
 	GarbageCollector::GetInstance().Free();
 	DestroyRootObject();

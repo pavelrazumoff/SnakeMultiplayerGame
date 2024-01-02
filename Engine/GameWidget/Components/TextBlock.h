@@ -25,7 +25,7 @@ public:
 	TextPrimitive& GetText() { return *Text.Get(); }
 
 protected:
-	virtual GameObject* Clone() const override;
+	virtual GameObject* Clone(GameObject* _owner) const override;
 
 protected:
 	AlignmentSettings Alignment;

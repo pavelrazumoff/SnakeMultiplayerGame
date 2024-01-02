@@ -3,6 +3,8 @@
 #include "Core/RenderTextureLibrary.h"
 #include "Core/RenderTextLibrary.h"
 
+#include "Engine/GameObject/GameObjectUtility.h"
+
 TextPrimitive::TextPrimitive()
 {
 }
@@ -71,4 +73,13 @@ RC_SIZE TextPrimitive::GetTextDrawSize() const
 
 	RC_SIZE textSize = RenderTextLibrary::GetScaledTextSize(Text, Font.FontSize);
 	return textSize;
+}
+
+GameObject* TextPrimitive::Clone(GameObject* _owner) const
+{
+	TextPrimitive* newText = CreateNewObject<TextPrimitive>(_owner);
+	newText->SetFontStyle(GetFontStyle());
+	newText->SetText(GetText());
+
+	return newText;
 }

@@ -54,6 +54,8 @@ protected:
 
 	void HandleWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr);
 
+	void HandleLevelCloseEvent(GameLevel* instigator);
+
 	/** Engine Stop and Cleanup. */
 
 	void StopEngine();

@@ -50,9 +50,9 @@ void BrushPrimitive::UpdateDrawRect(const TEX_RECT& newRect)
 	DrawRect = newRect;
 }
 
-GameObject* BrushPrimitive::Clone() const
+GameObject* BrushPrimitive::Clone(GameObject* _owner) const
 {
-	BrushPrimitive* newBrush = CreateNewObject<BrushPrimitive>(GetOwner());
+	BrushPrimitive* newBrush = CreateNewObject<BrushPrimitive>(_owner);
 	newBrush->SetBrushStyle(Style);
 
 	return newBrush;

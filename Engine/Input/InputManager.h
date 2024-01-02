@@ -7,9 +7,6 @@
 
 #include <windows.h>
 
-#define DECLARE_EVENT_DELEGATE(EventType, ...) \
-	using EventType = EventDelegate<__VA_ARGS__> 
-
 DECLARE_EVENT_DELEGATE(KeyDelegate, WORD);
 
 DECLARE_EVENT_DELEGATE(MousePressDelegate, const MOUSE_EVENT_RECORD&, uint64_t);
