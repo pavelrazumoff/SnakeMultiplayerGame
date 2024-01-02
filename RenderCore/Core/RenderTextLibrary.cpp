@@ -5,6 +5,7 @@
 #include <map>
 
 static const uint8_t letterWidth = 3;
+static const uint8_t letterMaxHeight = 6;
 static const uint8_t letterIndent = 1;
 
 const std::map<char, std::string> letterArt = {
@@ -130,4 +131,13 @@ void RenderTextLibrary::Test_FillTextureWithScaledLetters(RCTexture* texture, ch
 	}
 
 	FillTextureWithScaledText(texture, testText, textColor, textScale, startCoord);
+}
+
+RC_SIZE RenderTextLibrary::GetScaledTextSize(std::string text, uint8_t textScale)
+{
+	RC_SIZE textSize;
+	textSize.cx = text.length() * letterWidth * textScale + (text.length() - 1) * letterIndent * textScale;
+	textSize.cy = letterMaxHeight;
+
+	return textSize;
 }

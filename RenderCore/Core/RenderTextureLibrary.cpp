@@ -117,8 +117,10 @@ RCTexture* RenderTextureLibrary::StretchTexture(const RCTexture* srcTexture, con
 	{
 		for (RC_UINT dstX = 0; dstX < newSize.cx; ++dstX)
 		{
-			RC_UINT srcPixel = (RC_UINT)(round((float)dstY / heightStep)) * srcTexture->GetWidth() +
-				(RC_UINT)(round((float)dstX / widthStep));
+			RC_UINT srcX = (dstX < newSize.cx / 2) ? (RC_UINT)(ceil((float)dstX / widthStep)) : (RC_UINT)(floor((float)dstX / widthStep));
+			RC_UINT srcY = (dstY < newSize.cy / 2) ? (RC_UINT)(ceil((float)dstY / heightStep)) : (RC_UINT)(floor((float)dstY / heightStep));
+
+			RC_UINT srcPixel = srcY * srcTexture->GetWidth() + srcX;
 			newTexture->SetPixel(srcTexture->GetData()[srcPixel], { dstX, dstY });
 			newTexture->SetColor(srcTexture->GetColorData()[srcPixel], { dstX, dstY });
 		}

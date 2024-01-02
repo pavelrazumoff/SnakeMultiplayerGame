@@ -60,3 +60,15 @@ void TextPrimitive::Construct()
 
 	Inherited::Construct();
 }
+
+RC_SIZE TextPrimitive::GetTextDrawSize() const
+{
+	if (Font.FontSize == 0)
+	{
+		RC_SIZE textSize = { (RC_INT)Text.length(), 1 };
+		return textSize;
+	}
+
+	RC_SIZE textSize = RenderTextLibrary::GetScaledTextSize(Text, Font.FontSize);
+	return textSize;
+}

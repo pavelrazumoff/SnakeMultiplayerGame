@@ -43,11 +43,7 @@ MainMenuWidget::MainMenuWidget()
 		WelcomeCaptionText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Center;
 		WelcomeCaptionText->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
 
-		// We don't yet have dirty size calc based on text content.
-		WelcomeCaptionText->GetLayout().DimensionsOverride.cx = 31;//200;
-		WelcomeCaptionText->GetLayout().DimensionsOverride.cy = 7;
-
-		WelcomeCaptionText->GetText().SetText("Welcome!");
+		WelcomeCaptionText->GetText().SetText("Welcome to the Snake Game!");
 		WelcomeCaptionText->GetText().SetFontStyle({ 1, RenderConstants::LightGrayPixelColorRGB });
 
 		Tree.PlaceWidgetOn(WelcomeCaptionText.Get(), MainVerticalBox.Get());
@@ -73,7 +69,7 @@ MainMenuWidget::MainMenuWidget()
 		StartGameButtonText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::NoAlignment;
 		StartGameButtonText->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
 
-		StartGameButtonText->GetText().SetText("Start Game");
+		StartGameButtonText->GetText().SetText("Play");
 		StartGameButtonText->GetText().SetFontStyle({ 0, RenderConstants::LightGrayPixelColorRGB });
 
 		Tree.PlaceWidgetOn(StartGameButtonText.Get(), StartGameButton.Get());

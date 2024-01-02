@@ -22,6 +22,8 @@ public:
 	void SetText(const std::string& newText) { Text = newText; }
 	const std::string& GetText() const { return Text; }
 
+	RC_SIZE GetTextDrawSize() const;
+
 protected:
 	std::string Text;
 
