@@ -23,4 +23,6 @@ protected:
 
 	TObjectPtr<Button> StartGameButton;
 	TObjectPtr<TextBlock> StartGameButtonText;
+
+	TObjectPtr<TextBlock> WelcomeCaptionText;
 };

@@ -152,6 +152,7 @@
     <ClInclude Include="Core\RCDataTypes.h" />
     <ClInclude Include="Core\RCTexture.h" />
     <ClInclude Include="Core\RenderConsoleLibrary.h" />
+    <ClInclude Include="Core\RenderTextLibrary.h" />
     <ClInclude Include="Core\RenderTextureLibrary.h" />
     <ClInclude Include="Draw\DrawConsoleLibrary.h" />
     <ClInclude Include="framework.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="Core\RCDataTypes.cpp" />
     <ClCompile Include="Core\RCTexture.cpp" />
     <ClCompile Include="Core\RenderConsoleLibrary.cpp" />
+    <ClCompile Include="Core\RenderTextLibrary.cpp" />
     <ClCompile Include="Core\RenderTextureLibrary.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Draw\DrawConsoleLibrary.cpp" />

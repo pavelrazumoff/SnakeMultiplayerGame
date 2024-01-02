@@ -51,6 +51,9 @@
     <ClInclude Include="Core\RCDataTypes.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Core\RenderTextLibrary.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -75,6 +78,9 @@
       <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="Core\RCDataTypes.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\RenderTextLibrary.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>

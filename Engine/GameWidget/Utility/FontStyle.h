@@ -16,6 +16,6 @@ public:
 	}
 
 public:
-	uint8_t FontSize = 1;
+	uint8_t FontSize = 0;
 	TEX_COLOR_RGB FontColor = RenderConstants::WhitePixelColorRGB;
 };

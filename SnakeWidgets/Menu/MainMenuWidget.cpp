@@ -36,11 +36,28 @@ MainMenuWidget::MainMenuWidget()
 		Tree.PlaceWidgetOn(TopPanelWidget.Get(), MainVerticalBox.Get());
 	}
 
+	WelcomeCaptionText = CreateNewObject<TextBlock>(this);
+	if (WelcomeCaptionText.Get())
+	{
+		WelcomeCaptionText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
+		WelcomeCaptionText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Center;
+		WelcomeCaptionText->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
+
+		// We don't yet have dirty size calc based on text content.
+		WelcomeCaptionText->GetLayout().DimensionsOverride.cx = 31;//200;
+		WelcomeCaptionText->GetLayout().DimensionsOverride.cy = 7;
+
+		WelcomeCaptionText->GetText().SetText("Welcome!");
+		WelcomeCaptionText->GetText().SetFontStyle({ 1, RenderConstants::LightGrayPixelColorRGB });
+
+		Tree.PlaceWidgetOn(WelcomeCaptionText.Get(), MainVerticalBox.Get());
+	}
+
 	StartGameButton = CreateNewObject<Button>(this);
 	if (StartGameButton.Get())
 	{
 		StartGameButton->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
-		StartGameButton->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Center;
+		StartGameButton->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Top;
 		StartGameButton->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
 
 		StartGameButton->GetLayout().DimensionsOverride.cx = 12;
@@ -57,6 +74,7 @@ MainMenuWidget::MainMenuWidget()
 		StartGameButtonText->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
 
 		StartGameButtonText->GetText().SetText("Start Game");
+		StartGameButtonText->GetText().SetFontStyle({ 0, RenderConstants::LightGrayPixelColorRGB });
 
 		Tree.PlaceWidgetOn(StartGameButtonText.Get(), StartGameButton.Get());
 	}

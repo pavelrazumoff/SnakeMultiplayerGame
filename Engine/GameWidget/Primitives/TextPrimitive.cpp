@@ -1,6 +1,7 @@
 #include "TextPrimitive.h"
 
 #include "Core/RenderTextureLibrary.h"
+#include "Core/RenderTextLibrary.h"
 
 TextPrimitive::TextPrimitive()
 {
@@ -19,11 +20,12 @@ void TextPrimitive::Construct()
 	BrushStyle style;
 	style.Image = std::make_shared<RCTexture>(fillWidth, fillHeight);
 
-	TEX_PIXEL* texData = new TEX_PIXEL[fillWidth * fillHeight];
-	memset(texData, RenderConstants::AlphaZeroPixel, fillWidth * fillHeight * sizeof(TEX_PIXEL));
-
 	// TODO: Consider text alignment.
+	if (Font.FontSize == 0)
 	{
+		TEX_PIXEL* texData = new TEX_PIXEL[fillWidth * fillHeight];
+		memset(texData, RenderConstants::AlphaZeroPixel, fillWidth * fillHeight * sizeof(TEX_PIXEL));
+
 		// Center the text.
 		const size_t textLen = Text.length();
 		const int textDisplacementLeft = (fillWidth - (uint16_t)textLen) / 2;
@@ -38,15 +40,21 @@ void TextPrimitive::Construct()
 
 			texData[drawY * fillWidth + drawX] = Text[ti];
 		}
+
+		TEX_RECT rect = { 0, 0, fillWidth - 1, fillHeight - 1 };
+		TEX_COORD coord = { 0, 0 };
+		RenderTextureLibrary::FillTexture(style.Image.get(), texData, rect, GetTexWidth(rect), coord);
+		RenderTextureLibrary::FillTextureColor(style.Image.get(), Font.FontColor);
+
+		delete[] texData;
+		texData = nullptr;
 	}
-
-	TEX_RECT rect = { 0, 0, fillWidth - 1, fillHeight - 1 };
-	TEX_COORD coord = { 0, 0 };
-	RenderTextureLibrary::FillTexture(style.Image.get(), texData, rect, GetTexWidth(rect), coord);
-	RenderTextureLibrary::FillTextureColor(style.Image.get(), Font.FontColor);
-
-	delete[] texData;
-	texData = nullptr;
+	else
+	{
+		TEX_COORD coord = { 0, 0 };
+		RenderTextLibrary::FillTextureWithScaledText(style.Image.get(), Text, Font.FontColor, Font.FontSize, coord);
+		//RenderTextLibrary::Test_FillTextureWithScaledLetters(style.Image.get(), 'A', Font.FontColor, Font.FontSize, coord);
+	}
 
 	SetBrushStyle(style);
 
