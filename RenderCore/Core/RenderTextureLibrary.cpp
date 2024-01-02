@@ -49,7 +49,7 @@ void RenderTextureLibrary::FillTexture(RCTexture* texture, const RCTexture* srcT
 {
 	if (!texture || !srcTexture) return;
 
-	TEX_RECT srcRect = { 0, 0, srcTexture->GetWidth(), srcTexture->GetHeight() };
+	TEX_RECT srcRect = { 0, 0, srcTexture->GetWidth() - 1, srcTexture->GetHeight() - 1 };
 	FillTexture(texture, srcTexture, srcRect, dstCoords);
 }
 

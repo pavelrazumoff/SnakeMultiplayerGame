@@ -35,26 +35,26 @@ void ApplyAlignmentSettings(GameWidget* parentWidget, GameWidget* underlayWidget
 				else
 				{
 					newUnderlayWidgetRect.left = parentRect.left;
-					newUnderlayWidgetRect.right = newUnderlayWidgetRect.left + underlayWidgetDirtySize.cx;
+					newUnderlayWidgetRect.right = newUnderlayWidgetRect.left + underlayWidgetDirtySize.cx - 1;
 				}
 			}
 			break;
 		case AlignmentSettings::HorizontalAlignment::Left:
 			{
 				newUnderlayWidgetRect.left = parentRect.left;
-				newUnderlayWidgetRect.right = newUnderlayWidgetRect.left + underlayWidgetDirtySize.cx;
+				newUnderlayWidgetRect.right = newUnderlayWidgetRect.left + underlayWidgetDirtySize.cx - 1;
 			}
 			break;
 		case AlignmentSettings::HorizontalAlignment::Center:
 			{
-				newUnderlayWidgetRect.left = parentRect.left + (parentRect.right - parentRect.left - underlayWidgetDirtySize.cx) / 2;
-				newUnderlayWidgetRect.right = newUnderlayWidgetRect.left + underlayWidgetDirtySize.cx;
+				newUnderlayWidgetRect.left = parentRect.left + (parentRect.right - parentRect.left + 1 - underlayWidgetDirtySize.cx) / 2;
+				newUnderlayWidgetRect.right = newUnderlayWidgetRect.left + underlayWidgetDirtySize.cx - 1;
 			}
 			break;
 		case AlignmentSettings::HorizontalAlignment::Right:
 			{
 				newUnderlayWidgetRect.right = parentRect.right;
-				newUnderlayWidgetRect.left = newUnderlayWidgetRect.right - underlayWidgetDirtySize.cx;
+				newUnderlayWidgetRect.left = newUnderlayWidgetRect.right - underlayWidgetDirtySize.cx + 1;
 			}
 			break;
 		default:
@@ -73,26 +73,26 @@ void ApplyAlignmentSettings(GameWidget* parentWidget, GameWidget* underlayWidget
 				else
 				{
 					newUnderlayWidgetRect.top = parentRect.top;
-					newUnderlayWidgetRect.bottom = newUnderlayWidgetRect.top + underlayWidgetDirtySize.cy;
+					newUnderlayWidgetRect.bottom = newUnderlayWidgetRect.top + underlayWidgetDirtySize.cy - 1;
 				}
 			}
 			break;
 		case AlignmentSettings::VerticalAlignment::Top:
 			{
 				newUnderlayWidgetRect.top = parentRect.top;
-				newUnderlayWidgetRect.bottom = newUnderlayWidgetRect.top + underlayWidgetDirtySize.cy;
+				newUnderlayWidgetRect.bottom = newUnderlayWidgetRect.top + underlayWidgetDirtySize.cy - 1;
 			}
 			break;
 		case AlignmentSettings::VerticalAlignment::Center:
 			{
-				newUnderlayWidgetRect.top = parentRect.top + (parentRect.bottom - parentRect.top - underlayWidgetDirtySize.cy) / 2;
-				newUnderlayWidgetRect.bottom = newUnderlayWidgetRect.top + underlayWidgetDirtySize.cy;
+				newUnderlayWidgetRect.top = parentRect.top + (parentRect.bottom - parentRect.top + 1 - underlayWidgetDirtySize.cy) / 2;
+				newUnderlayWidgetRect.bottom = newUnderlayWidgetRect.top + underlayWidgetDirtySize.cy - 1;
 			}
 			break;
 		case AlignmentSettings::VerticalAlignment::Bottom:
 			{
 				newUnderlayWidgetRect.bottom = parentRect.bottom;
-				newUnderlayWidgetRect.top = newUnderlayWidgetRect.bottom - underlayWidgetDirtySize.cy;
+				newUnderlayWidgetRect.top = newUnderlayWidgetRect.bottom - underlayWidgetDirtySize.cy + 1;
 			}
 			break;
 		default:

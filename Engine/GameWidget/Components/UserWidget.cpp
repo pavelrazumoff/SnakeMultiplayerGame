@@ -63,7 +63,7 @@ void UserWidget::ReconstructWidgetTree()
 	CalculateDirtySizeWidgetsRecursive(Tree.GetRootNode());
 
 	// TODO: Get UserWidget position on screen and pass here.
-	RC_RECT canvasRect = { 0, 0, (RC_UINT)Canvas->GetWidth(), (RC_UINT)Canvas->GetHeight() };
+	RC_RECT canvasRect = { 0, 0, (RC_UINT)Canvas->GetWidth() - 1, (RC_UINT)Canvas->GetHeight() - 1 };
 	Canvas->RepositionWidget(canvasRect);
 
 	ClarifyUnderlaySizeWidgetsRecursive(Tree.GetRootNode());

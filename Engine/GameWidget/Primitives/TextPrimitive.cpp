@@ -40,7 +40,7 @@ void TextPrimitive::Construct()
 		}
 	}
 
-	TEX_RECT rect = { 0, 0, fillWidth, fillHeight };
+	TEX_RECT rect = { 0, 0, fillWidth - 1, fillHeight - 1 };
 	TEX_COORD coord = { 0, 0 };
 	RenderTextureLibrary::FillTexture(style.Image.get(), texData, rect, GetTexWidth(rect), coord);
 	RenderTextureLibrary::FillTextureColor(style.Image.get(), Font.FontColor);

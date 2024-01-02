@@ -32,8 +32,8 @@ struct TEX_RECT
 
 typedef TEX_RECT RC_RECT;
 
-inline uint16_t GetTexWidth(const TEX_RECT& texRect) { return texRect.right - texRect.left; }
-inline uint16_t GetTexHeight(const TEX_RECT& texRect) { return texRect.bottom - texRect.top; }
+inline uint16_t GetTexWidth(const TEX_RECT& texRect) { return texRect.right - texRect.left + 1; }
+inline uint16_t GetTexHeight(const TEX_RECT& texRect) { return texRect.bottom - texRect.top + 1; }
 
 typedef unsigned short TEX_COLOR;
 

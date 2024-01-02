@@ -15,7 +15,7 @@ ButtonWidgetSettings::ButtonWidgetSettings()
 			"*      *"
 			"********";
 
-		TEX_RECT rect = { 0, 0, 8, 3 };
+		TEX_RECT rect = { 0, 0, 7, 2 };
 		TEX_COORD coord = { 0, 0 };
 		RenderTextureLibrary::FillTexture(style.Image.get(), texData, rect, GetTexWidth(rect), coord);
 		RenderTextureLibrary::FillTextureColor(style.Image.get(), RenderConstants::GrayPixelColorRGB);
