@@ -15,16 +15,24 @@ TextPrimitive::~TextPrimitive()
 
 void TextPrimitive::Construct()
 {
-	TEX_RECT textFillRect = GetDrawRect();
-	uint16_t fillWidth = GetTexWidth(textFillRect);
-	uint16_t fillHeight = GetTexHeight(textFillRect);
+	/*
+		TODO: For different font sizes.
+		Calculate the whole image with text dimensions based on text content (including width/height of each letter).
+		This will be constant no matter what primitive draw rect is. We just draw the text on the image with the same size.
+		Then in parent's Construct() we stretch the image with printed text to the draw rect.
+	*/
 
 	BrushStyle style;
-	style.Image = std::make_shared<RCTexture>(fillWidth, fillHeight);
 
 	// TODO: Consider text alignment.
-	if (Font.FontSize == 0)
+	if (Font.FontType == FontPrintType::Simple)
 	{
+		TEX_RECT textFillRect = GetDrawRect();
+		uint16_t fillWidth = GetTexWidth(textFillRect);
+		uint16_t fillHeight = GetTexHeight(textFillRect);
+
+		style.Image = std::make_shared<RCTexture>(fillWidth, fillHeight);
+
 		TEX_PIXEL* texData = new TEX_PIXEL[fillWidth * fillHeight];
 		memset(texData, RenderConstants::AlphaZeroPixel, fillWidth * fillHeight * sizeof(TEX_PIXEL));
 
@@ -54,8 +62,16 @@ void TextPrimitive::Construct()
 	else
 	{
 		TEX_COORD coord = { 0, 0 };
-		RenderTextLibrary::FillTextureWithScaledText(style.Image.get(), Text, Font.FontColor, Font.FontSize, coord);
-		//RenderTextLibrary::Test_FillTextureWithScaledLetters(style.Image.get(), 'A', Font.FontColor, Font.FontSize, coord);
+		const bool bUseBigLetters = (Font.FontType == FontPrintType::LetterBig);
+
+		// Always draw with the default font size.
+		RC_SIZE textRenderSize = bUseBigLetters ? RenderTextLibrary::GetTextBigSize(Text) : RenderTextLibrary::GetTextSize(Text);
+		style.Image = std::make_shared<RCTexture>(textRenderSize.cx, textRenderSize.cy);
+
+		if (bUseBigLetters)
+			RenderTextLibrary::FillTextureWithTextBig(style.Image.get(), Text, Font.FontColor, coord);
+		else
+			RenderTextLibrary::FillTextureWithText(style.Image.get(), Text, Font.FontColor, coord);
 	}
 
 	SetBrushStyle(style);
@@ -71,7 +87,11 @@ RC_SIZE TextPrimitive::GetTextDrawSize() const
 		return textSize;
 	}
 
-	RC_SIZE textSize = RenderTextLibrary::GetScaledTextSize(Text, Font.FontSize);
+	// Scale the overall image with the specified font size (Font.FontSize == 1 is default).
+	const bool bUseBigLetters = (Font.FontType == FontPrintType::LetterBig);
+
+	RC_SIZE textSize = bUseBigLetters ? RenderTextLibrary::GetTextBigSize(Text, Font.FontSize - 1) :
+		RenderTextLibrary::GetTextSize(Text, Font.FontSize - 1);
 	return textSize;
 }
 

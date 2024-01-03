@@ -53,7 +53,7 @@ void StartupLevel::HandleMainMenuResponse(uint8_t responseType)
 		case MainMenuResponse::StartGame:
 			break;
 		case MainMenuResponse::ExitGame:
-			LevelCloseEvent.Trigger(this);
+			LevelCloseEvent.Trigger(this); // TODO: Replace with calling the LevelManager (OpenLevel/CloseLevel). Engine will subscribe to it's events.
 			break;
 		default:
 			break;

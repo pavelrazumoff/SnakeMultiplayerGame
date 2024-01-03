@@ -44,7 +44,7 @@ MainMenuWidget::MainMenuWidget()
 		WelcomeCaptionText->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
 
 		WelcomeCaptionText->GetText().SetText("Welcome to the Snake Game!");
-		WelcomeCaptionText->GetText().SetFontStyle({ 1, RenderConstants::LightGrayPixelColorRGB });
+		WelcomeCaptionText->GetText().SetFontStyle({ 1, FontPrintType::LetterBig, RenderConstants::LightGrayPixelColorRGB });
 
 		Tree.PlaceWidgetOn(WelcomeCaptionText.Get(), MainVerticalBox.Get());
 	}
@@ -72,7 +72,7 @@ MainMenuWidget::MainMenuWidget()
 		StartGameButtonText->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
 
 		StartGameButtonText->GetText().SetText("Play");
-		StartGameButtonText->GetText().SetFontStyle({ 0, RenderConstants::LightGrayPixelColorRGB });
+		StartGameButtonText->GetText().SetFontStyle({ 0, FontPrintType::Simple, RenderConstants::LightGrayPixelColorRGB });
 
 		Tree.PlaceWidgetOn(StartGameButtonText.Get(), StartGameButton.Get());
 	}
