@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/GameLevel.h"
+#include "Engine/Level/GameLevel.h"
 
 class MainMenuWidget;
 
@@ -19,6 +19,8 @@ public:
 
 protected:
 	void HandleMainMenuResponse(uint8_t responseType);
+
+	void StartPlay();
 
 protected:
 	TObjectPtr<MainMenuWidget> StartupMenuWidget;

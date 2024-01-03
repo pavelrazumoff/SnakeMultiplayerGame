@@ -9,8 +9,11 @@ GameObject::GameObject()
 
 GameObject::~GameObject()
 {
-	for (auto child : ChildObjects)
-		if (child) child->_SetAsOwner(nullptr);
+	while (!ChildObjects.empty())
+	{
+		if (ChildObjects[0]) ChildObjects[0]->_SetAsOwner(nullptr);
+		else ChildObjects.erase(ChildObjects.begin());
+	}
 
 	if (!bWaitForDestroy)
 	{

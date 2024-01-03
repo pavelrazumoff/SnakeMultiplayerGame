@@ -85,15 +85,18 @@
     <Filter Include="Header Files\Engine\Events">
       <UniqueIdentifier>{4376f009-a9c2-44b8-9d0e-13a4c8b56fa2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Level">
+      <UniqueIdentifier>{d5773795-a798-424c-8ae2-b8a1b60814d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Level">
+      <UniqueIdentifier>{59ce9488-979e-4cd0-b9e5-c5aa510b7a51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Engine\GameEngine.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine\GameLevel.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="Engine\GarbageCollector.cpp">
@@ -156,12 +159,18 @@
     <ClCompile Include="Engine\GameWidget\Primitives\TextPrimitive.cpp">
       <Filter>Source Files\Engine\GameWidget\Primitives</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Level\GameLevel.cpp">
+      <Filter>Source Files\Engine\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Level\LevelManager.cpp">
+      <Filter>Source Files\Engine\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakeLevels\PlayLevel.cpp">
+      <Filter>Source Files\SnakeLevels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameEngine.h">
-      <Filter>Header Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\GameLevel.h">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GarbageCollector.h">
@@ -256,6 +265,15 @@
     </ClInclude>
     <ClInclude Include="Engine\GameWidget\Utility\FontStyle.h">
       <Filter>Header Files\Engine\GameWidget\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Level\GameLevel.h">
+      <Filter>Header Files\Engine\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Level\LevelManager.h">
+      <Filter>Header Files\Engine\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeLevels\PlayLevel.h">
+      <Filter>Header Files\SnakeLevels</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

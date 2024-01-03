@@ -3,6 +3,7 @@
 #include "GarbageCollector.h"
 #include "Render/RenderManager.h"
 #include "Input/InputManager.h"
+#include "Level/LevelManager.h"
 
 #include "Core/RenderConsoleLibrary.h"
 #include "Draw/DrawConsoleLibrary.h"
@@ -86,14 +87,13 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 	}
 
 	RenderManager::GetInstance()->Initialize();
-
 	RenderConsoleLibrary::SetConsoleCaption(GameProperties.GameName.c_str());
 
-	CurrentLevel = StartupLevel;
-	if (CurrentLevel.Get())
 	{
-		CurrentLevel->OnLevelCloseEvent().Subscribe(this, &GameEngine::HandleLevelCloseEvent);
-		CurrentLevel->OpenLevel();
+		LevelManager::GetInstance().OnLevelOpenEvent().Subscribe(this, &GameEngine::HandleLevelOpenEvent);
+		LevelManager::GetInstance().OnLevelCloseEvent().Subscribe(this, &GameEngine::HandleLevelCloseEvent);
+
+		LevelManager::GetInstance().OpenLevel(StartupLevel);
 	}
 }
 
@@ -205,6 +205,7 @@ void GameEngine::RefreshInputState()
 	Events.
 */
 
+// Input Events.
 void GameEngine::HandleKeyPressEvent(WORD keyCode)
 {
 }
@@ -337,10 +338,28 @@ void GameEngine::HandleWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr)
 	}
 }
 
+// Level Events.
+void GameEngine::HandleLevelOpenEvent(GameLevel* instigator)
+{
+	if (CurrentLevel.Get())
+	{
+		// TODO: Close the current level first.
+	}
+
+	CurrentLevel = instigator;
+	if (CurrentLevel.Get())
+	{
+		CurrentLevel->OpenLevel();
+	}
+}
+
 void GameEngine::HandleLevelCloseEvent(GameLevel* instigator)
 {
+	// If there is an event of closing a level, it means that we want to close the app.
 	if (instigator == CurrentLevel.Get())
 		StopEngine();
+	else
+		DebugEngineTrap();
 }
 
 /*

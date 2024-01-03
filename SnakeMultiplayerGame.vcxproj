@@ -144,7 +144,6 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\GameEngine.cpp" />
-    <ClCompile Include="Engine\GameLevel.cpp" />
     <ClCompile Include="Engine\GameObject\GameObject.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\Button.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\CanvasWidget.cpp" />
@@ -161,8 +160,11 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\GarbageCollector.cpp" />
     <ClCompile Include="Engine\Input\InputManager.cpp" />
     <ClCompile Include="Engine\Input\InputUtility.cpp" />
+    <ClCompile Include="Engine\Level\GameLevel.cpp" />
+    <ClCompile Include="Engine\Level\LevelManager.cpp" />
     <ClCompile Include="Engine\MemoryReflectionSystem.cpp" />
     <ClCompile Include="Engine\Render\RenderManager.cpp" />
+    <ClCompile Include="SnakeLevels\PlayLevel.cpp" />
     <ClCompile Include="SnakeLevels\StartupLevel.cpp" />
     <ClCompile Include="SnakeWidgets\Menu\MainMenuWidget.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -172,7 +174,6 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\Events\EventDelegate.h" />
     <ClInclude Include="Engine\Events\EventManager.h" />
     <ClInclude Include="Engine\GameEngine.h" />
-    <ClInclude Include="Engine\GameLevel.h" />
     <ClInclude Include="Engine\GameObject\GameObject.h" />
     <ClInclude Include="Engine\GameObject\GameObjectPtr.h" />
     <ClInclude Include="Engine\GameObject\GameObjectUtility.h" />
@@ -196,9 +197,12 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\Input\InputHandler.h" />
     <ClInclude Include="Engine\Input\InputManager.h" />
     <ClInclude Include="Engine\Input\InputUtility.h" />
+    <ClInclude Include="Engine\Level\GameLevel.h" />
+    <ClInclude Include="Engine\Level\LevelManager.h" />
     <ClInclude Include="Engine\MemoryReflectionSystem.h" />
     <ClInclude Include="Engine\Render\Renderable.h" />
     <ClInclude Include="Engine\Render\RenderManager.h" />
+    <ClInclude Include="SnakeLevels\PlayLevel.h" />
     <ClInclude Include="SnakeLevels\StartupLevel.h" />
     <ClInclude Include="SnakeWidgets\Menu\MainMenuWidget.h" />
   </ItemGroup>

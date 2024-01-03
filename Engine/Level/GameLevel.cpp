@@ -14,7 +14,6 @@ void GameLevel::OpenLevel()
 
 void GameLevel::Update(float DeltaTime)
 {
-
 }
 
 bool GameLevel::PassInput(const InputState& is)

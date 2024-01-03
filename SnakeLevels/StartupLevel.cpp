@@ -3,8 +3,11 @@
 #include "SnakeWidgets/Menu/MainMenuWidget.h"
 #include "Engine/GameObject/GameObjectUtility.h"
 #include "Engine/Render/RenderManager.h"
+#include "Engine/Level/LevelManager.h"
 
 #include "Core/RenderConsoleLibrary.h"
+
+#include "PlayLevel.h"
 
 StartupLevel::StartupLevel()
 {
@@ -21,7 +24,7 @@ void StartupLevel::OpenLevel()
 	if (!StartupMenuWidget.Get())
 	{
 		StartupMenuWidget = CreateNewObject<MainMenuWidget>(this);
-		if(StartupMenuWidget.Get())
+		if (StartupMenuWidget.Get())
 			StartupMenuWidget->OnResponseEvent().Subscribe(this, &StartupLevel::HandleMainMenuResponse);
 
 		PlaceObjectOnLevel(StartupMenuWidget.Get());
@@ -51,11 +54,18 @@ void StartupLevel::HandleMainMenuResponse(uint8_t responseType)
 	switch (mainMenuResponse)
 	{
 		case MainMenuResponse::StartGame:
+			StartPlay();
 			break;
 		case MainMenuResponse::ExitGame:
-			LevelCloseEvent.Trigger(this); // TODO: Replace with calling the LevelManager (OpenLevel/CloseLevel). Engine will subscribe to it's events.
+			LevelManager::GetInstance().CloseLevel(this);
 			break;
 		default:
 			break;
 	}
+}
+
+void StartupLevel::StartPlay()
+{
+	PlayLevel* playLevel = CreateNewObject<PlayLevel>();
+	LevelManager::GetInstance().OpenLevel(playLevel);
 }

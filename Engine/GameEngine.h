@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameLevel.h"
+#include "Level/GameLevel.h"
 #include "Core/RCDataTypes.h"
 
 #include "Input/InputUtility.h"
@@ -41,6 +41,7 @@ protected:
 
 	/** Events. */
 
+	// Input Events.
 	void HandleKeyPressEvent(WORD keyCode);
 	void HandleKeyReleaseEvent(WORD keyCode);
 
@@ -54,6 +55,8 @@ protected:
 
 	void HandleWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr);
 
+	// Level Events.
+	void HandleLevelOpenEvent(GameLevel* instigator);
 	void HandleLevelCloseEvent(GameLevel* instigator);
 
 	/** Engine Stop and Cleanup. */
