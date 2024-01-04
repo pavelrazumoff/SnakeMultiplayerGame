@@ -4,6 +4,9 @@
 #include "Core/RenderConsoleLibrary.h"
 #include "Draw/DrawConsoleLibrary.h"
 
+#include "Engine/EngineUtility.h"
+#include "Engine/Log/Logger.h"
+
 #include <chrono>
 
 RenderManager::RenderManager()
@@ -45,11 +48,25 @@ void RenderManager::Render()
 	}
 	#endif // USE_RENDER_LATENCY()
 
-	while (!RenderQueue.empty())
+	//using namespace std::chrono;
+	//auto PushStart = high_resolution_clock::now();
+
+	for (auto& renderGroup : RenderGroupQueue)
 	{
-		RenderQueue.front()->Render(SecondRenderBuffer.get());
-		RenderQueue.pop();
+		while (!renderGroup.second.empty())
+		{
+			renderGroup.second.back()->Render(SecondRenderBuffer.get());
+			renderGroup.second.pop_back();
+		}
 	}
+
+	RenderGroupQueue.clear();
+
+	//auto PushEnd = high_resolution_clock::now();
+	//float TimePassed = duration_cast<duration<float>>(PushEnd - PushStart).count();
+
+	//std::string logMessage = "RenderManager::Render() - Rendered renderables in " + std::to_string(TimePassed) + " seconds.";
+	//Logger::GetInstance().Write(logMessage.c_str());
 
 	DrawRenderBuffer();
 	SwapRenderBuffers();
@@ -89,18 +106,40 @@ void RenderManager::ReconstructRenderBuffer()
 
 bool RenderManager::PushToRenderQueue(IRenderable* renderable)
 {
+	if (!renderable) { DebugEngineTrap(); return false; }
+	if (!renderable->IsVisible()) return false;
+
 	#if USE_RENDER_LATENCY()
 	if (!bReadyToRender) return false;
 	#endif // USE_RENDER_LATENCY()
 
-	RenderQueue.push(renderable);
+	//using namespace std::chrono;
+	//auto PushStart = high_resolution_clock::now();
+
+	const uint8_t priority = renderable->GetRenderPriority();
+	auto& renderGroup = RenderGroupQueue[renderable->GetRenderPriorityGroup()];
+
+	auto it = std::find_if(renderGroup.begin(), renderGroup.end(), [&priority](const IRenderable* other) -> bool {
+		return other->GetRenderPriority() <= priority;
+	});
+
+	if (it != renderGroup.end())
+	{
+		renderGroup.insert(it, renderable);
+		return true;
+	}
+
+	renderGroup.insert(renderGroup.begin(), renderable);
+
+	//auto PushEnd = high_resolution_clock::now();
+	//float TimePassed = duration_cast<duration<float>>(PushEnd - PushStart).count();
+	//
+	//std::string logMessage = "RenderManager::PushToRenderQueue() - Pushed renderable to render queue in " + std::to_string(TimePassed) + " seconds.";
+	//Logger::GetInstance().Write(logMessage.c_str());
 	return true;
 }
 
 void RenderManager::ClearRenderQueue()
 {
-	while (!RenderQueue.empty())
-	{
-		RenderQueue.pop();
-	}
+	RenderGroupQueue.clear();
 }

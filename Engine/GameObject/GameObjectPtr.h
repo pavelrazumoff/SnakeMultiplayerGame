@@ -25,11 +25,15 @@ public:
 	}
 
 	~TObjectPtr() {
+
+		if (!ObjectPtr) return; // Already nulled.
 		MemoryReflectionSystem::GetInstance().AssignNewReference((GameObject**)&ObjectPtr, nullptr);
 	}
 
 	void operator=(T* Other) {
 		static_assert(std::is_base_of<GameObject, T>::value, "T must be derived from GameObject.");
+
+		if (!ObjectPtr && !Other) return; // Already nulled.
 
 		ObjectPtr = Other;
 		MemoryReflectionSystem::GetInstance().AssignNewReference((GameObject**)&ObjectPtr, Other);

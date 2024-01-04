@@ -16,6 +16,9 @@ public:
 
 	/** Extending the IRenderable interface. */
 	virtual void Render(RCTexture* RenderTargetTexture) override;
+	virtual bool IsVisible() const override { return true; }
+
+	virtual RenderPriorityGroup GetRenderPriorityGroup() const override { return RenderPriorityGroup::UI; }
 
 	/** Extending the IInputHandler interface. */
 	virtual bool PassInput(const InputState& is) override;

@@ -67,8 +67,6 @@ protected:
 protected:
 	GamePropertiesInfo GameProperties;
 
-	TObjectPtr<GameLevel> CurrentLevel;
-
 private:
 	std::atomic<bool> bIsRunning = false;
 

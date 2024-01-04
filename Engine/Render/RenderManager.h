@@ -3,7 +3,8 @@
 #include "Renderable.h"
 #include "Core/RCTexture.h"
 
-#include <queue>
+#include <vector>
+#include <map>
 #include <memory>
 
 #define USE_RENDER_LATENCY() 0
@@ -29,7 +30,7 @@ protected:
 	void SwapRenderBuffers();
 
 protected:
-	std::queue<IRenderable*> RenderQueue;
+	std::map<RenderPriorityGroup, std::vector<IRenderable*>> RenderGroupQueue;
 
 private:
 	#if USE_RENDER_LATENCY()

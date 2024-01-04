@@ -43,6 +43,5 @@ void InputState::ResetAll()
 	LastMousePressPos = { 0, 0 };
 
 	// Keyboard Input.
-	while (!KeyPressedQueue.empty())
-		KeyPressedQueue.pop();
+	KeyPressedQueue.clear();
 }

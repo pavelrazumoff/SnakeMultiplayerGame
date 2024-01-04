@@ -4,6 +4,7 @@
 #include "Render/RenderManager.h"
 #include "Input/InputManager.h"
 #include "Level/LevelManager.h"
+#include "Log/Logger.h"
 
 #include "Core/RenderConsoleLibrary.h"
 #include "Draw/DrawConsoleLibrary.h"
@@ -70,6 +71,8 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 {
 	FillEngineProperties();
 
+	Logger::GetInstance().Initialize("engine_log.log");
+
 	InputManager::GetInstance().Initialize();
 	{
 		InputManager::GetInstance().OnKeyPressEvent().Subscribe(this, &GameEngine::HandleKeyPressEvent);
@@ -119,13 +122,12 @@ void GameEngine::Run()
 
 		// Do the game logic here.
 		{
-			if (!CurrentLevel.Get())
+			if (auto pLevel = LevelManager::GetInstance().GetCurrentLevel())
 			{
-				break;
+				pLevel->PassInput(LastInputState);
+				pLevel->Update(DeltaTime);
 			}
-
-			CurrentLevel->PassInput(LastInputState);
-			CurrentLevel->Update(DeltaTime);
+			else break;
 		}
 
 		RenderManager::GetInstance()->Render();
@@ -208,10 +210,13 @@ void GameEngine::RefreshInputState()
 // Input Events.
 void GameEngine::HandleKeyPressEvent(WORD keyCode)
 {
+	ActualInputState.KeyPressedQueue.push_back(keyCode);
 }
 
 void GameEngine::HandleKeyReleaseEvent(WORD keyCode)
 {
+	std::erase(ActualInputState.KeyPressedQueue, keyCode);
+
 	switch (keyCode)
 	{
 		case VK_ESCAPE:
@@ -332,34 +337,21 @@ void GameEngine::HandleWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr)
 
 	RenderManager::GetInstance()->ReconstructRenderBuffer();
 
-	if (CurrentLevel.Get())
+	if (auto pLevel = LevelManager::GetInstance().GetCurrentLevel())
 	{
-		CurrentLevel->ReconstructLevel();
+		pLevel->ReconstructLevel();
 	}
 }
 
 // Level Events.
 void GameEngine::HandleLevelOpenEvent(GameLevel* instigator)
 {
-	if (CurrentLevel.Get())
-	{
-		// TODO: Close the current level first.
-	}
-
-	CurrentLevel = instigator;
-	if (CurrentLevel.Get())
-	{
-		CurrentLevel->OpenLevel();
-	}
 }
 
 void GameEngine::HandleLevelCloseEvent(GameLevel* instigator)
 {
 	// If there is an event of closing a level, it means that we want to close the app.
-	if (instigator == CurrentLevel.Get())
-		StopEngine();
-	else
-		DebugEngineTrap();
+	StopEngine();
 }
 
 /*
@@ -376,6 +368,7 @@ void GameEngine::Cleanup()
 	// Reset the cursor to the bottom left corner so the service info starts to be printed from there.
 	DrawConsoleLibrary::SetCursorToBottomLeft();
 
+	LevelManager::GetInstance().Release();
 	InputManager::GetInstance().Release();
 	GarbageCollector::GetInstance().Free();
 	DestroyRootObject();

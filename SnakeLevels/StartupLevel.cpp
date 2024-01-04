@@ -2,7 +2,6 @@
 
 #include "SnakeWidgets/Menu/MainMenuWidget.h"
 #include "Engine/GameObject/GameObjectUtility.h"
-#include "Engine/Render/RenderManager.h"
 #include "Engine/Level/LevelManager.h"
 
 #include "Core/RenderConsoleLibrary.h"
@@ -37,7 +36,9 @@ void StartupLevel::Update(float DeltaTime)
 {
 	Inherited::Update(DeltaTime);
 
-	RenderManager::GetInstance()->PushToRenderQueue(StartupMenuWidget.Get());
+	// TODO: Move it inside the parent level class and push to render with the help of ObjectsOnLevel.
+	// Be careful with UI, that should have its own priority and be rendered last.
+	//RenderManager::GetInstance()->PushToRenderQueue(StartupMenuWidget.Get());
 }
 
 void StartupLevel::ReconstructLevel()

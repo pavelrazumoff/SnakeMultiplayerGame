@@ -102,7 +102,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir);NetworkCore;RenderCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -124,7 +124,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir);NetworkCore;RenderCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -162,14 +162,19 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\Input\InputUtility.cpp" />
     <ClCompile Include="Engine\Level\GameLevel.cpp" />
     <ClCompile Include="Engine\Level\LevelManager.cpp" />
+    <ClCompile Include="Engine\Log\Logger.cpp" />
     <ClCompile Include="Engine\MemoryReflectionSystem.cpp" />
     <ClCompile Include="Engine\Render\RenderManager.cpp" />
+    <ClCompile Include="Engine\SceneObjects\Components\ImageComponent.cpp" />
+    <ClCompile Include="Engine\SceneObjects\Pawn\GamePawn.cpp" />
+    <ClCompile Include="Engine\SceneObjects\SceneObject.cpp" />
     <ClCompile Include="SnakeLevels\PlayLevel.cpp" />
     <ClCompile Include="SnakeLevels\StartupLevel.cpp" />
     <ClCompile Include="SnakeWidgets\Menu\MainMenuWidget.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\EngineTypes.h" />
     <ClInclude Include="Engine\EngineUtility.h" />
     <ClInclude Include="Engine\Events\EventDelegate.h" />
     <ClInclude Include="Engine\Events\EventManager.h" />
@@ -199,9 +204,15 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\Input\InputUtility.h" />
     <ClInclude Include="Engine\Level\GameLevel.h" />
     <ClInclude Include="Engine\Level\LevelManager.h" />
+    <ClInclude Include="Engine\Log\Logger.h" />
     <ClInclude Include="Engine\MemoryReflectionSystem.h" />
     <ClInclude Include="Engine\Render\Renderable.h" />
     <ClInclude Include="Engine\Render\RenderManager.h" />
+    <ClInclude Include="Engine\SceneObjects\Components\ImageComponent.h" />
+    <ClInclude Include="Engine\SceneObjects\Components\ObjectComponent.h" />
+    <ClInclude Include="Engine\SceneObjects\Components\SceneComponent.h" />
+    <ClInclude Include="Engine\SceneObjects\Pawn\GamePawn.h" />
+    <ClInclude Include="Engine\SceneObjects\SceneObject.h" />
     <ClInclude Include="SnakeLevels\PlayLevel.h" />
     <ClInclude Include="SnakeLevels\StartupLevel.h" />
     <ClInclude Include="SnakeWidgets\Menu\MainMenuWidget.h" />

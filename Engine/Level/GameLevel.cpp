@@ -1,5 +1,8 @@
 #include "GameLevel.h"
 
+#include "Engine/SceneObjects/SceneObject.h"
+#include "Engine/Render/RenderManager.h"
+
 GameLevel::GameLevel()
 {
 }
@@ -14,6 +17,16 @@ void GameLevel::OpenLevel()
 
 void GameLevel::Update(float DeltaTime)
 {
+	for (auto& obj : ObjectsOnLevel)
+	{
+		if (obj->IsWaitingForDestroy()) continue;
+
+		if (SceneObject* pSceneObj = dynamic_cast<SceneObject*>(obj.Get()))
+			pSceneObj->Update(DeltaTime);
+		
+		if (IRenderable* renderObj = dynamic_cast<IRenderable*>(obj.Get()))
+			RenderManager::GetInstance()->PushToRenderQueue(renderObj);
+	}
 }
 
 bool GameLevel::PassInput(const InputState& is)

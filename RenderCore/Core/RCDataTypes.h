@@ -14,6 +14,8 @@ struct TEX_COORD
 	RC_UINT y;
 };
 
+typedef TEX_COORD RC_COORD;
+
 struct TEX_SIZE
 {
 	RC_UINT cx;

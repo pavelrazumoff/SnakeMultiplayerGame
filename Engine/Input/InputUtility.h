@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/RCDataTypes.h"
-#include <queue>
+#include <vector>
 
 enum class InputMouseButton
 {
@@ -43,7 +43,7 @@ public:
 
 	/** Keyboard Input. */
 
-	std::queue<uint_least16_t> KeyPressedQueue;
+	std::vector<uint_least16_t> KeyPressedQueue;
 
 private:
 	bool bConsumed = false;
