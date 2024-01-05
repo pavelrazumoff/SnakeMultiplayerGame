@@ -64,3 +64,8 @@ void SceneObject::AddObjectComponent(ObjectComponent* newComponent)
 {
 	ChildComponents.push_back(newComponent);
 }
+
+void SceneObject::RemoveObjectComponent(ObjectComponent* componentToRemove)
+{
+	ChildComponents.erase(std::remove(ChildComponents.begin(), ChildComponents.end(), componentToRemove), ChildComponents.end());
+}

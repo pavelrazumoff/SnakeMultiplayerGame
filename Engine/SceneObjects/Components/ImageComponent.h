@@ -16,6 +16,9 @@ public:
 	void SetImage(std::shared_ptr<RCTexture> image);
 	void SetImageSize(LV_SIZE newSize);
 
+	const RCTexture* GetImage() const { return Image.get(); }
+	LV_SIZE GetImageSize() const { return ImageSize; }
+
 protected:
 	void Construct();
 

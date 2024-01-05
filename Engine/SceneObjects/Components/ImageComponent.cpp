@@ -22,8 +22,8 @@ void ImageComponent::DrawComponent(RCTexture* RenderTargetTexture)
 	else
 		DrawCoord.y = (RC_INT)floor(drawLoc.y);
 
-	if (VisibleRect.left >= VisibleRect.right ||
-		VisibleRect.top >= VisibleRect.bottom) return;
+	if (VisibleRect.left > VisibleRect.right ||
+		VisibleRect.top > VisibleRect.bottom) return;
 
 	if (VisibleRect.left >= RenderTargetTexture->GetWidth() ||
 		VisibleRect.top >= RenderTargetTexture->GetHeight()) return;

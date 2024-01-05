@@ -38,6 +38,7 @@ public:
 	/** */
 
 	void AddObjectComponent(ObjectComponent* newComponent);
+	void RemoveObjectComponent(ObjectComponent* componentToRemove);
 
 	template <class T>
 	static T* FindComponent(SceneObject* object)

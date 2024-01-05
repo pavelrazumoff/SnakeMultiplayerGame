@@ -18,7 +18,7 @@ void PlayLevel::OpenLevel()
 
 	RC_SIZE screenDim = RenderConsoleLibrary::GetConsoleDimensions();
 
-	LV_COORD startPlayerCoord = { screenDim.cx / 2 - 2, screenDim.cy / 2 - 2 };
+	LV_COORD startPlayerCoord((float)screenDim.cx / 2.0f - 2.0f, (float)screenDim.cy / 2.0f - 2.0f);
 	pSnakePawn = LevelManager::GetInstance().SpawnSceneObject<SnakePawn>(startPlayerCoord);
 
 	ReconstructLevel();
