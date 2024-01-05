@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Engine/SceneObjects/SceneObject.h"
+#include "../Components/InputComponent.h"
+#include "../Components/MovementComponent.h"
 
 class GamePawn : public SceneObject
 {
@@ -12,7 +14,14 @@ public:
 
 	virtual void Update(float DeltaTime) override;
 
-	/** Extending the IInputHandler interface. */
+	void AddMovement(const LV_VECTOR& Direction, float Scale);
 
-	virtual bool PassInput(const InputState& is) override;
+protected:
+	void _MovePawn(const LV_VECTOR& ScaledDirection);
+
+protected:
+	friend class MovementComponent;
+
+	InputComponent InputPawnComponent;
+	MovementComponent MovementPawnComponent;
 };

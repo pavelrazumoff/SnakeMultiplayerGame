@@ -1,7 +1,14 @@
 #include "GamePawn.h"
+#include "../Components/MovementComponent.h"
+
+#include "Engine/Level/LevelManager.h"
 
 GamePawn::GamePawn()
 {
+	AddObjectComponent(&InputPawnComponent);
+
+	MovementPawnComponent.SetOwnerPawn(this);
+	AddObjectComponent(&MovementPawnComponent);
 }
 
 GamePawn::~GamePawn()
@@ -10,9 +17,21 @@ GamePawn::~GamePawn()
 
 void GamePawn::Update(float DeltaTime)
 {
+	Inherited::Update(DeltaTime);
 }
 
-bool GamePawn::PassInput(const InputState& is)
+void GamePawn::AddMovement(const LV_VECTOR& Direction, float Scale)
 {
-	return false;
+	if (auto movement = FindComponent<MovementComponent>(this))
+	{
+		movement->DoMovement(Direction * Scale);
+	}
+}
+
+void GamePawn::_MovePawn(const LV_VECTOR& ScaledDirection)
+{
+	LV_COORD currentLocation = GetLocation();
+	LV_COORD newLocation = currentLocation + ScaledDirection * LevelManager::GetInstance().GetLevelDeltaSeconds();
+
+	SetLocation(newLocation);
 }

@@ -4,6 +4,7 @@
 
 #include "Engine/Events/EventDelegate.h"
 #include "Engine/EngineTypes.h"
+#include "Engine/EngineUtility.h"
 
 #include "Engine/SceneObjects/SceneObject.h"
 #include "Engine/GameObject/GameObjectUtility.h"
@@ -23,6 +24,9 @@ public:
 	void OpenLevel(GameLevel* level);
 	void CloseLevel(GameLevel* level);
 
+	void SetLevelDeltaSeconds(float deltaSeconds) { LevelDeltaSeconds = deltaSeconds; }
+	float GetLevelDeltaSeconds() const { return LevelDeltaSeconds; }
+
 	GameLevel* GetCurrentLevel() { return CurrentLevel.Get(); }
 
 	LevelActionDelegate& OnLevelOpenEvent() { return LevelOpenEvent; }
@@ -33,12 +37,14 @@ public:
 	template<typename T>
 	T* SpawnSceneObject(const LV_COORD& Location)
 	{
+		if (!GetCurrentLevel()) { DebugEngineTrap(); return nullptr; }
+
 		static_assert(std::is_base_of<SceneObject, T>::value, "T must be derived from SceneObject.");
 
-		T* SpawnedObject = CreateNewObject<T>(this);
+		T* SpawnedObject = CreateNewObject<T>(CurrentLevel.Get());
 		if (SceneObject* sceneObject = dynamic_cast<SceneObject*>(SpawnedObject))
 		{
-			PlaceObjectOnLevel(sceneObject);
+			CurrentLevel->PlaceObjectOnLevel(sceneObject);
 			sceneObject->SetLocation(Location);
 		}
 		else
@@ -53,4 +59,5 @@ protected:
 
 private:
 	TObjectPtr<GameLevel> CurrentLevel;
+	float LevelDeltaSeconds = 0.0f;
 };

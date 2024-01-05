@@ -108,7 +108,6 @@ void GameEngine::Run()
 	const float GarbageCollectorWaitTimeLimit = 2.0f;
 
 	auto Start = high_resolution_clock::now();
-	float DeltaTime = 0.0f;
 
 	bIsRunning = true;
 	StartThreads();
@@ -125,7 +124,7 @@ void GameEngine::Run()
 			if (auto pLevel = LevelManager::GetInstance().GetCurrentLevel())
 			{
 				pLevel->PassInput(LastInputState);
-				pLevel->Update(DeltaTime);
+				pLevel->Update(LevelManager::GetInstance().GetLevelDeltaSeconds());
 			}
 			else break;
 		}
@@ -136,13 +135,13 @@ void GameEngine::Run()
 		{
 			auto End = high_resolution_clock::now();
 
-			DeltaTime = duration_cast<duration<float>>(End - Start).count();
+			LevelManager::GetInstance().SetLevelDeltaSeconds(duration_cast<duration<float>>(End - Start).count());
 			Start = End;
 		}
 
 		// Garbage collection.
 		{
-			GarbageCollectorWaitTime += DeltaTime;
+			GarbageCollectorWaitTime += LevelManager::GetInstance().GetLevelDeltaSeconds();
 
 			if (GarbageCollectorWaitTime >= GarbageCollectorWaitTimeLimit)
 			{
@@ -210,7 +209,9 @@ void GameEngine::RefreshInputState()
 // Input Events.
 void GameEngine::HandleKeyPressEvent(WORD keyCode)
 {
-	ActualInputState.KeyPressedQueue.push_back(keyCode);
+	auto& keyQueue = ActualInputState.KeyPressedQueue;
+	if (std::find(keyQueue.begin(), keyQueue.end(), keyCode) == keyQueue.end())
+		keyQueue.push_back(keyCode);
 }
 
 void GameEngine::HandleKeyReleaseEvent(WORD keyCode)

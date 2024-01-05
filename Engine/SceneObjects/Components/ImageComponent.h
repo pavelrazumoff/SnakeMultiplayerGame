@@ -11,10 +11,18 @@ public:
 	ImageComponent() {}
 	virtual ~ImageComponent() {}
 
-	void SetImage(std::shared_ptr<RCTexture> image);
-
 	virtual void DrawComponent(RCTexture* RenderTargetTexture);
+
+	void SetImage(std::shared_ptr<RCTexture> image);
+	void SetImageSize(LV_SIZE newSize);
+
+protected:
+	void Construct();
 
 protected:
 	std::shared_ptr<RCTexture> Image;
+	LV_SIZE ImageSize = { 0.0f, 0.0f };
+
+private:
+	std::shared_ptr<RCTexture> DrawTexture;
 };

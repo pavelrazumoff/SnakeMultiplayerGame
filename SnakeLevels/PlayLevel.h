@@ -2,6 +2,8 @@
 
 #include "Engine/Level/GameLevel.h"
 
+class SnakePawn;
+
 class PlayLevel : public GameLevel
 {
 	typedef GameLevel Inherited;
@@ -14,4 +16,7 @@ public:
 	virtual void Update(float DeltaTime) override;
 
 	virtual void ReconstructLevel() override;
+
+protected:
+	TObjectPtr<SnakePawn> pSnakePawn;
 };

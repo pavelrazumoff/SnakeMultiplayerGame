@@ -16,7 +16,8 @@ public:
 	SceneObject();
 	virtual ~SceneObject();
 
-	virtual void Update(float /*DeltaTime*/) {}
+	virtual void BeginPlay();
+	virtual void Update(float DeltaTime);
 
 	/** Scene Placement. */
 
@@ -32,7 +33,23 @@ public:
 
 	/** Extending the IInputHandler interface. */
 
-	virtual bool PassInput(const InputState& is) override { return false; }
+	virtual bool PassInput(const InputState& is) override final;
+
+	/** */
+
+	void AddObjectComponent(ObjectComponent* newComponent);
+
+	template <class T>
+	static T* FindComponent(SceneObject* object)
+	{
+		for (auto& component : object->ChildComponents)
+		{
+			if (T* castedComponent = dynamic_cast<T*>(component))
+				return castedComponent;
+		}
+
+		return nullptr;
+	}
 
 protected:
 	LV_COORD Location = { 0, 0 };

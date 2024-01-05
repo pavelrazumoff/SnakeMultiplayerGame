@@ -11,6 +11,11 @@ public:
 	virtual ~SceneComponent() {}
 
 	virtual void DrawComponent(RCTexture* /*RenderTargetTexture*/) {}
+	virtual void UpdateComponent(float DeltaTime);
+
+	void UpdateSceneLocation(LV_COORD parentLocation);
+
+	LV_COORD GetSceneLocation() const { return SceneLocation; }
 
 protected:
 	LV_COORD RelativeLocation = { 0, 0 };

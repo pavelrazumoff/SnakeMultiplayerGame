@@ -1,6 +1,5 @@
 #include "GameLevel.h"
 
-#include "Engine/SceneObjects/SceneObject.h"
 #include "Engine/Render/RenderManager.h"
 
 GameLevel::GameLevel()
@@ -17,6 +16,12 @@ void GameLevel::OpenLevel()
 
 void GameLevel::Update(float DeltaTime)
 {
+	while (!ObjectBeginPlayQueue.empty())
+	{
+		ObjectBeginPlayQueue.front()->BeginPlay();
+		ObjectBeginPlayQueue.pop();
+	}
+
 	for (auto& obj : ObjectsOnLevel)
 	{
 		if (obj->IsWaitingForDestroy()) continue;
@@ -50,5 +55,10 @@ void GameLevel::PlaceObjectOnLevel(GameObject* obj)
 		});
 
 	if (it == ObjectsOnLevel.end())
+	{
 		ObjectsOnLevel.push_back(obj);
+
+		if (auto sceneObj = dynamic_cast<SceneObject*>(obj))
+			ObjectBeginPlayQueue.push(sceneObj);
+	}
 }

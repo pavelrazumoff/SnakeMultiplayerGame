@@ -10,7 +10,7 @@ public:
 	TObjectPtr(T* Other) : ObjectPtr(Other) {
 		static_assert(std::is_base_of<GameObject, T>::value, "T must be derived from GameObject.");
 
-		MemoryReflectionSystem::GetInstance().AssignNewReference(&ObjectPtr, Other);
+		MemoryReflectionSystem::GetInstance().AssignNewReference((GameObject**)&ObjectPtr, Other);
 	}
 	TObjectPtr() : ObjectPtr(nullptr) {}
 
@@ -18,9 +18,9 @@ public:
 		MemoryReflectionSystem::GetInstance().AssignNewReference((GameObject**)&ObjectPtr, Other.ObjectPtr);
 	}
 
-	TObjectPtr(TObjectPtr&& Other) : ObjectPtr(Other.ObjectPtr) {
+	TObjectPtr(TObjectPtr&& Other) noexcept : ObjectPtr(Other.ObjectPtr) {
 		Other.ObjectPtr = nullptr;
-		MemoryReflectionSystem::GetInstance().AssignNewReference(&Other.ObjectPtr, nullptr);
+		MemoryReflectionSystem::GetInstance().AssignNewReference((GameObject**)&Other.ObjectPtr, nullptr);
 		MemoryReflectionSystem::GetInstance().AssignNewReference((GameObject**)&ObjectPtr, ObjectPtr);
 	}
 
