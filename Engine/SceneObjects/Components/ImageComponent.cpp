@@ -13,14 +13,14 @@ void ImageComponent::DrawComponent(RCTexture* RenderTargetTexture)
 	TEX_COORD DrawCoord = { 0, 0 };
 
 	if (drawLoc.x < 0.0f)
-		VisibleRect.left = (RC_INT)floor(-drawLoc.x);
+		VisibleRect.left = (RC_INT)round(-drawLoc.x);
 	else
-		DrawCoord.x = (RC_INT)floor(drawLoc.x);
+		DrawCoord.x = (RC_INT)round(drawLoc.x);
 
 	if (drawLoc.y < 0.0f)
-		VisibleRect.top = (RC_INT)floor(-drawLoc.y);
+		VisibleRect.top = (RC_INT)round(-drawLoc.y);
 	else
-		DrawCoord.y = (RC_INT)floor(drawLoc.y);
+		DrawCoord.y = (RC_INT)round(drawLoc.y);
 
 	if (VisibleRect.left > VisibleRect.right ||
 		VisibleRect.top > VisibleRect.bottom) return;

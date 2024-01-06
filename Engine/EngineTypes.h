@@ -23,6 +23,22 @@ public:
 		return fabs(x - other.x) < tolerance && fabs(y - other.y) < tolerance;
 	}
 
+	bool Compare(const LV_VECTOR& other, const LV_VECTOR& tolerance) const
+	{
+		return fabs(x - other.x) < tolerance.x && fabs(y - other.y) < tolerance.y;
+	}
+
+	LV_VECTOR& Normalize()
+	{
+		float length = sqrt(x * x + y * y);
+		if (length > 0.0f)
+		{
+			x /= length;
+			y /= length;
+		}
+		return *this;
+	}
+
 	bool IsZero() const { return x == 0.0f && y == 0.0f; }
 
 	LV_VECTOR operator+(const LV_VECTOR& other) const

@@ -16,6 +16,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Update(float DeltaTime) override;
 
+	virtual void Render(RCTexture* RenderTargetTexture) override;
+
 protected:
 	/** Input Action bindings. */
 
@@ -25,14 +27,12 @@ protected:
 	/** Snake movement logic. */
 
 	void UpdateBodyMovement(float DeltaTime);
-	void HandleDirectionChange();
 
 protected:
 	ImageComponent HeadImageComponent;
-	ImageComponent TailImageComponent;
+	ImageComponent BodyImageComponent;
 
-	//std::queue<std::shared_ptr<ImageComponent>> BodyImageComponents;
-	std::queue<LV_COORD> turnPoints;
+	std::vector<LV_COORD> bodyPoints;
 
 	/** Input Actions */
 
@@ -41,5 +41,6 @@ protected:
 
 private:
 	LV_VECTOR MovingDirection;
-	LV_COORD TailTargetLocation;
+
+	float SpawnNewBodyPartTimer = 0.0f;
 };

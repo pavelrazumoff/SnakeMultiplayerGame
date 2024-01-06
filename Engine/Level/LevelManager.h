@@ -24,8 +24,8 @@ public:
 	void OpenLevel(GameLevel* level);
 	void CloseLevel(GameLevel* level);
 
-	void SetLevelDeltaSeconds(float deltaSeconds) { LevelDeltaSeconds = deltaSeconds; }
-	float GetLevelDeltaSeconds() const { return LevelDeltaSeconds; }
+	void SetLevelDeltaSeconds(float deltaSeconds);
+	float GetLevelDeltaSeconds() const;
 
 	GameLevel* GetCurrentLevel() { return CurrentLevel.Get(); }
 

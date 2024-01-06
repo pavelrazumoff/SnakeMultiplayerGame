@@ -22,12 +22,12 @@ SnakePawn::SnakePawn()
 
 	// Tail.
 	{
-		TailImageComponent.SetImage(imgTail);
-		TailImageComponent.SetImageSize({ 1.0f, 1.0f });
+		BodyImageComponent.SetImage(imgTail);
+		BodyImageComponent.SetImageSize({ 1.0f, 1.0f });
 
-		TailImageComponent.SetUseAbsoluteLocation(true);
+		BodyImageComponent.SetUseAbsoluteLocation(true);
 
-		AddObjectComponent(&TailImageComponent);
+		AddObjectComponent(&BodyImageComponent);
 	}
 
 	// Input Action bindings.
@@ -55,7 +55,8 @@ void SnakePawn::BeginPlay()
 	Inherited::BeginPlay();
 
 	LV_COORD tailLocation = HeadImageComponent.GetSceneLocation() - LV_COORD(0.0f, -1.0f);
-	TailImageComponent.SetAbsoluteLocation(tailLocation);
+	BodyImageComponent.SetAbsoluteLocation(tailLocation);
+	bodyPoints.push_back(tailLocation);
 }
 
 void SnakePawn::Update(float DeltaTime)
@@ -63,6 +64,22 @@ void SnakePawn::Update(float DeltaTime)
 	Inherited::Update(DeltaTime);
 
 	UpdateBodyMovement(DeltaTime);
+}
+
+void SnakePawn::Render(RCTexture* RenderTargetTexture)
+{
+	Inherited::Render(RenderTargetTexture);
+
+	// For each body part draw the same BodyImageComponent on each of its location.
+
+	LV_COORD savedFirstBodyLoc = BodyImageComponent.GetSceneLocation();
+	for (int i = 1; i < bodyPoints.size(); ++i)
+	{
+		BodyImageComponent.SetAbsoluteLocation(bodyPoints[i]);
+		BodyImageComponent.DrawComponent(RenderTargetTexture);
+	}
+
+	BodyImageComponent.SetAbsoluteLocation(savedFirstBodyLoc);
 }
 
 /*
@@ -75,7 +92,6 @@ void SnakePawn::MoveUpDown_Triggered(InputValue actionValue)
 	if (MovingDirection.y != 0.0f) return;
 
 	MovingDirection = { 0.0f, actionValue.AxisValue };
-	HandleDirectionChange();
 }
 
 void SnakePawn::MoveLeftRight_Triggered(InputValue actionValue)
@@ -84,74 +100,45 @@ void SnakePawn::MoveLeftRight_Triggered(InputValue actionValue)
 	if (MovingDirection.x != 0.0f) return;
 
 	MovingDirection = { actionValue.AxisValue, 0.0f };
-	HandleDirectionChange();
 }
 
 void SnakePawn::UpdateBodyMovement(float DeltaTime)
 {
 	if (MovingDirection == LV_VECTOR::Zero()) return;
 	
-	AddMovement(MovingDirection, 1.0f);
-
-	LV_COORD tailLocation = TailImageComponent.GetSceneLocation();
-	LV_VECTOR tailMovementVec = { 0.0f, 0.0f };
-
-	const float tolerance = 0.08f;
-	if (!tailLocation.Compare(TailTargetLocation, tolerance))
+	if (SpawnNewBodyPartTimer > 3.0f)
 	{
-		float diff = TailTargetLocation.x - tailLocation.x;
-		if (abs(diff) > tolerance)
-			tailMovementVec.x = diff > 0.0f ? 1.0f : -1.0f;
-		else
-		{
-			diff = TailTargetLocation.y - tailLocation.y;
-			if (abs(diff) > tolerance)
-				tailMovementVec.y = diff > 0.0f ? 1.0f : -1.0f;
-		}
+		SpawnNewBodyPartTimer = 0.0f;
+
+		LV_COORD localHeadLoc = bodyPoints.size() > 1 ? bodyPoints[bodyPoints.size() - 2] : HeadImageComponent.GetSceneLocation();
+		LV_VECTOR newBodyPartDir = localHeadLoc - bodyPoints.back();
+		bodyPoints.push_back(bodyPoints.back() - newBodyPartDir);
 	}
 	else
+		SpawnNewBodyPartTimer += DeltaTime;
+
+	static LV_COORD LastSavedHeadPoint = HeadImageComponent.GetSceneLocation();
+	LastSavedHeadPoint.Align();
+
+	AddMovement(MovingDirection, 1.0f);
+
+	LV_COORD headLocation = HeadImageComponent.GetSceneLocation();
+	headLocation.Align();
+
+	if (!LastSavedHeadPoint.Compare(headLocation, 1.0f))
 	{
-		if (!turnPoints.empty())
+		LV_COORD lastSavedBodyPoint = bodyPoints[0];
+		bodyPoints[0] = LastSavedHeadPoint;
+
+		for (size_t i = 1; i < bodyPoints.size(); i++)
 		{
-			TailTargetLocation = turnPoints.front();
-			turnPoints.pop();
+			LV_COORD temp = bodyPoints[i];
+			bodyPoints[i] = lastSavedBodyPoint;
+			lastSavedBodyPoint = temp;
 		}
-		else TailTargetLocation = HeadImageComponent.GetSceneLocation();
-		//else DebugEngineTrap(); // We should never reach parents head with the tail (because it always moves).
+
+		LastSavedHeadPoint = headLocation;
 	}
 
-	tailLocation += tailMovementVec * MovementPawnComponent.GetMovementSpeed() * DeltaTime;
-	TailImageComponent.SetAbsoluteLocation(tailLocation);
-}
-
-void SnakePawn::HandleDirectionChange()
-{
-	/*
-	const ImageComponent* prevLastBodyComp = BodyImageComponents.empty() ? nullptr : BodyImageComponents.back().get();
-
-	std::shared_ptr<ImageComponent> newLastBodyComp = std::make_shared<ImageComponent>();
-	BodyImageComponents.push(newLastBodyComp);
-	
-	std::shared_ptr<RCTexture> imgBody(HeadImageComponent.GetImage()->CopyTexture());
-	RenderTextureLibrary::FillTextureColor(imgBody.get(), RenderConstants::RedPixelColorRGB);
-
-	newLastBodyComp->SetImage(imgBody);
-	newLastBodyComp->SetImageSize({ 1.0f, 1.0f });
-
-	newLastBodyComp->SetUseAbsoluteLocation(true);
-
-	if (prevLastBodyComp)
-	{
-
-	}
-
-	AddObjectComponent(newLastBodyComp.get());*/
-
-	turnPoints.push(HeadImageComponent.GetSceneLocation());
-
-	if (TailTargetLocation.IsZero())
-	{
-		TailTargetLocation = turnPoints.front();
-		turnPoints.pop();
-	}
+	BodyImageComponent.SetAbsoluteLocation(bodyPoints[0]);
 }

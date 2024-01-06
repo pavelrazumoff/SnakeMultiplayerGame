@@ -37,3 +37,13 @@ void LevelManager::CloseLevel(GameLevel* level)
 
 	LevelCloseEvent.Trigger(level);
 }
+
+void LevelManager::SetLevelDeltaSeconds(float deltaSeconds)
+{
+	LevelDeltaSeconds = deltaSeconds;
+}
+
+float LevelManager::GetLevelDeltaSeconds() const
+{
+	return LevelDeltaSeconds;
+}
