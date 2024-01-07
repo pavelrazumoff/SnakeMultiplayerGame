@@ -118,6 +118,18 @@
     <Filter Include="Source Files\SnakeObjects">
       <UniqueIdentifier>{fda23ad9-5c67-48a6-8905-c1da92ae5a00}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Math">
+      <UniqueIdentifier>{ea6797f9-d1b4-492d-8e9e-5f69319c2717}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Math">
+      <UniqueIdentifier>{418dcaf4-6fcc-41e7-9cca-e232bf620b56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\CollisionDetection">
+      <UniqueIdentifier>{50cad966-a26f-41c7-b337-2eb5ad8e67d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\CollisionDetection">
+      <UniqueIdentifier>{8388223b-01c4-49c0-af55-d7634b40bc0e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -220,6 +232,24 @@
       <Filter>Source Files\Engine\Input</Filter>
     </ClCompile>
     <ClCompile Include="Engine\SceneObjects\Components\MovementComponent.cpp">
+      <Filter>Source Files\Engine\SceneObjects\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakeObjects\Food.cpp">
+      <Filter>Source Files\SnakeObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Math\MathLibrary.cpp">
+      <Filter>Source Files\Engine\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\SceneObjects\Components\CollisionComponent.cpp">
+      <Filter>Source Files\Engine\SceneObjects\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\CollisionDetection\CollisionManager.cpp">
+      <Filter>Source Files\Engine\CollisionDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\CollisionDetection\QuadTree.cpp">
+      <Filter>Source Files\Engine\CollisionDetection</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\SceneObjects\Components\BoxComponent.cpp">
       <Filter>Source Files\Engine\SceneObjects\Components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -360,6 +390,30 @@
       <Filter>Header Files\Engine\Input</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SceneObjects\Components\MovementComponent.h">
+      <Filter>Header Files\Engine\SceneObjects\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeObjects\Food.h">
+      <Filter>Header Files\SnakeObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Math\MathLibrary.h">
+      <Filter>Header Files\Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SceneObjects\Components\CollisionComponent.h">
+      <Filter>Header Files\Engine\SceneObjects\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CollisionDetection\CollisionManager.h">
+      <Filter>Header Files\Engine\CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CollisionDetection\QuadTree.h">
+      <Filter>Header Files\Engine\CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CollisionDetection\Collider.h">
+      <Filter>Header Files\Engine\CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\CollisionDetection\CollisionTypes.h">
+      <Filter>Header Files\Engine\CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\SceneObjects\Components\BoxComponent.h">
       <Filter>Header Files\Engine\SceneObjects\Components</Filter>
     </ClInclude>
   </ItemGroup>

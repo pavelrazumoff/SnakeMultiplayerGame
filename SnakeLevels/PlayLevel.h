@@ -18,5 +18,13 @@ public:
 	virtual void ReconstructLevel() override;
 
 protected:
+	void SpawnNewFood();
+
+protected:
 	TObjectPtr<SnakePawn> pSnakePawn;
+
+	float SpawnNewFoodTimeValue = 3.0f;
+
+private:
+	float SpawnNewFoodTimer = 0.0f;
 };

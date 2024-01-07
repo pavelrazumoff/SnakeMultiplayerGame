@@ -1,6 +1,10 @@
 #pragma once
 
-class ObjectComponent
+#include "Engine/GameObject/GameObject.h"
+
+class SceneObject;
+
+class ObjectComponent : public GameObject
 {
 public:
 	virtual ~ObjectComponent() {}

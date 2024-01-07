@@ -22,6 +22,6 @@ protected:
 protected:
 	friend class MovementComponent;
 
-	InputComponent InputPawnComponent;
-	MovementComponent MovementPawnComponent;
+	TObjectPtr<InputComponent> InputPawnComponent;
+	TObjectPtr<MovementComponent> MovementPawnComponent;
 };

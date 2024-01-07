@@ -51,8 +51,9 @@ void GameObject::RemoveChild(GameObject* Child)
 
 void GameObject::PostDestroy()
 {
-	MemoryReflectionSystem::GetInstance().ClearDanglingPointers(this);
 	if (Owner) Owner->NotifyChildDestroy(this);
+
+	MemoryReflectionSystem::GetInstance().ClearDanglingPointers(this);
 }
 
 void GameObject::NotifyChildDestroy(GameObject* Child)

@@ -13,10 +13,10 @@ RenderManager::RenderManager()
 {
 }
 
-RenderManager* RenderManager::GetInstance()
+RenderManager& RenderManager::GetInstance()
 {
 	static RenderManager instance;
-	return &instance;
+	return instance;
 }
 
 void RenderManager::Initialize()

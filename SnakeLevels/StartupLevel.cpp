@@ -32,15 +32,6 @@ void StartupLevel::OpenLevel()
 	ReconstructLevel();
 }
 
-void StartupLevel::Update(float DeltaTime)
-{
-	Inherited::Update(DeltaTime);
-
-	// TODO: Move it inside the parent level class and push to render with the help of ObjectsOnLevel.
-	// Be careful with UI, that should have its own priority and be rendered last.
-	//RenderManager::GetInstance()->PushToRenderQueue(StartupMenuWidget.Get());
-}
-
 void StartupLevel::ReconstructLevel()
 {
 	if (!StartupMenuWidget.Get()) return;

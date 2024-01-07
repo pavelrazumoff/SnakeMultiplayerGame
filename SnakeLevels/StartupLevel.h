@@ -13,7 +13,6 @@ public:
 	virtual ~StartupLevel();
 
 	virtual void OpenLevel() override;
-	virtual void Update(float DeltaTime) override;
 
 	virtual void ReconstructLevel() override;
 

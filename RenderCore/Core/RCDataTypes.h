@@ -74,6 +74,7 @@ inline constexpr TEX_COLOR_RGB RedPixelColorRGB    = { 255, 0, 0 };
 inline constexpr TEX_COLOR_RGB GreenPixelColorRGB  = { 0, 255, 0 };
 inline constexpr TEX_COLOR_RGB BluePixelColorRGB   = { 0, 0, 255 };
 inline constexpr TEX_COLOR_RGB WhitePixelColorRGB  = { 255, 255, 255 };
+inline constexpr TEX_COLOR_RGB YellowPixelColorRGB = { 255, 255, 0 };
 
 inline constexpr TEX_COLOR_RGB GrayPixelColorRGB   = { 128, 128, 128 };
 inline constexpr TEX_COLOR_RGB DarkGrayPixelColorRGB = { 64, 64, 64 };

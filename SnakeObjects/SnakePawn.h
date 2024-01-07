@@ -1,9 +1,13 @@
 #pragma once
 
 #include "Engine/SceneObjects/Pawn/GamePawn.h"
-#include "Engine/SceneObjects/Components/ImageComponent.h"
 
 #include <queue>
+
+class ImageComponent;
+class CollisionComponent;
+class BoxComponent;
+class ICollider;
 
 class SnakePawn : public GamePawn
 {
@@ -27,10 +31,18 @@ protected:
 	/** Snake movement logic. */
 
 	void UpdateBodyMovement(float DeltaTime);
+	void IncreaseBody();
+
+	/** Collision Events. */
+
+	void HandleHeadCollisionStartEvent(CollisionComponent* InstigatorComp, SceneObject* OtherObject, ICollider* OtherCollider);
+	void HandleHeadCollisionEndEvent(CollisionComponent* InstigatorComp, SceneObject* OtherObject, ICollider* OtherCollider);
 
 protected:
-	ImageComponent HeadImageComponent;
-	ImageComponent BodyImageComponent;
+	TObjectPtr<ImageComponent> HeadImageComponent;
+	TObjectPtr<ImageComponent> BodyImageComponent;
+
+	TObjectPtr<BoxComponent> HeadBoxComponent;
 
 	std::vector<LV_COORD> bodyPoints;
 
@@ -41,6 +53,4 @@ protected:
 
 private:
 	LV_VECTOR MovingDirection;
-
-	float SpawnNewBodyPartTimer = 0.0f;
 };

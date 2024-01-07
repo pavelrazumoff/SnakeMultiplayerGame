@@ -30,7 +30,7 @@ void GameLevel::Update(float DeltaTime)
 			pSceneObj->Update(DeltaTime);
 		
 		if (IRenderable* renderObj = dynamic_cast<IRenderable*>(obj.Get()))
-			RenderManager::GetInstance()->PushToRenderQueue(renderObj);
+			RenderManager::GetInstance().PushToRenderQueue(renderObj);
 	}
 }
 
@@ -61,4 +61,16 @@ void GameLevel::PlaceObjectOnLevel(GameObject* obj)
 		if (auto sceneObj = dynamic_cast<SceneObject*>(obj))
 			ObjectBeginPlayQueue.push(sceneObj);
 	}
+}
+
+void GameLevel::NotifyChildDestroy(GameObject* Child)
+{
+	Inherited::NotifyChildDestroy(Child);
+
+	auto it = std::find_if(ObjectsOnLevel.begin(), ObjectsOnLevel.end(), [Child](TObjectPtr<GameObject>& Other) -> bool {
+		return Child == Other.Get();
+		});
+
+	if (it != ObjectsOnLevel.end())
+		ObjectsOnLevel.erase(it);
 }

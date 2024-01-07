@@ -8,6 +8,9 @@
 #include "Engine/Render/Renderable.h"
 #include "Components/ObjectComponent.h"
 
+#include "Engine/GameObject/GameObjectPtr.h"
+#include "Engine/GameObject/GameObjectUtility.h"
+
 class SceneObject : public GameObject, public IInputHandler, public IRenderable
 {
 	typedef GameObject Inherited;
@@ -37,6 +40,14 @@ public:
 
 	/** */
 
+	template <class T>
+	T* CreateChildComponent()
+	{
+		T* newComponent = CreateNewObject<T>(this);
+		AddObjectComponent(newComponent);
+		return newComponent;
+	}
+
 	void AddObjectComponent(ObjectComponent* newComponent);
 	void RemoveObjectComponent(ObjectComponent* componentToRemove);
 
@@ -45,7 +56,7 @@ public:
 	{
 		for (auto& component : object->ChildComponents)
 		{
-			if (T* castedComponent = dynamic_cast<T*>(component))
+			if (T* castedComponent = dynamic_cast<T*>(component.Get()))
 				return castedComponent;
 		}
 
@@ -56,5 +67,5 @@ protected:
 	LV_COORD Location = { 0, 0 };
 
 private:
-	std::vector<ObjectComponent*> ChildComponents;
+	std::vector<TObjectPtr<ObjectComponent>> ChildComponents;
 };

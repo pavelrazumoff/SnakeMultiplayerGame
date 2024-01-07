@@ -23,7 +23,7 @@ void SceneObject::Update(float DeltaTime)
 {
 	for (auto& child : ChildComponents)
 	{
-		if (auto sceneComp = dynamic_cast<SceneComponent*>(child))
+		if (auto sceneComp = dynamic_cast<SceneComponent*>(child.Get()))
 			sceneComp->UpdateSceneLocation(Location);
 
 		child->UpdateComponent(DeltaTime);
@@ -36,7 +36,7 @@ void SceneObject::SetLocation(const LV_COORD& newLocation)
 
 	for (auto& child : ChildComponents)
 	{
-		if (auto sceneComp = dynamic_cast<SceneComponent*>(child))
+		if (auto sceneComp = dynamic_cast<SceneComponent*>(child.Get()))
 			sceneComp->UpdateSceneLocation(Location);
 	}
 }
@@ -47,7 +47,7 @@ void SceneObject::Render(RCTexture* RenderTargetTexture)
 
 	for (auto& child : ChildComponents)
 	{
-		if (auto sceneComp = dynamic_cast<SceneComponent*>(child))
+		if (auto sceneComp = dynamic_cast<SceneComponent*>(child.Get()))
 			sceneComp->DrawComponent(RenderTargetTexture);
 	}
 }
@@ -67,5 +67,9 @@ void SceneObject::AddObjectComponent(ObjectComponent* newComponent)
 
 void SceneObject::RemoveObjectComponent(ObjectComponent* componentToRemove)
 {
-	ChildComponents.erase(std::remove(ChildComponents.begin(), ChildComponents.end(), componentToRemove), ChildComponents.end());
+	auto it = std::find_if(ChildComponents.begin(), ChildComponents.end(), [componentToRemove](auto& Other) -> bool {
+		return componentToRemove == Other.Get();
+		});
+
+	if (it != ChildComponents.end()) ChildComponents.erase(it);
 }

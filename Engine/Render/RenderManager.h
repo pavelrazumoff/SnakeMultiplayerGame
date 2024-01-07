@@ -15,7 +15,7 @@ public:
 	RenderManager();
 	~RenderManager() {}
 
-	static RenderManager* GetInstance();
+	static RenderManager& GetInstance();
 
 	void Initialize();
 

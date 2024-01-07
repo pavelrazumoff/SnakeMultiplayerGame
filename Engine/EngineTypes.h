@@ -12,7 +12,7 @@ public:
 		: x(_x), y(_y)
 	{}
 
-	void Align()
+	void Round()
 	{
 		x = round(x);
 		y = round(y);

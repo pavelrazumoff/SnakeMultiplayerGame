@@ -5,10 +5,10 @@
 
 GamePawn::GamePawn()
 {
-	AddObjectComponent(&InputPawnComponent);
+	InputPawnComponent = CreateChildComponent<InputComponent>();
 
-	MovementPawnComponent.SetOwnerPawn(this);
-	AddObjectComponent(&MovementPawnComponent);
+	MovementPawnComponent = CreateChildComponent<MovementComponent>();
+	MovementPawnComponent->SetOwnerPawn(this);
 }
 
 GamePawn::~GamePawn()

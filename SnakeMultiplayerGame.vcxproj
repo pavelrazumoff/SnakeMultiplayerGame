@@ -143,6 +143,8 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\CollisionDetection\CollisionManager.cpp" />
+    <ClCompile Include="Engine\CollisionDetection\QuadTree.cpp" />
     <ClCompile Include="Engine\GameEngine.cpp" />
     <ClCompile Include="Engine\GameObject\GameObject.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\Button.cpp" />
@@ -164,8 +166,11 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\Level\GameLevel.cpp" />
     <ClCompile Include="Engine\Level\LevelManager.cpp" />
     <ClCompile Include="Engine\Log\Logger.cpp" />
+    <ClCompile Include="Engine\Math\MathLibrary.cpp" />
     <ClCompile Include="Engine\MemoryReflectionSystem.cpp" />
     <ClCompile Include="Engine\Render\RenderManager.cpp" />
+    <ClCompile Include="Engine\SceneObjects\Components\BoxComponent.cpp" />
+    <ClCompile Include="Engine\SceneObjects\Components\CollisionComponent.cpp" />
     <ClCompile Include="Engine\SceneObjects\Components\ImageComponent.cpp" />
     <ClCompile Include="Engine\SceneObjects\Components\InputComponent.cpp" />
     <ClCompile Include="Engine\SceneObjects\Components\MovementComponent.cpp" />
@@ -174,11 +179,16 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\SceneObjects\SceneObject.cpp" />
     <ClCompile Include="SnakeLevels\PlayLevel.cpp" />
     <ClCompile Include="SnakeLevels\StartupLevel.cpp" />
+    <ClCompile Include="SnakeObjects\Food.cpp" />
     <ClCompile Include="SnakeObjects\SnakePawn.cpp" />
     <ClCompile Include="SnakeWidgets\Menu\MainMenuWidget.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\CollisionDetection\Collider.h" />
+    <ClInclude Include="Engine\CollisionDetection\CollisionManager.h" />
+    <ClInclude Include="Engine\CollisionDetection\CollisionTypes.h" />
+    <ClInclude Include="Engine\CollisionDetection\QuadTree.h" />
     <ClInclude Include="Engine\EngineTypes.h" />
     <ClInclude Include="Engine\EngineUtility.h" />
     <ClInclude Include="Engine\Events\EventDelegate.h" />
@@ -211,9 +221,12 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\Level\GameLevel.h" />
     <ClInclude Include="Engine\Level\LevelManager.h" />
     <ClInclude Include="Engine\Log\Logger.h" />
+    <ClInclude Include="Engine\Math\MathLibrary.h" />
     <ClInclude Include="Engine\MemoryReflectionSystem.h" />
     <ClInclude Include="Engine\Render\Renderable.h" />
     <ClInclude Include="Engine\Render\RenderManager.h" />
+    <ClInclude Include="Engine\SceneObjects\Components\BoxComponent.h" />
+    <ClInclude Include="Engine\SceneObjects\Components\CollisionComponent.h" />
     <ClInclude Include="Engine\SceneObjects\Components\ImageComponent.h" />
     <ClInclude Include="Engine\SceneObjects\Components\InputComponent.h" />
     <ClInclude Include="Engine\SceneObjects\Components\MovementComponent.h" />
@@ -223,6 +236,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\SceneObjects\SceneObject.h" />
     <ClInclude Include="SnakeLevels\PlayLevel.h" />
     <ClInclude Include="SnakeLevels\StartupLevel.h" />
+    <ClInclude Include="SnakeObjects\Food.h" />
     <ClInclude Include="SnakeObjects\SnakePawn.h" />
     <ClInclude Include="SnakeWidgets\Menu\MainMenuWidget.h" />
   </ItemGroup>

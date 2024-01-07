@@ -41,7 +41,7 @@ public:
 
 	void operator=(const TObjectPtr& Other) {
 		ObjectPtr = Other.ObjectPtr;
-		MemoryReflectionSystem::GetInstance().AssignNewReference(&ObjectPtr, Other.ObjectPtr);
+		MemoryReflectionSystem::GetInstance().AssignNewReference((GameObject**)&ObjectPtr, Other.ObjectPtr);
 	}
 
 	T* operator->() { return ObjectPtr; }
@@ -49,6 +49,8 @@ public:
 
 	T* Get() { return ObjectPtr; }
 	const T* Get() const { return ObjectPtr; }
+
+	bool IsValid() const { return ObjectPtr != nullptr; }
 
 private:
 	T* ObjectPtr = nullptr;

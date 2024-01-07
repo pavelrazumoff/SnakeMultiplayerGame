@@ -4,10 +4,13 @@
 #include "Render/RenderManager.h"
 #include "Input/InputManager.h"
 #include "Level/LevelManager.h"
+#include "CollisionDetection/CollisionManager.h"
 #include "Log/Logger.h"
 
 #include "Core/RenderConsoleLibrary.h"
 #include "Draw/DrawConsoleLibrary.h"
+
+#include "Math/MathLibrary.h"
 
 #include <chrono>
 #include <shared_mutex>
@@ -73,6 +76,12 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 
 	Logger::GetInstance().Initialize("engine_log.log");
 
+	#if _DEBUG
+	MathLibrary::SeedRandom(100);
+	#else // _DEBUG
+	MathLibrary::SeedRandom();
+	#endif // _DEBUG
+
 	InputManager::GetInstance().Initialize();
 	{
 		InputManager::GetInstance().OnKeyPressEvent().Subscribe(this, &GameEngine::HandleKeyPressEvent);
@@ -89,7 +98,7 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 		InputManager::GetInstance().OnWindowResizeEvent().Subscribe(this, &GameEngine::HandleWindowResizeEvent);
 	}
 
-	RenderManager::GetInstance()->Initialize();
+	RenderManager::GetInstance().Initialize();
 	RenderConsoleLibrary::SetConsoleCaption(GameProperties.GameName.c_str());
 
 	{
@@ -98,6 +107,8 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 
 		LevelManager::GetInstance().OpenLevel(StartupLevel);
 	}
+
+	CollisionManager::GetInstance().Initialize();
 }
 
 void GameEngine::Run()
@@ -121,6 +132,8 @@ void GameEngine::Run()
 
 		// Do the game logic here.
 		{
+			CollisionManager::GetInstance().UpdateTracking();
+
 			if (auto pLevel = LevelManager::GetInstance().GetCurrentLevel())
 			{
 				pLevel->PassInput(LastInputState);
@@ -129,7 +142,7 @@ void GameEngine::Run()
 			else break;
 		}
 
-		RenderManager::GetInstance()->Render();
+		RenderManager::GetInstance().Render();
 
 		// Calculating the DeltaTime.
 		{
@@ -336,7 +349,8 @@ void GameEngine::HandleWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr)
 
 	std::unique_lock<std::shared_mutex> lock(EngineMainProcessMtx);
 
-	RenderManager::GetInstance()->ReconstructRenderBuffer();
+	RenderManager::GetInstance().ReconstructRenderBuffer();
+	CollisionManager::GetInstance().Reconstruct();
 
 	if (auto pLevel = LevelManager::GetInstance().GetCurrentLevel())
 	{

@@ -15,6 +15,8 @@ class GameLevel;
 
 class GameLevel : public GameObject, public IInputHandler
 {
+	typedef GameObject Inherited;
+
 public:
 	GameLevel();
 	virtual ~GameLevel();
@@ -27,6 +29,8 @@ public:
 	void PlaceObjectOnLevel(GameObject* obj);
 
 	virtual void ReconstructLevel() {}
+
+	virtual void NotifyChildDestroy(GameObject* Child) override;
 
 private:
 	std::vector<TObjectPtr<GameObject>> ObjectsOnLevel;
