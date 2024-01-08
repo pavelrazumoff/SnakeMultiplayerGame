@@ -44,7 +44,13 @@ protected:
 
 	TObjectPtr<BoxComponent> HeadBoxComponent;
 
-	std::vector<LV_COORD> bodyPoints;
+	struct BODY_POINT
+	{
+		LV_COORD Location;
+		LV_VECTOR Direction;
+	};
+
+	std::vector<BODY_POINT> bodyPoints;
 
 	/** Input Actions */
 

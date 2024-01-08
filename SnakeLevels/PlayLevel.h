@@ -19,6 +19,7 @@ public:
 
 protected:
 	void SpawnNewFood();
+	void CheckForBoundaries();
 
 protected:
 	TObjectPtr<SnakePawn> pSnakePawn;

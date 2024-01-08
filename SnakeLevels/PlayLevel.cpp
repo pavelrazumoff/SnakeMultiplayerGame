@@ -39,6 +39,8 @@ void PlayLevel::Update(float DeltaTime)
 	}
 	else
 		SpawnNewFoodTimer += DeltaTime;
+
+	CheckForBoundaries();
 }
 
 void PlayLevel::ReconstructLevel()
@@ -49,6 +51,26 @@ void PlayLevel::SpawnNewFood()
 {
 	RC_SIZE screenDim = RenderConsoleLibrary::GetConsoleDimensions();
 
-	LV_COORD spawnFoodCoord(MathLibrary::GetRandomInRange(0, screenDim.cx), MathLibrary::GetRandomInRange(0, screenDim.cy));
+	LV_COORD spawnFoodCoord((float)MathLibrary::GetRandomInRange(0, screenDim.cx), (float)MathLibrary::GetRandomInRange(0, screenDim.cy));
 	TObjectPtr<FoodObject> newFood = LevelManager::GetInstance().SpawnSceneObject<FoodObject>(spawnFoodCoord);
+}
+
+void PlayLevel::CheckForBoundaries()
+{
+	if (!pSnakePawn.IsValid()) return;
+
+	RC_SIZE screenDim = RenderConsoleLibrary::GetConsoleDimensions();
+	LV_SIZE boundaries = { (float)screenDim.cx, (float)screenDim.cy };
+
+	LV_COORD snakeLocation = pSnakePawn->GetLocation();
+	if (snakeLocation.x <= 0.0f)
+		snakeLocation.x = boundaries.x - 1.0f;
+	else if (snakeLocation.x > boundaries.x - 1.0f)
+		snakeLocation.x = 1.0f;
+	else if (snakeLocation.y <= 0.0f)
+		snakeLocation.y = boundaries.y - 1.0f;
+	else if (snakeLocation.y > boundaries.y - 1.0f)
+		snakeLocation.y = 0.0f;
+
+	pSnakePawn->SetLocation(snakeLocation);
 }

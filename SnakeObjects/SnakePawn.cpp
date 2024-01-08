@@ -72,7 +72,12 @@ void SnakePawn::BeginPlay()
 
 	LV_COORD tailLocation = HeadImageComponent->GetSceneLocation() - LV_COORD(0.0f, -1.0f);
 	BodyImageComponent->SetAbsoluteLocation(tailLocation);
-	bodyPoints.push_back(tailLocation);
+
+	BODY_POINT tailPoint;
+	tailPoint.Location = tailLocation;
+	tailPoint.Direction = LV_VECTOR::Zero();
+
+	bodyPoints.push_back(tailPoint);
 }
 
 void SnakePawn::Update(float DeltaTime)
@@ -91,7 +96,7 @@ void SnakePawn::Render(RCTexture* RenderTargetTexture)
 	LV_COORD savedFirstBodyLoc = BodyImageComponent->GetSceneLocation();
 	for (int i = 1; i < bodyPoints.size(); ++i)
 	{
-		BodyImageComponent->SetAbsoluteLocation(bodyPoints[i]);
+		BodyImageComponent->SetAbsoluteLocation(bodyPoints[i].Location);
 		BodyImageComponent->DrawComponent(RenderTargetTexture);
 	}
 
@@ -136,37 +141,57 @@ void SnakePawn::UpdateBodyMovement(float DeltaTime)
 
 	if (!LastSavedHeadPoint.Compare(headLocation, 1.0f))
 	{
-		LV_COORD lastSavedBodyPoint = bodyPoints[0];
-		bodyPoints[0] = LastSavedHeadPoint;
+		LV_COORD lastSavedBodyPoint = bodyPoints[0].Location;
+		bodyPoints[0].Location = LastSavedHeadPoint;
+		bodyPoints[0].Direction = MovingDirection;
 
 		for (size_t i = 1; i < bodyPoints.size(); i++)
 		{
-			LV_COORD temp = bodyPoints[i];
+			LV_COORD temp = bodyPoints[i].Location;
 
 			// Making sure that every body part is up to date with its predecessor.
 			// Because if there will be a huge delay between frames, then the body parts will be out of sync.
 			// So we always calc the displacement vector between updated body part and non-updated version of it to get the direction 
 			// to move the next one instead of just setting the next one's location to its predecessor old one.
-			LV_VECTOR dir = bodyPoints[i - 1] - lastSavedBodyPoint;
+			LV_VECTOR dir = bodyPoints[i - 1].Location - lastSavedBodyPoint;
 			dir.Normalize();
 
-			bodyPoints[i] = bodyPoints[i - 1] - dir;
+			// We need to handle the case when the snake moves out of boundaries and its head is teleported to the other side.
+			// In such a case the dir vector will be reversed, so we need to track that and reverse it back.
+			bool bChangedDir = false;
+			if (bodyPoints[i - 1].Direction.x != 0.0f && dir.x != 0.0f && bodyPoints[i - 1].Direction.x != dir.x)
+			{
+				dir.x *= -1.0f;
+				bChangedDir = true;
+			}
+			if (bodyPoints[i - 1].Direction.y != 0.0f && dir.y != 0.0f && bodyPoints[i - 1].Direction.y != dir.y)
+			{
+				dir.y *= -1.0f;
+				bChangedDir = true;
+			}
+
+			bodyPoints[i].Location = bChangedDir ? lastSavedBodyPoint : (bodyPoints[i - 1].Location - dir);
+			bodyPoints[i].Direction = dir;
 			lastSavedBodyPoint = temp;
 		}
 
 		LastSavedHeadPoint = headLocation;
 	}
 
-	BodyImageComponent->SetAbsoluteLocation(bodyPoints[0]);
+	BodyImageComponent->SetAbsoluteLocation(bodyPoints[0].Location);
 }
 
 void SnakePawn::IncreaseBody()
 {
-	LV_COORD localHeadLoc = bodyPoints.size() > 1 ? bodyPoints[bodyPoints.size() - 2] : HeadImageComponent->GetSceneLocation();
-	LV_VECTOR newBodyPartDir = localHeadLoc - bodyPoints.back();
+	LV_COORD localHeadLoc = (bodyPoints.size() > 1) ? bodyPoints[bodyPoints.size() - 2].Location : HeadImageComponent->GetSceneLocation();
+	LV_VECTOR newBodyPartDir = localHeadLoc - bodyPoints.back().Location;
 	newBodyPartDir.Normalize();
 
-	bodyPoints.push_back(bodyPoints.back() - newBodyPartDir);
+	BODY_POINT newBodyPart;
+	newBodyPart.Location = bodyPoints.back().Location - newBodyPartDir;
+	newBodyPart.Direction = newBodyPartDir;
+
+	bodyPoints.push_back(newBodyPart);
 }
 
 /*
