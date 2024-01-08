@@ -51,9 +51,11 @@ void CollisionComponent::HandleCollisionWith(std::vector<ICollider*> Intersectio
 
 void CollisionComponent::SetSceneLocation(LV_COORD sceneLocation)
 {
+	LV_COORD oldSceneLocation = GetSceneLocation();
 	Inherited::SetSceneLocation(sceneLocation);
 
-	CollisionManager::GetInstance().UpdateCollisionComponent(this);
+	if (!oldSceneLocation.Compare(GetSceneLocation(), 1.0f))
+		CollisionManager::GetInstance().UpdateCollisionComponent(this);
 }
 
 bool CollisionComponent::WasAlreadyCollidingWith(ICollider* otherCollider)

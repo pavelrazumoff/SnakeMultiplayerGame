@@ -23,7 +23,7 @@ protected:
 protected:
 	TObjectPtr<SnakePawn> pSnakePawn;
 
-	float SpawnNewFoodTimeValue = 3.0f;
+	float SpawnNewFoodTimeValue = 1.5f;
 
 private:
 	float SpawnNewFoodTimer = 0.0f;

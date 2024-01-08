@@ -2,6 +2,7 @@
 
 #include "stdint.h"
 #include <cmath>
+#include <string>
 
 /** Types specifically for objects placed on Game Levels. */
 
@@ -106,6 +107,11 @@ public:
 	}
 
 	static inline LV_VECTOR Zero() { return LV_VECTOR(0, 0); }
+
+	std::string ToString() const
+	{
+		return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+	}
 
 public:
 	float x = 0.0f;

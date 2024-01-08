@@ -142,7 +142,15 @@ void SnakePawn::UpdateBodyMovement(float DeltaTime)
 		for (size_t i = 1; i < bodyPoints.size(); i++)
 		{
 			LV_COORD temp = bodyPoints[i];
-			bodyPoints[i] = lastSavedBodyPoint;
+
+			// Making sure that every body part is up to date with its predecessor.
+			// Because if there will be a huge delay between frames, then the body parts will be out of sync.
+			// So we always calc the displacement vector between updated body part and non-updated version of it to get the direction 
+			// to move the next one instead of just setting the next one's location to its predecessor old one.
+			LV_VECTOR dir = bodyPoints[i - 1] - lastSavedBodyPoint;
+			dir.Normalize();
+
+			bodyPoints[i] = bodyPoints[i - 1] - dir;
 			lastSavedBodyPoint = temp;
 		}
 
@@ -154,10 +162,10 @@ void SnakePawn::UpdateBodyMovement(float DeltaTime)
 
 void SnakePawn::IncreaseBody()
 {
-	//Logger::GetInstance().Write("SnakePawn::IncreaseBody()");
-
 	LV_COORD localHeadLoc = bodyPoints.size() > 1 ? bodyPoints[bodyPoints.size() - 2] : HeadImageComponent->GetSceneLocation();
 	LV_VECTOR newBodyPartDir = localHeadLoc - bodyPoints.back();
+	newBodyPartDir.Normalize();
+
 	bodyPoints.push_back(bodyPoints.back() - newBodyPartDir);
 }
 
