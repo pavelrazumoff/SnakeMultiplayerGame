@@ -3,6 +3,7 @@
 #include "SnakeWidgets/Menu/MainMenuWidget.h"
 #include "Engine/GameObject/GameObjectUtility.h"
 #include "Engine/Level/LevelManager.h"
+#include "Engine/GameWidget/GameWidgetManager.h"
 
 #include "Core/RenderConsoleLibrary.h"
 
@@ -26,7 +27,7 @@ void StartupLevel::OpenLevel()
 		if (StartupMenuWidget.Get())
 			StartupMenuWidget->OnResponseEvent().Subscribe(this, &StartupLevel::HandleMainMenuResponse);
 
-		PlaceObjectOnLevel(StartupMenuWidget.Get());
+		GameWidgetManager::GetInstance().PlaceUserWidgetOnScreen(StartupMenuWidget.Get());
 	}
 
 	ReconstructLevel();

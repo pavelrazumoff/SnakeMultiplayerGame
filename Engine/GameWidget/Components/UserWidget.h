@@ -15,18 +15,24 @@ public:
 	virtual ~UserWidget();
 
 	/** Extending the IRenderable interface. */
+
 	virtual void Render(RCTexture* RenderTargetTexture) override;
 	virtual bool IsVisible() const override { return true; }
 
 	virtual RenderPriorityGroup GetRenderPriorityGroup() const override { return RenderPriorityGroup::UI; }
 
 	/** Extending the IInputHandler interface. */
+
 	virtual bool PassInput(const InputState& is) override;
+
+	/**  */
 
 	virtual void DrawWidget(RCTexture* RenderTargetTexture) override;
 
 	void SetCanvasDimensions(uint32_t width, uint32_t height);
 	void GetCanvasDimensions(uint32_t& width, uint32_t& height) const;
+
+	void ForceReconstruct(GameWidget* Instigator);
 
 protected:
 	void ReconstructWidgetTree();

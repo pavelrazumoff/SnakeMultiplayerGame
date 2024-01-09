@@ -3,7 +3,13 @@
 #include "SnakeObjects/SnakePawn.h"
 #include "SnakeObjects/Food.h"
 
+#include "SnakeWidgets/HUD/PlayerHUDWidget.h"
+#include "SnakePlayer/SnakePlayerState.h"
+
 #include "Engine/Level/LevelManager.h"
+#include "Engine/Player/PlayerManager.h"
+#include "Engine/GameWidget/GameWidgetManager.h"
+
 #include "Core/RenderConsoleLibrary.h"
 
 #include "Engine/Math/MathLibrary.h"
@@ -25,6 +31,18 @@ void PlayLevel::OpenLevel()
 	LV_COORD startPlayerCoord((float)screenDim.cx / 2.0f - 2.0f, (float)screenDim.cy / 2.0f - 2.0f);
 	pSnakePawn = LevelManager::GetInstance().SpawnSceneObject<SnakePawn>(startPlayerCoord);
 
+	if (!PlayerHUD.IsValid())
+	{
+		PlayerHUD = CreateNewObject<PlayerHUDWidget>(this);
+
+		GameWidgetManager::GetInstance().PlaceUserWidgetOnScreen(PlayerHUD.Get());
+	}
+
+	if (SnakePlayerState* pPlayerState = dynamic_cast<SnakePlayerState*>(PlayerManager::GetInstance().GetPlayerState()))
+	{
+		pPlayerState->OnScoreUpdatedEvent().Subscribe(this, &PlayLevel::HandleScoreChanged);
+	}
+
 	ReconstructLevel();
 }
 
@@ -45,6 +63,10 @@ void PlayLevel::Update(float DeltaTime)
 
 void PlayLevel::ReconstructLevel()
 {
+	if (!PlayerHUD.IsValid()) return;
+
+	RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
+	PlayerHUD->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
 }
 
 void PlayLevel::SpawnNewFood()
@@ -73,4 +95,11 @@ void PlayLevel::CheckForBoundaries()
 		snakeLocation.y = 0.0f;
 
 	pSnakePawn->SetLocation(snakeLocation);
+}
+
+void PlayLevel::HandleScoreChanged(SnakePlayerState* /*Instigator*/, uint32_t newScore)
+{
+	if (!PlayerHUD.IsValid()) return;
+
+	PlayerHUD->SetScore(newScore);
 }

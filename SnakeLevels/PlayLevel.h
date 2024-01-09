@@ -3,6 +3,8 @@
 #include "Engine/Level/GameLevel.h"
 
 class SnakePawn;
+class PlayerHUDWidget;
+class SnakePlayerState;
 
 class PlayLevel : public GameLevel
 {
@@ -21,8 +23,12 @@ protected:
 	void SpawnNewFood();
 	void CheckForBoundaries();
 
+	void HandleScoreChanged(SnakePlayerState* Instigator, uint32_t newScore);
+
 protected:
 	TObjectPtr<SnakePawn> pSnakePawn;
+
+	TObjectPtr<PlayerHUDWidget> PlayerHUD;
 
 	float SpawnNewFoodTimeValue = 1.5f;
 

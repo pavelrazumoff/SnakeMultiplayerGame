@@ -1,6 +1,7 @@
 #include "GameLevel.h"
 
 #include "Engine/Render/RenderManager.h"
+#include "Engine/GameWidget/GameWidgetManager.h"
 
 GameLevel::GameLevel()
 {
@@ -32,6 +33,8 @@ void GameLevel::Update(float DeltaTime)
 		if (IRenderable* renderObj = dynamic_cast<IRenderable*>(obj.Get()))
 			RenderManager::GetInstance().PushToRenderQueue(renderObj);
 	}
+
+	GameWidgetManager::GetInstance().Update(DeltaTime);
 }
 
 bool GameLevel::PassInput(const InputState& is)
@@ -45,7 +48,7 @@ bool GameLevel::PassInput(const InputState& is)
 		}
 	}
 
-	return false;
+	return GameWidgetManager::GetInstance().PassInput(is);
 }
 
 void GameLevel::PlaceObjectOnLevel(GameObject* obj)

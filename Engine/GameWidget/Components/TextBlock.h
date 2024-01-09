@@ -22,6 +22,7 @@ public:
 	AlignmentSettings& GetAlignment() { return Alignment; }
 	LayoutSettings& GetLayout() { return Layout; }
 
+	void SetText(const std::string& newText);
 	TextPrimitive& GetText() { return *Text.Get(); }
 
 protected:

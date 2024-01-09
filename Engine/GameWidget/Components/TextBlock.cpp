@@ -1,6 +1,7 @@
 #include "TextBlock.h"
 
 #include "Engine/GameObject/GameObjectUtility.h"
+#include "Engine/GameWidget/GameWidgetManager.h"
 
 TextBlock::TextBlock()
 {
@@ -44,6 +45,13 @@ RC_SIZE TextBlock::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedTo
 	else _bSizeYNeedToRecalc = true;
 
 	return dirtySize;
+}
+
+void TextBlock::SetText(const std::string& newText)
+{
+	Text.Get()->SetText(newText);
+
+	GameWidgetManager::GetInstance().RequestWidgetReconstruction(this);
 }
 
 GameObject* TextBlock::Clone(GameObject* _owner) const

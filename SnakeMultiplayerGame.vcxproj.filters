@@ -130,6 +130,24 @@
     <Filter Include="Source Files\Engine\CollisionDetection">
       <UniqueIdentifier>{8388223b-01c4-49c0-af55-d7634b40bc0e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Player">
+      <UniqueIdentifier>{c527866b-0543-491c-bfd9-5d2a13382019}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SnakePlayer">
+      <UniqueIdentifier>{b4c7d341-e8de-402e-a837-bc3be8113bf7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SnakePlayer">
+      <UniqueIdentifier>{d740daa1-1ed9-41df-b678-1bd11207e3bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Player">
+      <UniqueIdentifier>{11e31449-2a27-4520-96bf-2f7e701c10a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SnakeWidgets\HUD">
+      <UniqueIdentifier>{8c84b5ab-c0df-4461-a23d-d6469c11a19f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SnakeWidgets\HUD">
+      <UniqueIdentifier>{c9e2086f-3478-4b82-a7fb-65ced6b6f45c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -251,6 +269,24 @@
     </ClCompile>
     <ClCompile Include="Engine\SceneObjects\Components\BoxComponent.cpp">
       <Filter>Source Files\Engine\SceneObjects\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakePlayer\SnakePlayerState.cpp">
+      <Filter>Source Files\SnakePlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Player\PlayerManager.cpp">
+      <Filter>Source Files\Engine\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Player\PlayerState.cpp">
+      <Filter>Source Files\Engine\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\EngineFactory.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakeWidgets\HUD\PlayerHUDWidget.cpp">
+      <Filter>Source Files\SnakeWidgets\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\GameWidgetManager.cpp">
+      <Filter>Source Files\Engine\GameWidget</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -415,6 +451,24 @@
     </ClInclude>
     <ClInclude Include="Engine\SceneObjects\Components\BoxComponent.h">
       <Filter>Header Files\Engine\SceneObjects\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Player\PlayerState.h">
+      <Filter>Header Files\Engine\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakePlayer\SnakePlayerState.h">
+      <Filter>Header Files\SnakePlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Player\PlayerManager.h">
+      <Filter>Header Files\Engine\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\EngineFactory.h">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeWidgets\HUD\PlayerHUDWidget.h">
+      <Filter>Header Files\SnakeWidgets\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\GameWidgetManager.h">
+      <Filter>Header Files\Engine\GameWidget</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -6,6 +6,8 @@
 #include "Level/LevelManager.h"
 #include "CollisionDetection/CollisionManager.h"
 #include "Log/Logger.h"
+#include "EngineFactory.h"
+#include "Player/PlayerManager.h"
 
 #include "Core/RenderConsoleLibrary.h"
 #include "Draw/DrawConsoleLibrary.h"
@@ -109,6 +111,9 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 	}
 
 	CollisionManager::GetInstance().Initialize();
+
+	EngineFactory::GetInstance().RegisterType("PlayerState", new PlayerState());
+	PlayerManager::GetInstance().Initialize();
 }
 
 void GameEngine::Run()

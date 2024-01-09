@@ -10,12 +10,21 @@
 #include "Engine/GameEngine.h"
 #include "Engine/GameObject/GameObjectUtility.h"
 
+#include "Engine/EngineFactory.h"
+#include "Engine/Player/PlayerManager.h"
+
+#include "SnakePlayer/SnakePlayerState.h"
+
 #include "SnakeLevels/StartupLevel.h"
 
 int main()
 {
 	GamePropertiesInfo gameProps;
 	gameProps.GameName = "Snake Game";
+
+	// TODO: Move out to the GameMode analogue class.
+	EngineFactory::GetInstance().RegisterType("SnakePlayerState", new SnakePlayerState());
+	PlayerManager::GetInstance().SetPlayerStateClass("SnakePlayerState");
 
 	GameEngine gameEngine(gameProps);
 

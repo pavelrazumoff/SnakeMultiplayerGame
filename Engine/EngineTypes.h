@@ -4,6 +4,17 @@
 #include <cmath>
 #include <string>
 
+/** Base Engine Type for use to create specific objects by factories. */
+
+class EngineGenericType
+{
+public:
+	virtual ~EngineGenericType() {}
+
+	virtual [[nodiscard]] EngineGenericType* Clone() const = 0;
+	virtual std::string GetTypeName() const = 0;
+};
+
 /** Types specifically for objects placed on Game Levels. */
 
 struct LV_VECTOR

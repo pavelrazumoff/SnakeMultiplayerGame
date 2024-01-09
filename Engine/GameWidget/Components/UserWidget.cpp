@@ -151,3 +151,9 @@ void UserWidget::GetCanvasDimensions(uint32_t& width, uint32_t& height) const
 	width = Canvas->GetWidth();
 	height = Canvas->GetHeight();
 }
+
+void UserWidget::ForceReconstruct(GameWidget* Instigator)
+{
+	// TODO: Somehow optimize recostruction by using the Instigator object that actually requested this procedure.
+	ReconstructWidgetTree();
+}

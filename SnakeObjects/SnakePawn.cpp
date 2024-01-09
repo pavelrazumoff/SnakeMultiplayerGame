@@ -8,6 +8,9 @@
 
 #include "Food.h"
 
+#include "SnakePlayer/SnakePlayerState.h"
+#include "Engine/Player/PlayerManager.h"
+
 SnakePawn::SnakePawn()
 {
 	std::shared_ptr<RCTexture> imgHead = std::make_shared<RCTexture>(1, 1);
@@ -203,10 +206,20 @@ void SnakePawn::HandleHeadCollisionStartEvent(CollisionComponent* InstigatorComp
 	if (auto food = dynamic_cast<FoodObject*>(OtherObject))
 	{
 		food->Destroy();
+
 		IncreaseBody();
+		UpdatePlayerStat();
 	}
 }
 
 void SnakePawn::HandleHeadCollisionEndEvent(CollisionComponent* InstigatorComp, SceneObject* OtherObject, ICollider* OtherCollider)
 {
+}
+
+void SnakePawn::UpdatePlayerStat()
+{
+	SnakePlayerState* pPlayerState = dynamic_cast<SnakePlayerState*>(PlayerManager::GetInstance().GetPlayerState());
+	if (!pPlayerState) return;
+
+	pPlayerState->IncrementScore();
 }

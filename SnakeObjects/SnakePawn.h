@@ -38,6 +38,12 @@ protected:
 	void HandleHeadCollisionStartEvent(CollisionComponent* InstigatorComp, SceneObject* OtherObject, ICollider* OtherCollider);
 	void HandleHeadCollisionEndEvent(CollisionComponent* InstigatorComp, SceneObject* OtherObject, ICollider* OtherCollider);
 
+	/** Player Stat. */
+
+	void UpdatePlayerStat();
+
+protected:
+
 protected:
 	TObjectPtr<ImageComponent> HeadImageComponent;
 	TObjectPtr<ImageComponent> BodyImageComponent;

@@ -145,6 +145,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <ClCompile Include="Engine\CollisionDetection\CollisionManager.cpp" />
     <ClCompile Include="Engine\CollisionDetection\QuadTree.cpp" />
+    <ClCompile Include="Engine\EngineFactory.cpp" />
     <ClCompile Include="Engine\GameEngine.cpp" />
     <ClCompile Include="Engine\GameObject\GameObject.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\Button.cpp" />
@@ -155,6 +156,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\GameWidget\Components\UserWidget.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\VerticalBox.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\WidgetTree.cpp" />
+    <ClCompile Include="Engine\GameWidget\GameWidgetManager.cpp" />
     <ClCompile Include="Engine\GameWidget\Primitives\BrushPrimitive.cpp" />
     <ClCompile Include="Engine\GameWidget\Primitives\TextPrimitive.cpp" />
     <ClCompile Include="Engine\GameWidget\Utility\AlignmentSettings.cpp" />
@@ -168,6 +170,8 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\Log\Logger.cpp" />
     <ClCompile Include="Engine\Math\MathLibrary.cpp" />
     <ClCompile Include="Engine\MemoryReflectionSystem.cpp" />
+    <ClCompile Include="Engine\Player\PlayerManager.cpp" />
+    <ClCompile Include="Engine\Player\PlayerState.cpp" />
     <ClCompile Include="Engine\Render\RenderManager.cpp" />
     <ClCompile Include="Engine\SceneObjects\Components\BoxComponent.cpp" />
     <ClCompile Include="Engine\SceneObjects\Components\CollisionComponent.cpp" />
@@ -181,6 +185,8 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="SnakeLevels\StartupLevel.cpp" />
     <ClCompile Include="SnakeObjects\Food.cpp" />
     <ClCompile Include="SnakeObjects\SnakePawn.cpp" />
+    <ClCompile Include="SnakePlayer\SnakePlayerState.cpp" />
+    <ClCompile Include="SnakeWidgets\HUD\PlayerHUDWidget.cpp" />
     <ClCompile Include="SnakeWidgets\Menu\MainMenuWidget.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
@@ -189,6 +195,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\CollisionDetection\CollisionManager.h" />
     <ClInclude Include="Engine\CollisionDetection\CollisionTypes.h" />
     <ClInclude Include="Engine\CollisionDetection\QuadTree.h" />
+    <ClInclude Include="Engine\EngineFactory.h" />
     <ClInclude Include="Engine\EngineTypes.h" />
     <ClInclude Include="Engine\EngineUtility.h" />
     <ClInclude Include="Engine\Events\EventDelegate.h" />
@@ -205,6 +212,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\GameWidget\Components\UserWidget.h" />
     <ClInclude Include="Engine\GameWidget\Components\VerticalBox.h" />
     <ClInclude Include="Engine\GameWidget\Components\WidgetTree.h" />
+    <ClInclude Include="Engine\GameWidget\GameWidgetManager.h" />
     <ClInclude Include="Engine\GameWidget\Primitives\BrushPrimitive.h" />
     <ClInclude Include="Engine\GameWidget\Primitives\TextPrimitive.h" />
     <ClInclude Include="Engine\GameWidget\Utility\AlignmentSettings.h" />
@@ -223,6 +231,8 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\Log\Logger.h" />
     <ClInclude Include="Engine\Math\MathLibrary.h" />
     <ClInclude Include="Engine\MemoryReflectionSystem.h" />
+    <ClInclude Include="Engine\Player\PlayerManager.h" />
+    <ClInclude Include="Engine\Player\PlayerState.h" />
     <ClInclude Include="Engine\Render\Renderable.h" />
     <ClInclude Include="Engine\Render\RenderManager.h" />
     <ClInclude Include="Engine\SceneObjects\Components\BoxComponent.h" />
@@ -238,6 +248,8 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="SnakeLevels\StartupLevel.h" />
     <ClInclude Include="SnakeObjects\Food.h" />
     <ClInclude Include="SnakeObjects\SnakePawn.h" />
+    <ClInclude Include="SnakePlayer\SnakePlayerState.h" />
+    <ClInclude Include="SnakeWidgets\HUD\PlayerHUDWidget.h" />
     <ClInclude Include="SnakeWidgets\Menu\MainMenuWidget.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
