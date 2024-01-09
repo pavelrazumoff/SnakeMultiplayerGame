@@ -67,13 +67,16 @@ void PlayLevel::ReconstructLevel()
 
 	RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
 	PlayerHUD->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
+
+	RC_RECT screenRect = PlayerHUD->GetScreenFreeRect();
+	playAreaRect = { (float)screenRect.left, (float)screenRect.top, (float)screenRect.right, (float)screenRect.bottom };
+	//playAreaRect = { 0.0f, 0.0f, (float)consoleDim.cx, (float)consoleDim.cy };
 }
 
 void PlayLevel::SpawnNewFood()
 {
-	RC_SIZE screenDim = RenderConsoleLibrary::GetConsoleDimensions();
-
-	LV_COORD spawnFoodCoord((float)MathLibrary::GetRandomInRange(0, screenDim.cx), (float)MathLibrary::GetRandomInRange(0, screenDim.cy));
+	LV_COORD spawnFoodCoord((float)MathLibrary::GetRandomInRange(playAreaRect.left, playAreaRect.right),
+		(float)MathLibrary::GetRandomInRange(playAreaRect.top, playAreaRect.bottom));
 	TObjectPtr<FoodObject> newFood = LevelManager::GetInstance().SpawnSceneObject<FoodObject>(spawnFoodCoord);
 }
 
@@ -81,18 +84,15 @@ void PlayLevel::CheckForBoundaries()
 {
 	if (!pSnakePawn.IsValid()) return;
 
-	RC_SIZE screenDim = RenderConsoleLibrary::GetConsoleDimensions();
-	LV_SIZE boundaries = { (float)screenDim.cx, (float)screenDim.cy };
-
 	LV_COORD snakeLocation = pSnakePawn->GetLocation();
-	if (snakeLocation.x <= 0.0f)
-		snakeLocation.x = boundaries.x - 1.0f;
-	else if (snakeLocation.x > boundaries.x - 1.0f)
-		snakeLocation.x = 1.0f;
-	else if (snakeLocation.y <= 0.0f)
-		snakeLocation.y = boundaries.y - 1.0f;
-	else if (snakeLocation.y > boundaries.y - 1.0f)
-		snakeLocation.y = 0.0f;
+	if (snakeLocation.x <= playAreaRect.left)
+		snakeLocation.x = playAreaRect.right;
+	else if (snakeLocation.x > playAreaRect.right)
+		snakeLocation.x = playAreaRect.left;
+	else if (snakeLocation.y <= playAreaRect.top)
+		snakeLocation.y = playAreaRect.bottom;
+	else if (snakeLocation.y > playAreaRect.bottom)
+		snakeLocation.y = playAreaRect.top;
 
 	pSnakePawn->SetLocation(snakeLocation);
 }

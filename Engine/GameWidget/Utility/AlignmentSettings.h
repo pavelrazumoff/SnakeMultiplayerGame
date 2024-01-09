@@ -2,6 +2,8 @@
 
 #include "WidgetComponent.h"
 
+#include "Core/RCDataTypes.h"
+
 class AlignmentSettings : public IWidgetComponent
 {
 public:
@@ -32,6 +34,7 @@ public:
 	HorizontalAlignment Horizontal = HorizontalAlignment::Center;
 	VerticalAlignment Vertical = VerticalAlignment::Center;
 	StretchMode Stretch = StretchMode::NoStretch; // Affects only the size of the widget.
+	RC_RECT Padding = RC_RECT(); // Padding from the edges of the parent widget.
 };
 
 class GameWidget;

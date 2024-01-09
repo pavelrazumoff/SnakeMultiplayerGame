@@ -31,6 +31,7 @@ protected:
 	TObjectPtr<PlayerHUDWidget> PlayerHUD;
 
 	float SpawnNewFoodTimeValue = 1.5f;
+	LV_RECT playAreaRect;
 
 private:
 	float SpawnNewFoodTimer = 0.0f;

@@ -131,3 +131,18 @@ public:
 
 typedef LV_VECTOR LV_SIZE;
 typedef LV_VECTOR LV_COORD;
+
+struct LV_RECT
+{
+public:
+	LV_RECT() {}
+	LV_RECT(float _left, float _top, float _right, float _bottom)
+		: left(_left), top(_top), right(_right), bottom(_bottom)
+	{}
+
+public:
+	float left = 0.0f;
+	float top = 0.0f;
+	float right = 0.0f;
+	float bottom = 0.0f;
+};

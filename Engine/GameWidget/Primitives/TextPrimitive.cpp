@@ -81,7 +81,7 @@ void TextPrimitive::Construct()
 
 RC_SIZE TextPrimitive::GetTextDrawSize() const
 {
-	if (Font.FontSize == 0)
+	if (Font.FontType == FontPrintType::Simple)
 	{
 		RC_SIZE textSize = { (RC_INT)Text.length(), 1 };
 		return textSize;

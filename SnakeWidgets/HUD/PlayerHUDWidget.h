@@ -15,6 +15,8 @@ public:
 
 	void SetScore(uint32_t score);
 
+	RC_RECT GetScreenFreeRect() const;
+
 protected:
 	TObjectPtr<VerticalBox> WndVerticalBox;
 
