@@ -70,7 +70,6 @@ void PlayLevel::ReconstructLevel()
 
 	RC_RECT screenRect = PlayerHUD->GetScreenFreeRect();
 	playAreaRect = { (float)screenRect.left, (float)screenRect.top, (float)screenRect.right, (float)screenRect.bottom };
-	//playAreaRect = { 0.0f, 0.0f, (float)consoleDim.cx, (float)consoleDim.cy };
 }
 
 void PlayLevel::SpawnNewFood()

@@ -44,6 +44,8 @@ void CollisionManager::UpdateTracking()
 {
 	for (auto& trackCollisionComp : TrackedCollisionComponents)
 	{
+		if (!trackCollisionComp->CanCollide()) continue;
+
 		std::vector<ICollider*> intersections;
 		CollisionQuadTree->QueryRangeFor(trackCollisionComp.Get(), intersections);
 

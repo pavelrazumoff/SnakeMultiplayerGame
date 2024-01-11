@@ -42,7 +42,12 @@ SnakePawn::SnakePawn()
 	{
 		HeadBoxComponent = CreateChildComponent<BoxComponent>();
 
-		HeadBoxComponent->SetBoxExtent({ 0.5f, 0.5f });
+		HeadBoxComponent->SetBoxExtent({ 1.0f, 1.0f });
+
+		HeadBoxComponent->Settings.SetCollisionObjectType(CollisionObjectType::PlayerPawn);
+		HeadBoxComponent->Settings.SetCollisionWithObjectType(CollisionObjectType::Static, true);
+		HeadBoxComponent->Settings.SetCollisionWithObjectType(CollisionObjectType::Dynamic, true);
+		HeadBoxComponent->Settings.SetCollisionWithObjectType(CollisionObjectType::PlayerPawn, true);
 
 		HeadBoxComponent->OnCollisionStartEvent().Subscribe(this, &SnakePawn::HandleHeadCollisionStartEvent);
 		HeadBoxComponent->OnCollisionEndEvent().Subscribe(this, &SnakePawn::HandleHeadCollisionEndEvent);

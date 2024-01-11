@@ -17,6 +17,21 @@ void CollisionComponent::BeginPlayComponent()
 	CollisionManager::GetInstance().StartTrackingCollisionComponent(this);
 }
 
+bool CollisionComponent::CanCollide() const
+{
+	return Settings.CanHandleCollisionWithAny();
+}
+
+bool CollisionComponent::CanCollideWith(const ICollider* other) const
+{
+	if (auto otherComp = dynamic_cast<const CollisionComponent*>(other))
+	{
+		return Settings.CanHandleCollisionWith(otherComp->Settings.GetCollisionObjectType());
+	}
+
+	return false;
+}
+
 void CollisionComponent::HandleCollisionWith(std::vector<ICollider*> Intersections)
 {
 	for (auto& Intersection : Intersections)

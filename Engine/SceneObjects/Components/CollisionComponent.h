@@ -22,6 +22,11 @@ public:
 
 	virtual void BeginPlayComponent() override;
 
+	/** Extending the ICollider interface. */
+
+	virtual bool CanCollide() const override;
+	virtual bool CanCollideWith(const ICollider* other) const override;
+
 	void HandleCollisionWith(std::vector<ICollider*> Intersections);
 
 	/** Events. */
@@ -34,6 +39,9 @@ protected:
 
 private:
 	bool WasAlreadyCollidingWith(ICollider* otherCollider);
+
+public:
+	CollisionSettings Settings;
 
 protected:
 	CollisionStartedDelegate CollisionStartEvent;

@@ -69,7 +69,8 @@ void QuadTree::QueryRange(QuadTreeNode* node, const ICollider* colliderCheck, st
 
 	for (auto collider : node->colliders)
 	{
-		if (collider->Intersects(colliderCheck->GetAABB()))
+		if (colliderCheck->CanCollideWith(collider) &&
+			collider->Intersects(colliderCheck->GetAABB()))
 			outColliders.push_back(collider);
 	}
 

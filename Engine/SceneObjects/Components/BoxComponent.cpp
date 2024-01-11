@@ -8,5 +8,5 @@ bool BoxComponent::Intersects(const AABB& other) const
 AABB BoxComponent::GetAABB() const
 {
 	LV_COORD boxLocation = GetSceneLocation();
-	return { boxLocation.x - BoxExtent.x, boxLocation.y - BoxExtent.y, boxLocation.x + BoxExtent.x, boxLocation.y + BoxExtent.y };
+	return { boxLocation.x, boxLocation.y, boxLocation.x + BoxExtent.x, boxLocation.y + BoxExtent.y };
 }

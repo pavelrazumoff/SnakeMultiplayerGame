@@ -48,5 +48,5 @@ RC_RECT PlayerHUDWidget::GetScreenFreeRect() const
 	RC_RECT freeRect = Canvas->GetCachedActualRect();
 	RC_RECT scoreRect = ScoreText->GetCachedActualRect();
 
-	return { freeRect.left, scoreRect.bottom, freeRect.right, freeRect.bottom };
+	return { freeRect.left, RC_UINT(scoreRect.bottom + 1), freeRect.right, freeRect.bottom };
 }
