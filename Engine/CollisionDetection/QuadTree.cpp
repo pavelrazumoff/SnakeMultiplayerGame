@@ -11,16 +11,16 @@ QuadTree::~QuadTree()
 	delete root;
 }
 
-void QuadTree::Insert(ICollider* collider)
+bool QuadTree::Insert(ICollider* collider)
 {
-	Insert(root, collider);
+	return Insert(root, collider);
 }
 
-void QuadTree::Insert(QuadTreeNode* node, ICollider* collider)
+bool QuadTree::Insert(QuadTreeNode* node, ICollider* collider)
 {
-	if (!node) return;
+	if (!node) return false;
 	if (!collider ||
-		!collider->Intersects(node->boundary)) return;
+		!collider->Includes(node->boundary)) return false;
 
 	if (node->colliders.size() < capacity)
 	{
@@ -32,8 +32,16 @@ void QuadTree::Insert(QuadTreeNode* node, ICollider* collider)
 			Subdivide(node);
 
 		for (int i = 0; i < 4; ++i)
-			Insert(node->children[i], collider);
+		{
+			if (Insert(node->children[i], collider))
+				return true;
+		}
+
+		// If we reach here, the collider didn't fit into any child node
+		node->colliders.push_back(collider);
 	}
+
+	return true;
 }
 
 void QuadTree::Remove(ICollider* collider)
@@ -69,8 +77,10 @@ void QuadTree::QueryRange(QuadTreeNode* node, const ICollider* colliderCheck, st
 
 	for (auto collider : node->colliders)
 	{
+		if (collider == colliderCheck) continue;
+
 		if (colliderCheck->CanCollideWith(collider) &&
-			collider->Intersects(colliderCheck->GetAABB()))
+			colliderCheck->Intersects(collider))
 			outColliders.push_back(collider);
 	}
 
@@ -88,25 +98,30 @@ void QuadTree::Subdivide(QuadTreeNode* node)
 	float maxX = node->boundary.maxX;
 	float maxY = node->boundary.maxY;
 
-	float midX = (minX + maxX) / 2.0f;
-	float midY = (minY + maxY) / 2.0f;
+	float midX = round((minX + maxX) / 2.0f);
+	float midY = round((minY + maxY) / 2.0f);
 
 	node->children[0] = new QuadTreeNode(AABB(minX, minY, midX, midY));
 	node->children[1] = new QuadTreeNode(AABB(midX, minY, maxX, midY));
 	node->children[2] = new QuadTreeNode(AABB(minX, midY, midX, maxY));
 	node->children[3] = new QuadTreeNode(AABB(midX, midY, maxX, maxY));
 
+	std::vector<ICollider*> remainingColliders;
 	for (auto collider : node->colliders)
 	{
+		bool bAdded = false;
 		for (int i = 0; i < 4; ++i)
 		{
-			if (collider->Intersects(node->children[i]->boundary))
+			if (collider->Includes(node->children[i]->boundary))
 			{
 				node->children[i]->colliders.push_back(collider);
+				bAdded = true;
 				break;
 			}
 		}
+
+		if (!bAdded) remainingColliders.push_back(collider);
 	}
 
-	node->colliders.clear();
+	node->colliders = remainingColliders;
 }

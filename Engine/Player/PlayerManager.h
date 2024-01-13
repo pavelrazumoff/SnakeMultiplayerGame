@@ -17,6 +17,8 @@ public:
 
 	static PlayerManager& GetInstance();
 
+	void FinishGame();
+
 	void SetPlayerStateClass(const std::string& className);
 	PlayerState* GetPlayerState(uint16_t playerIndex = 0) const { return pPlayerState; }
 

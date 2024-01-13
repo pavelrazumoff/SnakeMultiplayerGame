@@ -5,6 +5,8 @@
 
 #include "Core/RenderConsoleLibrary.h"
 
+#include "Engine/SceneObjects/Components/BoxComponent.h"
+
 CollisionManager::CollisionManager()
 {
 }
@@ -80,6 +82,31 @@ void CollisionManager::UpdateCollisionComponent(CollisionComponent* pCollisionCo
 		CollisionQuadTree->Insert(pCollisionComponent);
 	}
 	//else DebugEngineTrap();
+}
+
+void CollisionManager::AddCollisionChecker(uint32_t collisionPairPrimitiveMask, CollisionChecker checker)
+{
+	if (CollisionCheckers.find(collisionPairPrimitiveMask) != CollisionCheckers.cend()) return;
+
+	CollisionCheckers[collisionPairPrimitiveMask] = checker;
+}
+
+bool CollisionManager::CheckForIntersection(const ICollider* first, const ICollider* second)
+{
+	uint32_t primitiveMask = TO_UINT32(first->GetCollisionPrimitiveType(), second->GetCollisionPrimitiveType());
+	auto it = CollisionCheckers.find(primitiveMask);
+	if (it != CollisionCheckers.end())
+		return it->second(first, second);
+	
+	if (first->GetCollisionPrimitiveType() == second->GetCollisionPrimitiveType()) return false;
+
+	// Just swap the mask and try the second combination.
+	primitiveMask = TO_UINT32(second->GetCollisionPrimitiveType(), first->GetCollisionPrimitiveType());
+	it = CollisionCheckers.find(primitiveMask);
+	if (it != CollisionCheckers.end())
+		return it->second(second, first);
+
+	return false;
 }
 
 bool CollisionManager::IsTrackingCollisionComponent(CollisionComponent* pCollisionComponent)

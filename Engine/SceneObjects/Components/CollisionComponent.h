@@ -6,6 +6,8 @@
 #include "Engine/Events/EventDelegate.h"
 #include "Engine/GameObject/GameObjectPtr.h"
 
+#include <unordered_set>
+
 class CollisionComponent;
 class SceneObject;
 
@@ -16,6 +18,9 @@ class CollisionComponent : public SceneComponent, public ICollider
 {
 	typedef SceneComponent Inherited;
 
+protected:
+	virtual void RegisterCollisionComponent() = 0;
+
 public:
 	CollisionComponent();
 	virtual ~CollisionComponent();
@@ -23,6 +28,8 @@ public:
 	virtual void BeginPlayComponent() override;
 
 	/** Extending the ICollider interface. */
+
+	virtual bool Intersects(const ICollider* other) const override;
 
 	virtual bool CanCollide() const override;
 	virtual bool CanCollideWith(const ICollider* other) const override;
@@ -49,4 +56,6 @@ protected:
 
 private:
 	std::vector<TObjectPtr<CollisionComponent>> PrevIntersections;
+
+	static std::unordered_set<std::string> registeredTypes;
 };

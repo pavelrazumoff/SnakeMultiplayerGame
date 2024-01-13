@@ -2,6 +2,19 @@
 
 #include <map>
 
+#define LOWORD32(l)           ((uint16_t)(((uint32_t)(l)) & 0xffff))
+#define HIWORD32(l)           ((uint16_t)((((uint32_t)(l)) >> 16) & 0xffff))
+
+#define TO_UINT32(low, high) ((uint32_t)high << 16) | (uint32_t)low
+
+enum class CollisionPrimitiveType
+{
+	Box = 0,
+	Circle,
+
+	Custom = 100,
+};
+
 struct AABB
 {
 public:
@@ -13,6 +26,12 @@ public:
 	{
 		return minX <= other.maxX && maxX >= other.minX &&
 			minY <= other.maxY && maxY >= other.minY;
+	}
+
+	bool Includes(const AABB& other) const
+	{
+		return minX >= other.minX && maxX <= other.maxX &&
+			minY >= other.minY && maxY <= other.maxY;
 	}
 
 public:
@@ -33,16 +52,16 @@ public:
 	bool IsCollisionEnabled() const { return bEnableCollision; }
 
 	void SetCollisionObjectType(CollisionObjectType type) { CollisionType = type; }
-	void SetCollisionWithObjectType(CollisionObjectType type, bool bCollidable)
+	void SetCollisionResponse(CollisionObjectType type, bool bCollidable)
 	{
-		CollisionWithTypeMap[type] = bCollidable;
+		CollisionResponseMap[type] = bCollidable;
 	}
 
 	CollisionObjectType GetCollisionObjectType() const { return CollisionType; }
 
 	bool CanHandleCollisionWithAny() const
 	{
-		for (auto& it : CollisionWithTypeMap)
+		for (auto& it : CollisionResponseMap)
 		{
 			if (it.second)
 			{
@@ -54,8 +73,8 @@ public:
 
 	bool CanHandleCollisionWith(CollisionObjectType type) const
 	{
-		auto it = CollisionWithTypeMap.find(type);
-		if (it != CollisionWithTypeMap.end())
+		auto it = CollisionResponseMap.find(type);
+		if (it != CollisionResponseMap.end())
 		{
 			return it->second;
 		}
@@ -66,5 +85,5 @@ protected:
 	bool bEnableCollision = true;
 
 	CollisionObjectType CollisionType = CollisionObjectType::Static;
-	std::map<CollisionObjectType, bool> CollisionWithTypeMap;
+	std::map<CollisionObjectType, bool> CollisionResponseMap;
 };

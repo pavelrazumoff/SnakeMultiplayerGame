@@ -5,6 +5,7 @@
 
 #include "Engine/SceneObjects/Components/ImageComponent.h"
 #include "Engine/SceneObjects/Components/BoxComponent.h"
+#include "Components/BodyCollisionComponent.h"
 
 #include "Food.h"
 
@@ -45,12 +46,24 @@ SnakePawn::SnakePawn()
 		HeadBoxComponent->SetBoxExtent({ 1.0f, 1.0f });
 
 		HeadBoxComponent->Settings.SetCollisionObjectType(CollisionObjectType::PlayerPawn);
-		HeadBoxComponent->Settings.SetCollisionWithObjectType(CollisionObjectType::Static, true);
-		HeadBoxComponent->Settings.SetCollisionWithObjectType(CollisionObjectType::Dynamic, true);
-		HeadBoxComponent->Settings.SetCollisionWithObjectType(CollisionObjectType::PlayerPawn, true);
+		HeadBoxComponent->Settings.SetCollisionResponse(CollisionObjectType::Static, true);
+		HeadBoxComponent->Settings.SetCollisionResponse(CollisionObjectType::Dynamic, true);
+		HeadBoxComponent->Settings.SetCollisionResponse(CollisionObjectType::PlayerPawn, true);
 
 		HeadBoxComponent->OnCollisionStartEvent().Subscribe(this, &SnakePawn::HandleHeadCollisionStartEvent);
 		HeadBoxComponent->OnCollisionEndEvent().Subscribe(this, &SnakePawn::HandleHeadCollisionEndEvent);
+	}
+
+	// Tail Body Collision.
+	{
+		TailCollisionComponent = CreateChildComponent<BodyCollisionComponent>();
+
+		TailCollisionComponent->Settings.SetCollisionObjectType(CollisionObjectType::PlayerPawn);
+		TailCollisionComponent->Settings.SetCollisionResponse(CollisionObjectType::Static, true);
+		TailCollisionComponent->Settings.SetCollisionResponse(CollisionObjectType::Dynamic, true);
+		TailCollisionComponent->Settings.SetCollisionResponse(CollisionObjectType::PlayerPawn, true);
+
+		TailCollisionComponent->OnCollisionStartEvent().Subscribe(this, &SnakePawn::HandleBodyCollisionStartEvent);
 	}
 
 	// Input Action bindings.
@@ -79,6 +92,8 @@ void SnakePawn::BeginPlay()
 	Inherited::BeginPlay();
 
 	LV_COORD tailLocation = HeadImageComponent->GetSceneLocation() - LV_COORD(0.0f, -1.0f);
+	tailLocation.Round();
+
 	BodyImageComponent->SetAbsoluteLocation(tailLocation);
 
 	BODY_POINT tailPoint;
@@ -86,6 +101,9 @@ void SnakePawn::BeginPlay()
 	tailPoint.Direction = LV_VECTOR::Zero();
 
 	bodyPoints.push_back(tailPoint);
+
+	AABB lastBodyAABB = { tailPoint.Location.x, tailPoint.Location.y, tailPoint.Location.x, tailPoint.Location.y };
+	TailCollisionComponent->AddBodyAABB(lastBodyAABB);
 }
 
 void SnakePawn::Update(float DeltaTime)
@@ -184,6 +202,8 @@ void SnakePawn::UpdateBodyMovement(float DeltaTime)
 		}
 
 		LastSavedHeadPoint = headLocation;
+
+		SyncBodyMovementWithCollision();
 	}
 
 	BodyImageComponent->SetAbsoluteLocation(bodyPoints[0].Location);
@@ -199,7 +219,34 @@ void SnakePawn::IncreaseBody()
 	newBodyPart.Location = bodyPoints.back().Location - newBodyPartDir;
 	newBodyPart.Direction = newBodyPartDir;
 
+	newBodyPart.Location.Round();
 	bodyPoints.push_back(newBodyPart);
+
+	AABB lastBodyAABB = { newBodyPart.Location.x, newBodyPart.Location.y, newBodyPart.Location.x, newBodyPart.Location.y };
+	TailCollisionComponent->AddBodyAABB(lastBodyAABB);
+}
+
+void SnakePawn::SyncBodyMovementWithCollision()
+{
+	if (!bodyPoints.size()) return;
+
+	TailCollisionComponent->RemoveBodyAABB(TailCollisionComponent->GetBodyAABBCount() - 1);
+
+	LV_COORD bodyPoint = bodyPoints[0].Location;
+	bodyPoint.Round();
+
+	AABB firstBodyAABB = { bodyPoint.x, bodyPoint.y, bodyPoint.x, bodyPoint.y };
+	TailCollisionComponent->AddBodyAABB(firstBodyAABB, 0);
+
+	//if (TailCollisionComponent->GetBodyAABBCount() < 2) return;
+	//
+	//TailCollisionComponent->RemoveBodyAABB(TailCollisionComponent->GetBodyAABBCount() - 1);
+	//
+	//bodyPoint = bodyPoints.back().Location;
+	//bodyPoint.Round();
+	//
+	//AABB lastBodyAABB = { bodyPoint.x, bodyPoint.y, bodyPoint.x, bodyPoint.y };
+	//TailCollisionComponent->AddBodyAABB(lastBodyAABB);
 }
 
 /*
@@ -219,6 +266,21 @@ void SnakePawn::HandleHeadCollisionStartEvent(CollisionComponent* InstigatorComp
 
 void SnakePawn::HandleHeadCollisionEndEvent(CollisionComponent* InstigatorComp, SceneObject* OtherObject, ICollider* OtherCollider)
 {
+}
+
+void SnakePawn::HandleBodyCollisionStartEvent(CollisionComponent* InstigatorComp, SceneObject* OtherObject, ICollider* OtherCollider)
+{
+	if (auto snakePawn = dynamic_cast<SnakePawn*>(OtherObject))
+	{
+		// It means that we collided our head with out body.
+		if (OtherCollider == HeadBoxComponent.Get())
+		{
+			if (SnakePlayerState* pPlayerState = dynamic_cast<SnakePlayerState*>(PlayerManager::GetInstance().GetPlayerState()))
+				pPlayerState->SetPlayerLost();
+
+			PlayerManager::GetInstance().FinishGame();
+		}
+	}
 }
 
 void SnakePawn::UpdatePlayerStat()

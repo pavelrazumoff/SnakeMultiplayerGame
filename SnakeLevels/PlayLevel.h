@@ -24,6 +24,7 @@ protected:
 	void CheckForBoundaries();
 
 	void HandleScoreChanged(SnakePlayerState* Instigator, uint32_t newScore);
+	void HandlePlayerEndGame(SnakePlayerState* Instigator, bool bPlayerWon);
 
 protected:
 	TObjectPtr<SnakePawn> pSnakePawn;

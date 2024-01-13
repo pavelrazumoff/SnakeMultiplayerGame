@@ -41,6 +41,7 @@ void PlayLevel::OpenLevel()
 	if (SnakePlayerState* pPlayerState = dynamic_cast<SnakePlayerState*>(PlayerManager::GetInstance().GetPlayerState()))
 	{
 		pPlayerState->OnScoreUpdatedEvent().Subscribe(this, &PlayLevel::HandleScoreChanged);
+		pPlayerState->OnPlayerEndGameEvent().Subscribe(this, &PlayLevel::HandlePlayerEndGame);
 	}
 
 	ReconstructLevel();
@@ -101,4 +102,13 @@ void PlayLevel::HandleScoreChanged(SnakePlayerState* /*Instigator*/, uint32_t ne
 	if (!PlayerHUD.IsValid()) return;
 
 	PlayerHUD->SetScore(newScore);
+}
+
+void PlayLevel::HandlePlayerEndGame(SnakePlayerState* Instigator, bool bPlayerWon)
+{
+	//DebugEngineTrap();
+
+	if (!PlayerHUD.IsValid()) return;
+
+	PlayerHUD->SetScore(0);
 }

@@ -3,6 +3,8 @@
 #include "Engine/CollisionDetection/CollisionManager.h"
 #include "Engine/SceneObjects/SceneObject.h"
 
+std::unordered_set<std::string> CollisionComponent::registeredTypes;
+
 CollisionComponent::CollisionComponent()
 {
 }
@@ -14,7 +16,19 @@ CollisionComponent::~CollisionComponent()
 
 void CollisionComponent::BeginPlayComponent()
 {
+	const std::type_info& typeInfo = typeid(*this);
+	if (registeredTypes.find(typeInfo.name()) == registeredTypes.end())
+	{
+		RegisterCollisionComponent();
+		registeredTypes.insert(typeInfo.name());
+	}
+
 	CollisionManager::GetInstance().StartTrackingCollisionComponent(this);
+}
+
+bool CollisionComponent::Intersects(const ICollider* other) const
+{
+	return CollisionManager::GetInstance().CheckForIntersection(this, other);
 }
 
 bool CollisionComponent::CanCollide() const

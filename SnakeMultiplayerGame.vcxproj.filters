@@ -148,6 +148,12 @@
     <Filter Include="Source Files\SnakeWidgets\HUD">
       <UniqueIdentifier>{c9e2086f-3478-4b82-a7fb-65ced6b6f45c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\SnakeObjects\Components">
+      <UniqueIdentifier>{d0f8817d-fa96-4384-aa10-72e80146b550}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SnakeObjects\Components">
+      <UniqueIdentifier>{c0f131a5-18df-4737-a005-ce20b703bfda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -287,6 +293,9 @@
     </ClCompile>
     <ClCompile Include="Engine\GameWidget\GameWidgetManager.cpp">
       <Filter>Source Files\Engine\GameWidget</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakeObjects\Components\BodyCollisionComponent.cpp">
+      <Filter>Source Files\SnakeObjects\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -469,6 +478,12 @@
     </ClInclude>
     <ClInclude Include="Engine\GameWidget\GameWidgetManager.h">
       <Filter>Header Files\Engine\GameWidget</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeObjects\Components\BodyCollisionComponent.h">
+      <Filter>Header Files\SnakeObjects\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeUtility.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

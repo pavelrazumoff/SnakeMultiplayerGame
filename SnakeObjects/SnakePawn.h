@@ -7,6 +7,7 @@
 class ImageComponent;
 class CollisionComponent;
 class BoxComponent;
+class BodyCollisionComponent;
 class ICollider;
 
 class SnakePawn : public GamePawn
@@ -33,10 +34,14 @@ protected:
 	void UpdateBodyMovement(float DeltaTime);
 	void IncreaseBody();
 
+	void SyncBodyMovementWithCollision();
+
 	/** Collision Events. */
 
 	void HandleHeadCollisionStartEvent(CollisionComponent* InstigatorComp, SceneObject* OtherObject, ICollider* OtherCollider);
 	void HandleHeadCollisionEndEvent(CollisionComponent* InstigatorComp, SceneObject* OtherObject, ICollider* OtherCollider);
+
+	void HandleBodyCollisionStartEvent(CollisionComponent* InstigatorComp, SceneObject* OtherObject, ICollider* OtherCollider);
 
 	/** Player Stat. */
 
@@ -49,6 +54,7 @@ protected:
 	TObjectPtr<ImageComponent> BodyImageComponent;
 
 	TObjectPtr<BoxComponent> HeadBoxComponent;
+	TObjectPtr<BodyCollisionComponent> TailCollisionComponent;
 
 	struct BODY_POINT
 	{

@@ -22,7 +22,7 @@ FoodObject::FoodObject()
 	// Collision Box.
 	{
 		FoodBoxComponent = CreateChildComponent<BoxComponent>();
-		FoodBoxComponent->SetBoxExtent({ 0.5f, 0.5f });
+		FoodBoxComponent->SetBoxExtent({ 1.0f, 1.0f });
 
 		FoodBoxComponent->Settings.SetCollisionObjectType(CollisionObjectType::Static);
 	}

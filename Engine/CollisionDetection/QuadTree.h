@@ -33,8 +33,8 @@ public:
 	QuadTree(const AABB& boundary, int _capacity);
 	~QuadTree();
 
-	void Insert(ICollider* collider);
-	void Insert(QuadTreeNode* node, ICollider* collider);
+	bool Insert(ICollider* collider);
+	bool Insert(QuadTreeNode* node, ICollider* collider);
 
 	void Remove(ICollider* collider);
 	void Remove(QuadTreeNode* node, ICollider* collider);
