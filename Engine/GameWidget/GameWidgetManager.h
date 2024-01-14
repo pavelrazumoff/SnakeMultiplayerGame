@@ -15,11 +15,13 @@ public:
 	static GameWidgetManager& GetInstance();
 
 	void PlaceUserWidgetOnScreen(UserWidget* userWidget);
+	void RemoveUserWidgetFromScreen(UserWidget* userWidget);
+
 	void RequestWidgetReconstruction(GameWidget* Instigator);
 
 	void Update(float DeltaTime);
 	virtual bool PassInput(const InputState& is);
 
 protected:
-	TObjectPtr<UserWidget> WndUserWidget;
+	std::vector<TObjectPtr<UserWidget>> UserWidgetList;
 };

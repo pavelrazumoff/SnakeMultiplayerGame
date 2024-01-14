@@ -22,6 +22,8 @@ public:
 	virtual ~GameLevel();
 
 	virtual void OpenLevel();
+	virtual void CloseLevel();
+
 	virtual void Update(float DeltaTime);
 
 	virtual bool PassInput(const InputState& is) override;

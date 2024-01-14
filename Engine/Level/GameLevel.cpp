@@ -15,6 +15,10 @@ void GameLevel::OpenLevel()
 {
 }
 
+void GameLevel::CloseLevel()
+{
+}
+
 void GameLevel::Update(float DeltaTime)
 {
 	while (!ObjectBeginPlayQueue.empty())

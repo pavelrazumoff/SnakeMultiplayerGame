@@ -4,6 +4,7 @@
 #include "SnakeObjects/Food.h"
 
 #include "SnakeWidgets/HUD/PlayerHUDWidget.h"
+#include "SnakeWidgets/Menu/PlayerLostMenuWidget.h"
 #include "SnakePlayer/SnakePlayerState.h"
 
 #include "Engine/Level/LevelManager.h"
@@ -40,11 +41,27 @@ void PlayLevel::OpenLevel()
 
 	if (SnakePlayerState* pPlayerState = dynamic_cast<SnakePlayerState*>(PlayerManager::GetInstance().GetPlayerState()))
 	{
+		pPlayerState->ClearScore();
+
 		pPlayerState->OnScoreUpdatedEvent().Subscribe(this, &PlayLevel::HandleScoreChanged);
-		pPlayerState->OnPlayerEndGameEvent().Subscribe(this, &PlayLevel::HandlePlayerEndGame);
+		pPlayerState->OnPlayerLostEvent().Subscribe(this, &PlayLevel::HandlePlayerLost);
 	}
 
 	ReconstructLevel();
+}
+
+void PlayLevel::CloseLevel()
+{
+	Inherited::CloseLevel();
+
+	if (SnakePlayerState* pPlayerState = dynamic_cast<SnakePlayerState*>(PlayerManager::GetInstance().GetPlayerState()))
+	{
+		pPlayerState->OnScoreUpdatedEvent().Unsubscribe(this);
+		pPlayerState->OnPlayerLostEvent().Unsubscribe(this);
+	}
+
+	GameWidgetManager::GetInstance().RemoveUserWidgetFromScreen(PlayerHUD.Get());
+	GameWidgetManager::GetInstance().RemoveUserWidgetFromScreen(PlayerLostMenu.Get());
 }
 
 void PlayLevel::Update(float DeltaTime)
@@ -64,19 +81,31 @@ void PlayLevel::Update(float DeltaTime)
 
 void PlayLevel::ReconstructLevel()
 {
-	if (!PlayerHUD.IsValid()) return;
+	if (PlayerHUD.IsValid())
+	{
+		RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
+		PlayerHUD->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
 
-	RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
-	PlayerHUD->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
+		RC_RECT screenRect = PlayerHUD->GetScreenFreeRect();
+		playAreaRect = { (float)screenRect.left, (float)screenRect.top, (float)screenRect.right, (float)screenRect.bottom };
+	}
 
-	RC_RECT screenRect = PlayerHUD->GetScreenFreeRect();
-	playAreaRect = { (float)screenRect.left, (float)screenRect.top, (float)screenRect.right, (float)screenRect.bottom };
+	ReconstructDynamicMenu();
+}
+
+void PlayLevel::ReconstructDynamicMenu()
+{
+	if (PlayerLostMenu.IsValid())
+	{
+		RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
+		PlayerLostMenu->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
+	}
 }
 
 void PlayLevel::SpawnNewFood()
 {
-	LV_COORD spawnFoodCoord((float)MathLibrary::GetRandomInRange(playAreaRect.left, playAreaRect.right),
-		(float)MathLibrary::GetRandomInRange(playAreaRect.top, playAreaRect.bottom));
+	LV_COORD spawnFoodCoord((float)MathLibrary::GetRandomInRange((int)playAreaRect.left, (int)playAreaRect.right),
+		(float)MathLibrary::GetRandomInRange((int)playAreaRect.top, (int)playAreaRect.bottom));
 	TObjectPtr<FoodObject> newFood = LevelManager::GetInstance().SpawnSceneObject<FoodObject>(spawnFoodCoord);
 }
 
@@ -104,11 +133,34 @@ void PlayLevel::HandleScoreChanged(SnakePlayerState* /*Instigator*/, uint32_t ne
 	PlayerHUD->SetScore(newScore);
 }
 
-void PlayLevel::HandlePlayerEndGame(SnakePlayerState* Instigator, bool bPlayerWon)
+void PlayLevel::HandlePlayerLost(SnakePlayerState* Instigator)
 {
-	//DebugEngineTrap();
+	// If the player who has lost is us.
+	if (PlayerManager::GetInstance().GetPlayerState() == Instigator)
+	{
+		// TODO: Stop the game. Block the player input except menu handling.
+		if (!PlayerLostMenu.IsValid())
+		{
+			PlayerLostMenu = CreateNewObject<PlayerLostMenuWidget>(this);
+			if (PlayerLostMenu.IsValid())
+			{
+				PlayerLostMenu->OnPlayAgainClickEvent().Subscribe(this, &PlayLevel::HandlePlayAgainClicked);
+				PlayerLostMenu->OnExitGameClickEvent().Subscribe(this, &PlayLevel::HandleExitGameClicked);
+			}
 
-	if (!PlayerHUD.IsValid()) return;
+			GameWidgetManager::GetInstance().PlaceUserWidgetOnScreen(PlayerLostMenu.Get());
+			ReconstructDynamicMenu();
+		}
+	}
+}
 
-	PlayerHUD->SetScore(0);
+void PlayLevel::HandlePlayAgainClicked()
+{
+	PlayLevel* playLevel = CreateNewObject<PlayLevel>();
+	LevelManager::GetInstance().OpenLevel(playLevel);
+}
+
+void PlayLevel::HandleExitGameClicked()
+{
+	LevelManager::GetInstance().CloseLevel(this);
 }

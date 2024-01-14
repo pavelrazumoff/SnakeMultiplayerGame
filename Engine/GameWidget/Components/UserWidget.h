@@ -32,10 +32,11 @@ public:
 	void SetCanvasDimensions(uint32_t width, uint32_t height);
 	void GetCanvasDimensions(uint32_t& width, uint32_t& height) const;
 
-	void ForceReconstruct(GameWidget* Instigator);
+	bool ForceReconstruct(GameWidget* Instigator);
 
 protected:
 	void ReconstructWidgetTree();
+	bool DoesBelongToWidgetTree(GameWidget* widget);
 
 private:
 	void CalculateDirtySizeWidgetsRecursive(TreeNode* node);

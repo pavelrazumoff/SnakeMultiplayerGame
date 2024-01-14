@@ -189,6 +189,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="SnakePlayer\SnakePlayerState.cpp" />
     <ClCompile Include="SnakeWidgets\HUD\PlayerHUDWidget.cpp" />
     <ClCompile Include="SnakeWidgets\Menu\MainMenuWidget.cpp" />
+    <ClCompile Include="SnakeWidgets\Menu\PlayerLostMenuWidget.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -254,6 +255,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="SnakeUtility.h" />
     <ClInclude Include="SnakeWidgets\HUD\PlayerHUDWidget.h" />
     <ClInclude Include="SnakeWidgets\Menu\MainMenuWidget.h" />
+    <ClInclude Include="SnakeWidgets\Menu\PlayerLostMenuWidget.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

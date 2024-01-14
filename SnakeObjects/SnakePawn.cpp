@@ -262,6 +262,16 @@ void SnakePawn::HandleHeadCollisionStartEvent(CollisionComponent* InstigatorComp
 		IncreaseBody();
 		UpdatePlayerStat();
 	}
+	else if (auto snakePawn = dynamic_cast<SnakePawn*>(OtherObject))
+	{
+		// It means that we collided our head with someone's body (maybe us).
+
+		// TODO: Check that this pawn actually belongs to the current player.
+		if (SnakePlayerState* pPlayerState = dynamic_cast<SnakePlayerState*>(PlayerManager::GetInstance().GetPlayerState()))
+		{
+			pPlayerState->SetPlayerLost();
+		}
+	}
 }
 
 void SnakePawn::HandleHeadCollisionEndEvent(CollisionComponent* InstigatorComp, SceneObject* OtherObject, ICollider* OtherCollider)
@@ -270,17 +280,7 @@ void SnakePawn::HandleHeadCollisionEndEvent(CollisionComponent* InstigatorComp, 
 
 void SnakePawn::HandleBodyCollisionStartEvent(CollisionComponent* InstigatorComp, SceneObject* OtherObject, ICollider* OtherCollider)
 {
-	if (auto snakePawn = dynamic_cast<SnakePawn*>(OtherObject))
-	{
-		// It means that we collided our head with out body.
-		if (OtherCollider == HeadBoxComponent.Get())
-		{
-			if (SnakePlayerState* pPlayerState = dynamic_cast<SnakePlayerState*>(PlayerManager::GetInstance().GetPlayerState()))
-				pPlayerState->SetPlayerLost();
-
-			PlayerManager::GetInstance().FinishGame();
-		}
-	}
+	
 }
 
 void SnakePawn::UpdatePlayerStat()

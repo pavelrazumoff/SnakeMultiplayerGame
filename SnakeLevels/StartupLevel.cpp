@@ -33,6 +33,13 @@ void StartupLevel::OpenLevel()
 	ReconstructLevel();
 }
 
+void StartupLevel::CloseLevel()
+{
+	Inherited::CloseLevel();
+
+	GameWidgetManager::GetInstance().RemoveUserWidgetFromScreen(StartupMenuWidget.Get());
+}
+
 void StartupLevel::ReconstructLevel()
 {
 	if (!StartupMenuWidget.Get()) return;

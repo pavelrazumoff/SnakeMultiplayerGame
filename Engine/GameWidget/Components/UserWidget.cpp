@@ -69,6 +69,13 @@ void UserWidget::ReconstructWidgetTree()
 	ClarifyUnderlaySizeWidgetsRecursive(Tree.GetRootNode());
 }
 
+bool UserWidget::DoesBelongToWidgetTree(GameWidget* widget)
+{
+	return ProceedWidgetTreeRecursive(Tree.GetRootNode(), [widget](GameWidget* widgetToCheck) -> bool {
+		return widgetToCheck == widget;
+	});
+}
+
 void UserWidget::CalculateDirtySizeWidgetsRecursive(TreeNode* node)
 {
 	if (!node) return;
@@ -152,8 +159,11 @@ void UserWidget::GetCanvasDimensions(uint32_t& width, uint32_t& height) const
 	height = Canvas->GetHeight();
 }
 
-void UserWidget::ForceReconstruct(GameWidget* Instigator)
+bool UserWidget::ForceReconstruct(GameWidget* Instigator)
 {
 	// TODO: Somehow optimize recostruction by using the Instigator object that actually requested this procedure.
+	if (!DoesBelongToWidgetTree(Instigator)) return false;
+
 	ReconstructWidgetTree();
+	return true;
 }

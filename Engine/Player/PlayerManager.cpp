@@ -25,10 +25,6 @@ PlayerManager& PlayerManager::GetInstance()
 	return instance;
 }
 
-void PlayerManager::FinishGame()
-{
-}
-
 void PlayerManager::SetPlayerStateClass(const std::string& className)
 {
 	if (PlayerStateClassName == className)

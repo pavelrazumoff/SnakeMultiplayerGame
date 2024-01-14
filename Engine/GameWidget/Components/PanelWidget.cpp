@@ -23,33 +23,13 @@ void PanelWidget::ReconstructWidget()
 
 void PanelWidget::ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size_t underlayWidgetsCount)
 {
-	// TODO: Take possible layouting and alignment into account.
-	#if 0
-	RC_RECT widgetRect;
-	RC_SIZE widgetSize;
-	const RC_SIZE dirtySize = GetCachedDirtySize();
-
-	const RC_SIZE parentSize = { GetTexWidth(parentRect), GetTexHeight(parentRect) };
-
-	widgetSize.cx = IsSizeXNeedsToRecalc() ? parentSize.cx : dirtySize.cx;
-	widgetSize.cy = IsSizeYNeedToRecalc() ? parentSize.cy : dirtySize.cy;
-
-	if (widgetSize.cx < dirtySize.cx) widgetSize.cx = dirtySize.cx;
-	if (widgetSize.cy < dirtySize.cy) widgetSize.cy = dirtySize.cy;
+	engine_assert(underlayWidgetsCount <= 1);
 	
-	// TODO: Reposition based on alignment settings.
-
-	// TODO: We need the actual X, Y coordinates where to draw this widget.
-	widgetRect = { parentRect.left, parentRect.top, widgetSize.cx, widgetSize.cy };
-
-	BackgroundBrush->UpdateDrawRect(widgetRect);
-	#endif
-	//return widgetRect;
-
-	// We should already have the rect of this widget now.
-	// Based on that we can calculate the size of each underlaying widget based on ours layouting settings and theirs dirty sizes.
-
-
+	for (size_t i = 0; i < underlayWidgetsCount; ++i)
+	{
+		GameWidget* underlayWidget = underlayWidgets[i];
+		ApplyAlignmentSettings(this, underlayWidget);
+	}
 }
 
 void PanelWidget::RepositionWidget(const RC_RECT& newRect)

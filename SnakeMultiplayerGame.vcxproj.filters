@@ -297,6 +297,9 @@
     <ClCompile Include="SnakeObjects\Components\BodyCollisionComponent.cpp">
       <Filter>Source Files\SnakeObjects\Components</Filter>
     </ClCompile>
+    <ClCompile Include="SnakeWidgets\Menu\PlayerLostMenuWidget.cpp">
+      <Filter>Source Files\SnakeWidgets\Menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameEngine.h">
@@ -484,6 +487,9 @@
     </ClInclude>
     <ClInclude Include="SnakeUtility.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeWidgets\Menu\PlayerLostMenuWidget.h">
+      <Filter>Header Files\SnakeWidgets\Menu</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

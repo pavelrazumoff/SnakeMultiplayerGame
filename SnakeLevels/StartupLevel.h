@@ -13,6 +13,7 @@ public:
 	virtual ~StartupLevel();
 
 	virtual void OpenLevel() override;
+	virtual void CloseLevel() override;
 
 	virtual void ReconstructLevel() override;
 

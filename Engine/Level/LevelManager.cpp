@@ -20,6 +20,7 @@ void LevelManager::OpenLevel(GameLevel* level)
 	if (CurrentLevel.Get())
 	{
 		// TODO: Close the current level first.
+		CurrentLevel->CloseLevel();
 	}
 
 	CurrentLevel = level;
@@ -35,6 +36,7 @@ void LevelManager::CloseLevel(GameLevel* level)
 {
 	if (GetCurrentLevel() != level) { DebugEngineTrap(); return; }
 
+	level->CloseLevel();
 	LevelCloseEvent.Trigger(level);
 }
 

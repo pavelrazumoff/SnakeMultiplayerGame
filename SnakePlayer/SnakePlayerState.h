@@ -8,7 +8,7 @@
 class SnakePlayerState;
 
 DECLARE_EVENT_DELEGATE(ScoreUpdatedDelegate, SnakePlayerState*, uint32_t);
-DECLARE_EVENT_DELEGATE(PlayerEndGameDelegate, SnakePlayerState*, bool);
+DECLARE_EVENT_DELEGATE(PlayerLostDelegate, SnakePlayerState*);
 
 class SnakePlayerState : public PlayerState
 {
@@ -22,21 +22,22 @@ public:
 	virtual std::string GetTypeName() const override;
 
 	void IncrementScore();
+	void ClearScore();
+
 	uint32_t GetScore() const { return Score; }
 
-	void SetPlayerWon();
 	void SetPlayerLost();
 
 	/** Delegates. */
 
 	ScoreUpdatedDelegate& OnScoreUpdatedEvent() { return ScoreUpdatedEvent; }
-	PlayerEndGameDelegate& OnPlayerEndGameEvent() { return PlayerEndGameEvent; }
+	PlayerLostDelegate& OnPlayerLostEvent() { return PlayerLostEvent; }
 
 protected:
 	/** Delegates. */
 
 	ScoreUpdatedDelegate ScoreUpdatedEvent;
-	PlayerEndGameDelegate PlayerEndGameEvent;
+	PlayerLostDelegate PlayerLostEvent;
 
 protected:
 	uint32_t Score = 0;

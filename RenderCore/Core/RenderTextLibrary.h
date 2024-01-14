@@ -23,8 +23,8 @@ public:
 
 	/** Non-scaled text. */
 
-	static void FillTextureWithText(RCTexture* texture, std::string text, TEX_COLOR_RGB textColor, TEX_COORD startCoord);
-	static void FillTextureWithTextBig(RCTexture* texture, std::string text, TEX_COLOR_RGB textColor, TEX_COORD startCoord);
+	static void FillTextureWithText(RCTexture* texture, std::string text, TEX_COLOR_RGB textColor, TEX_COORD startCoord, TEX_PIXEL fillerPixel = 0);
+	static void FillTextureWithTextBig(RCTexture* texture, std::string text, TEX_COLOR_RGB textColor, TEX_COORD startCoord, TEX_PIXEL fillerPixel = 0);
 
 	static RC_SIZE GetTextSize(std::string text, uint8_t fontSize = 0);
 	static RC_SIZE GetTextBigSize(std::string text, uint8_t fontSize = 0);

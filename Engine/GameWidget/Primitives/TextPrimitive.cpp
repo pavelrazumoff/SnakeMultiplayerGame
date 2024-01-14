@@ -69,9 +69,9 @@ void TextPrimitive::Construct()
 		style.Image = std::make_shared<RCTexture>(textRenderSize.cx, textRenderSize.cy);
 
 		if (bUseBigLetters)
-			RenderTextLibrary::FillTextureWithTextBig(style.Image.get(), Text, Font.FontColor, coord);
+			RenderTextLibrary::FillTextureWithTextBig(style.Image.get(), Text, Font.FontColor, coord, Font.FontFillerPixel);
 		else
-			RenderTextLibrary::FillTextureWithText(style.Image.get(), Text, Font.FontColor, coord);
+			RenderTextLibrary::FillTextureWithText(style.Image.get(), Text, Font.FontColor, coord, Font.FontFillerPixel);
 	}
 
 	SetBrushStyle(style);

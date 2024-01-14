@@ -126,7 +126,8 @@ static RC_SIZE _CalcLetterSize(char ch, const LetterMap& letterMap)
 	return { maxLetterWidth, maxLetterHeight };
 }
 
-static void _FillTextureWithScaledText(RCTexture* texture, std::string text, TEX_COLOR_RGB textColor, uint8_t textScale, TEX_COORD startCoord, const LetterMap& letterMap)
+static void _FillTextureWithScaledText(RCTexture* texture, std::string text, TEX_COLOR_RGB textColor, uint8_t textScale, TEX_COORD startCoord,
+	const LetterMap& letterMap, TEX_PIXEL fillerPixel = 0)
 {
 	/*
 		TODO: Text Alignment.
@@ -181,6 +182,7 @@ static void _FillTextureWithScaledText(RCTexture* texture, std::string text, TEX
 				}
 				else
 				{
+					if (fillerPixel != 0 && letterCh == '*') letterCh = fillerPixel;
 					if (!FILL_TEXDATA_WITH_LETTER(letterCh, textScale)) continue;
 				}
 			}
@@ -251,14 +253,14 @@ RC_SIZE RenderTextLibrary::GetScaledTextSize(std::string text, uint8_t textScale
 	Non-scaled text.
 */
 
-void RenderTextLibrary::FillTextureWithText(RCTexture* texture, std::string text, TEX_COLOR_RGB textColor, TEX_COORD startCoord)
+void RenderTextLibrary::FillTextureWithText(RCTexture* texture, std::string text, TEX_COLOR_RGB textColor, TEX_COORD startCoord, TEX_PIXEL fillerPixel)
 {
-	_FillTextureWithScaledText(texture, text, textColor, 1, startCoord, letterArt);
+	_FillTextureWithScaledText(texture, text, textColor, 1, startCoord, letterArt, fillerPixel);
 }
 
-void RenderTextLibrary::FillTextureWithTextBig(RCTexture* texture, std::string text, TEX_COLOR_RGB textColor, TEX_COORD startCoord)
+void RenderTextLibrary::FillTextureWithTextBig(RCTexture* texture, std::string text, TEX_COLOR_RGB textColor, TEX_COORD startCoord, TEX_PIXEL fillerPixel)
 {
-	_FillTextureWithScaledText(texture, text, textColor, 1, startCoord, letterBigArt);
+	_FillTextureWithScaledText(texture, text, textColor, 1, startCoord, letterBigArt, fillerPixel);
 }
 
 static RC_SIZE _GetTextSize(std::string text, uint8_t fontSize, const LetterMap& letterMap)

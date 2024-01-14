@@ -24,12 +24,13 @@ void SnakePlayerState::IncrementScore()
 	ScoreUpdatedEvent.Trigger(this, Score);
 }
 
-void SnakePlayerState::SetPlayerWon()
+void SnakePlayerState::ClearScore()
 {
-	PlayerEndGameEvent.Trigger(this, true);
+	Score = 0;
+	ScoreUpdatedEvent.Trigger(this, Score);
 }
 
 void SnakePlayerState::SetPlayerLost()
 {
-	PlayerEndGameEvent.Trigger(this, false);
+	PlayerLostEvent.Trigger(this);
 }
