@@ -123,6 +123,9 @@ void GameEngine::Run()
 	float GarbageCollectorWaitTime = 0.0f;
 	const float GarbageCollectorWaitTimeLimit = 2.0f;
 
+	float FPSWaitTime = 0.0f;
+	const float FPSWaitTimeLimit = 0.1f;
+
 	auto Start = high_resolution_clock::now();
 
 	bIsRunning = true;
@@ -161,6 +164,19 @@ void GameEngine::Run()
 			{
 				GarbageCollector::GetInstance().Update();
 				GarbageCollectorWaitTime -= GarbageCollectorWaitTimeLimit;
+			}
+		}
+
+		// FPS.
+		{
+			FPSWaitTime += LevelManager::GetInstance().GetLevelDeltaSeconds();
+
+			if (FPSWaitTime >= FPSWaitTimeLimit)
+			{
+				std::string logMessage = "FPS: " + std::to_string(1.0f / LevelManager::GetInstance().GetLevelDeltaSeconds());
+				Logger::GetInstance().Write(logMessage.c_str());
+
+				FPSWaitTime -= FPSWaitTimeLimit;
 			}
 		}
 	}

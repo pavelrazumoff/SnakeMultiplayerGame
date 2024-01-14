@@ -74,8 +74,8 @@ void RenderManager::Render()
 
 void RenderManager::DrawRenderBuffer()
 {
-	DrawConsoleLibrary::DrawTextureDifference(SecondRenderBuffer.get(), CurrentRenderBuffer.get(), 0, 0);
-	RenderConsoleLibrary::RestoreConsoleRenderMode();
+	const bool bFoundDifference = DrawConsoleLibrary::DrawTextureDifference(SecondRenderBuffer.get(), CurrentRenderBuffer.get(), 0, 0);
+	if (bFoundDifference) RenderConsoleLibrary::RestoreConsoleRenderMode();
 }
 
 void RenderManager::SwapRenderBuffers()

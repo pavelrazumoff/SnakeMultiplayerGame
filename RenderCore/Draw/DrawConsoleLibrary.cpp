@@ -40,11 +40,13 @@ void DrawConsoleLibrary::DrawTexture(const RCTexture* texture, RC_INT x, RC_INT 
 	}
 }
 
-void DrawConsoleLibrary::DrawTextureDifference(const RCTexture* texture, const RCTexture* prevTexture, RC_INT x, RC_INT y)
+bool DrawConsoleLibrary::DrawTextureDifference(const RCTexture* texture, const RCTexture* prevTexture, RC_INT x, RC_INT y)
 {
 	if (!texture || !prevTexture ||
 		(texture->GetWidth() != prevTexture->GetWidth()) ||
-		(texture->GetHeight() != prevTexture->GetHeight())) return;
+		(texture->GetHeight() != prevTexture->GetHeight())) return false;
+
+	bool bFoundAnyDifference = false;
 
 	const RC_UINT texWidth = texture->GetWidth();
 	const RC_UINT texHeight = texture->GetHeight();
@@ -71,6 +73,8 @@ void DrawConsoleLibrary::DrawTextureDifference(const RCTexture* texture, const R
 					RenderConsoleLibrary::SetPixelRenderColor(pTextureColorData[startPixelPosX]);
 					RenderConsoleLibrary::FillConsoleLineWithBlock(pTextureData + startPixelPosX, x + startPixelPosX, y + i, j - startPixelPosX);
 					startPixelPosX = -1;
+
+					bFoundAnyDifference = true;
 				}
 
 				if (startPixelPosX == -1) startPixelPosX = j;
@@ -84,6 +88,8 @@ void DrawConsoleLibrary::DrawTextureDifference(const RCTexture* texture, const R
 					RenderConsoleLibrary::SetPixelRenderColor(pTextureColorData[startPixelPosX]);
 					RenderConsoleLibrary::FillConsoleLineWithBlock(pTextureData + startPixelPosX, x + startPixelPosX, y + i, j - startPixelPosX);
 					startPixelPosX = -1;
+
+					bFoundAnyDifference = true;
 				}
 			}
 			else if (startPixelPosX == -1) startPixelPosX = j;
@@ -93,6 +99,10 @@ void DrawConsoleLibrary::DrawTextureDifference(const RCTexture* texture, const R
 		{
 			RenderConsoleLibrary::SetPixelRenderColor(pTextureColorData[startPixelPosX]);
 			RenderConsoleLibrary::FillConsoleLineWithBlock(pTextureData + startPixelPosX, x + startPixelPosX, y + i, texWidth - startPixelPosX);
+
+			bFoundAnyDifference = true;
 		}
 	}
+
+	return bFoundAnyDifference;
 }

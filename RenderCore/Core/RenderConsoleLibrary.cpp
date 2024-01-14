@@ -32,14 +32,11 @@ void RenderConsoleLibrary::FillConsoleRegion(TEX_PIXEL cCharacter, RC_INT x, RC_
 	for (RC_UINT i = 0; i < height; ++i)
 	{
 		RenderConsoleLibrary::SetCursorPosition(x, y + i);
-		for (RC_UINT j = 0; j < width; ++j)
-		{
-			std::cout << cCharacter;
-		}
-		//std::cout << "\x1B[E";
+
+		std::string printBuf(width, cCharacter);
+		printf("%s", printBuf.c_str());
 	}
 
-	std::cout.flush();
 	#else
 	COORD coordScreen = { x, y };
 	DWORD cCharsWritten;
@@ -57,12 +54,9 @@ void RenderConsoleLibrary::FillConsoleLineWithBlock(const TEX_PIXEL* cBlock, RC_
 	#if USE_VIRTUAL_TERMINAL_PROCESSING()
 
 	RenderConsoleLibrary::SetCursorPosition(x, y);
-	for (RC_UINT i = 0; i < blockLen; ++i)
-	{
-		std::cout << cBlock[i];
-	}
 
-	std::cout.flush();
+	std::string printBuf(cBlock, cBlock + blockLen);
+	printf("%s", printBuf.c_str());
 
 	#else // USE_VIRTUAL_TERMINAL_PROCESSING()
 	COORD coordScreen = { x, y };
@@ -143,20 +137,17 @@ void RenderConsoleLibrary::EnableVirtualTerminalProcessing()
 
 void RenderConsoleLibrary::SetConsoleCaption(const char* caption)
 {
-	std::cout << "\x1B]0;" << caption << "\x07";
-	std::cout.flush();
+	printf("\x1B]0;%s\x07", caption);
 }
 
 void RenderConsoleLibrary::SetCursorPosition(RC_INT x, RC_INT y)
 {
-	std::cout << "\x1B[" << y + 1 << ";" << x + 1 << "H";
-	std::cout.flush();
+	printf("\x1B[%d;%dH", y + 1, x + 1);
 }
 
 void RenderConsoleLibrary::ShowCursor(bool bShow)
 {
-	std::cout << "\x1B[?25" << (bShow ? "h" : "l");
-	std::cout.flush();
+	printf("\x1B[?25%c", bShow ? 'h' : 'l');
 }
 
 void RenderConsoleLibrary::SetTextScrollingMargins(RC_INT top, RC_INT bottom)
@@ -172,19 +163,16 @@ void RenderConsoleLibrary::SetTextScrollingMargins(RC_INT top, RC_INT bottom)
 		The text outside this region (above the top margin and below the bottom margin) remains static.
 	*/
 
-	std::cout << "\x1B[" << top << ";" << bottom << "r";
-	std::cout.flush();
+	printf("\x1B[%d;%dr", top, bottom);
 }
 
 void RenderConsoleLibrary::SetPixelRenderColor(TEX_COLOR_RGB rgb)
 {
-	std::cout << "\x1B[38;2;" << static_cast<int>(rgb.r) << ";" << static_cast<int>(rgb.g) << ";" << static_cast<int>(rgb.b) << "m";
-	std::cout.flush();
+	printf("\x1B[38;2;%d;%d;%dm", static_cast<int>(rgb.r), static_cast<int>(rgb.g), static_cast<int>(rgb.b));
 }
 
 void RenderConsoleLibrary::SetBackgroundRenderColor(TEX_COLOR_RGB rgb)
 {
-	std::cout << "\x1B[48;2;" << static_cast<int>(rgb.r) << ";" << static_cast<int>(rgb.g) << ";" << static_cast<int>(rgb.b) << "m";
-	std::cout.flush();
+	printf("\x1B[48;2;%d;%d;%dm", static_cast<int>(rgb.r), static_cast<int>(rgb.g), static_cast<int>(rgb.b));
 }
 #endif // USE_VIRTUAL_TERMINAL_PROCESSING()

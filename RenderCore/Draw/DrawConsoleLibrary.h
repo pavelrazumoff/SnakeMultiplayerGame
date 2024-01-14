@@ -13,5 +13,5 @@ public:
 	static void SetCursorToBottomRight();
 
 	static void DrawTexture(const RCTexture* texture, RC_INT x, RC_INT y);
-	static void DrawTextureDifference(const RCTexture* texture, const RCTexture* prevTexture, RC_INT x, RC_INT y);
+	static bool DrawTextureDifference(const RCTexture* texture, const RCTexture* prevTexture, RC_INT x, RC_INT y);
 };
