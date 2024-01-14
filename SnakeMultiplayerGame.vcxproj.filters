@@ -300,6 +300,12 @@
     <ClCompile Include="SnakeWidgets\Menu\PlayerLostMenuWidget.cpp">
       <Filter>Source Files\SnakeWidgets\Menu</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Components\HorizontalBox.cpp">
+      <Filter>Source Files\Engine\GameWidget\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakeWidgets\Menu\GameMenuWidget.cpp">
+      <Filter>Source Files\SnakeWidgets\Menu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameEngine.h">
@@ -489,6 +495,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SnakeWidgets\Menu\PlayerLostMenuWidget.h">
+      <Filter>Header Files\SnakeWidgets\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Components\HorizontalBox.h">
+      <Filter>Header Files\Engine\GameWidget\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeDelegates.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeWidgets\Menu\GameMenuWidget.h">
       <Filter>Header Files\SnakeWidgets\Menu</Filter>
     </ClInclude>
   </ItemGroup>

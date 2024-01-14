@@ -56,8 +56,14 @@ bool GameWidgetManager::PassInput(const InputState& is)
 {
 	for (auto it = UserWidgetList.rbegin(); it != UserWidgetList.rend(); ++it)
 	{
-		if (it->IsValid() && it->Get()->PassInput(is))
-			return true;
+		if (it->IsValid())
+		{
+			if (it->Get()->PassInput(is))
+				return true;
+
+			// Always consume input from modal widgets (windows).
+			if (it->Get()->IsWidgetModal()) return true;
+		}
 	}
 	return false;
 }

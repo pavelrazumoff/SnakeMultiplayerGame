@@ -8,23 +8,23 @@ class PanelWidget;
 class Button;
 class TextBlock;
 
-class PlayerLostMenuWidget : public UserWidget
+class GameMenuWidget : public UserWidget
 {
 	typedef UserWidget Inherited;
 
 public:
-	PlayerLostMenuWidget();
-	~PlayerLostMenuWidget();
+	GameMenuWidget();
+	~GameMenuWidget();
 
-	MenuButtonClickDelegate& OnPlayAgainClickEvent() { return PlayAgainClickEvent; }
+	MenuButtonClickDelegate& OnResumeClickEvent() { return ResumeClickEvent; }
 	MenuButtonClickDelegate& OnExitGameClickEvent() { return ExitGameClickEvent; }
 
 protected:
-	void HandlePlayAgainButtonClick(Button* instigator);
+	void HandleResumeButtonClick(Button* instigator);
 	void HandleExitGameButtonClick(Button* instigator);
 
 protected:
-	MenuButtonClickDelegate PlayAgainClickEvent;
+	MenuButtonClickDelegate ResumeClickEvent;
 	MenuButtonClickDelegate ExitGameClickEvent;
 
 protected:
@@ -34,8 +34,8 @@ protected:
 
 	TObjectPtr<TextBlock> CaptionText;
 
-	TObjectPtr<Button> PlayAgainButton;
-	TObjectPtr<TextBlock> PlayAgainButtonText;
+	TObjectPtr<Button> ResumeButton;
+	TObjectPtr<TextBlock> ResumeButtonText;
 
 	TObjectPtr<Button> ExitGameButton;
 	TObjectPtr<TextBlock> ExitGameButtonText;

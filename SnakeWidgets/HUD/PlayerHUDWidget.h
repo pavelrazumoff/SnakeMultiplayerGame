@@ -1,9 +1,12 @@
 #pragma once
 
 #include "Engine/GameWidget/Components/UserWidget.h"
+#include "SnakeDelegates.h"
 
-class VerticalBox;
+class HorizontalBox;
 class TextBlock;
+class PanelWidget;
+class Button;
 
 class PlayerHUDWidget : public UserWidget
 {
@@ -17,8 +20,20 @@ public:
 
 	RC_RECT GetScreenFreeRect() const;
 
+	MenuButtonClickDelegate& OnMenuOpenClickEvent() { return MenuOpenClickEvent; }
+
 protected:
-	TObjectPtr<VerticalBox> WndVerticalBox;
+	void HandleOpenMenuButtonClick(Button* instigator);
+
+protected:
+	MenuButtonClickDelegate MenuOpenClickEvent;
+
+protected:
+	TObjectPtr<PanelWidget> TopPanelWidget;
+	TObjectPtr<HorizontalBox> TopHorizontalBox;
 
 	TObjectPtr<TextBlock> ScoreText;
+
+	TObjectPtr<Button> MenuButton;
+	TObjectPtr<TextBlock> MenuButtonText;
 };

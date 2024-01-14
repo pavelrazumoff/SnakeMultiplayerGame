@@ -1,4 +1,4 @@
-#include "PlayerLostMenuWidget.h"
+#include "GameMenuWidget.h"
 
 #include "Engine/GameWidget/Components/VerticalBox.h"
 #include "Engine/GameWidget/Components/PanelWidget.h"
@@ -7,7 +7,7 @@
 
 #include "Engine/GameObject/GameObjectUtility.h"
 
-PlayerLostMenuWidget::PlayerLostMenuWidget()
+GameMenuWidget::GameMenuWidget()
 {
 	SetWidgetModality(true);
 
@@ -48,53 +48,53 @@ PlayerLostMenuWidget::PlayerLostMenuWidget()
 
 		CaptionText->GetAlignment().Padding = { 0, 2, 0, 0 };
 
-		CaptionText->GetText().SetText("You Lost!");
-		CaptionText->GetText().SetFontStyle({ 1, FontPrintType::LetterBig, RenderConstants::LightRedPixelColorRGB, '#' });
+		CaptionText->GetText().SetText("Menu");
+		CaptionText->GetText().SetFontStyle({ 1, FontPrintType::LetterBig, RenderConstants::LightYellowPixelColorRGB, '#' });
 
 		Tree.PlaceWidgetOn(CaptionText.Get(), FrameVerticalBox.Get());
 	}
 
-	PlayAgainButton = CreateNewObject<Button>(this);
-	if (PlayAgainButton.Get())
+	ResumeButton = CreateNewObject<Button>(this);
+	if (ResumeButton.Get())
 	{
-		PlayAgainButton->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
-		PlayAgainButton->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Top;
-		PlayAgainButton->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
+		ResumeButton->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
+		ResumeButton->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Top;
+		ResumeButton->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
 
-		PlayAgainButton->GetAlignment().Padding = { 0, 3, 0, 0 };
+		ResumeButton->GetAlignment().Padding = { 0, 3, 0, 0 };
 
-		PlayAgainButton->GetLayout().DimensionsOverride.cx = 20;
-		PlayAgainButton->GetLayout().DimensionsOverride.cy = 3;
+		ResumeButton->GetLayout().DimensionsOverride.cx = 20;
+		ResumeButton->GetLayout().DimensionsOverride.cy = 3;
 
-		Tree.PlaceWidgetOn(PlayAgainButton.Get(), FrameVerticalBox.Get());
+		Tree.PlaceWidgetOn(ResumeButton.Get(), FrameVerticalBox.Get());
 
-		PlayAgainButton->OnClickEvent().Subscribe(this, &PlayerLostMenuWidget::HandlePlayAgainButtonClick);
+		ResumeButton->OnClickEvent().Subscribe(this, &GameMenuWidget::HandleResumeButtonClick);
 	}
 
-	PlayAgainButtonText = CreateNewObject<TextBlock>(this);
-	if (PlayAgainButtonText.Get())
+	ResumeButtonText = CreateNewObject<TextBlock>(this);
+	if (ResumeButtonText.Get())
 	{
-		PlayAgainButtonText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::NoAlignment;
-		PlayAgainButtonText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::NoAlignment;
-		PlayAgainButtonText->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
+		ResumeButtonText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::NoAlignment;
+		ResumeButtonText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::NoAlignment;
+		ResumeButtonText->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
 
-		PlayAgainButtonText->GetText().SetText("Play Again");
-		PlayAgainButtonText->GetText().SetFontStyle({ 0, FontPrintType::Simple, RenderConstants::LightGrayPixelColorRGB });
+		ResumeButtonText->GetText().SetText("Resume");
+		ResumeButtonText->GetText().SetFontStyle({ 0, FontPrintType::Simple, RenderConstants::LightGrayPixelColorRGB });
 
-		Tree.PlaceWidgetOn(PlayAgainButtonText.Get(), PlayAgainButton.Get());
+		Tree.PlaceWidgetOn(ResumeButtonText.Get(), ResumeButton.Get());
 	}
 
-	ExitGameButton = GameObject::CloneObject<Button>(PlayAgainButton.Get(), this);
+	ExitGameButton = GameObject::CloneObject<Button>(ResumeButton.Get(), this);
 	if (ExitGameButton.Get())
 	{
 		Tree.PlaceWidgetOn(ExitGameButton.Get(), FrameVerticalBox.Get());
 
 		ExitGameButton->GetAlignment().Padding = { 0, 1, 0, 0 };
 
-		ExitGameButton->OnClickEvent().Subscribe(this, &PlayerLostMenuWidget::HandleExitGameButtonClick);
+		ExitGameButton->OnClickEvent().Subscribe(this, &GameMenuWidget::HandleExitGameButtonClick);
 	}
 
-	ExitGameButtonText = GameObject::CloneObject<TextBlock>(PlayAgainButtonText.Get(), this);
+	ExitGameButtonText = GameObject::CloneObject<TextBlock>(ResumeButtonText.Get(), this);
 	if (ExitGameButtonText.Get())
 	{
 		Tree.PlaceWidgetOn(ExitGameButtonText.Get(), ExitGameButton.Get());
@@ -103,16 +103,16 @@ PlayerLostMenuWidget::PlayerLostMenuWidget()
 	}
 }
 
-PlayerLostMenuWidget::~PlayerLostMenuWidget()
+GameMenuWidget::~GameMenuWidget()
 {
 }
 
-void PlayerLostMenuWidget::HandlePlayAgainButtonClick(Button* instigator)
+void GameMenuWidget::HandleResumeButtonClick(Button* instigator)
 {
-	PlayAgainClickEvent.Trigger();
+	ResumeClickEvent.Trigger();
 }
 
-void PlayerLostMenuWidget::HandleExitGameButtonClick(Button* instigator)
+void GameMenuWidget::HandleExitGameButtonClick(Button* instigator)
 {
 	ExitGameClickEvent.Trigger();
 }

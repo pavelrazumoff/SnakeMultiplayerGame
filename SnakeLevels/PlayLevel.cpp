@@ -4,6 +4,7 @@
 #include "SnakeObjects/Food.h"
 
 #include "SnakeWidgets/HUD/PlayerHUDWidget.h"
+#include "SnakeWidgets/Menu/GameMenuWidget.h"
 #include "SnakeWidgets/Menu/PlayerLostMenuWidget.h"
 #include "SnakePlayer/SnakePlayerState.h"
 
@@ -35,6 +36,8 @@ void PlayLevel::OpenLevel()
 	if (!PlayerHUD.IsValid())
 	{
 		PlayerHUD = CreateNewObject<PlayerHUDWidget>(this);
+
+		PlayerHUD->OnMenuOpenClickEvent().Subscribe(this, &PlayLevel::HandleGameMenuOpenClicked);
 
 		GameWidgetManager::GetInstance().PlaceUserWidgetOnScreen(PlayerHUD.Get());
 	}
@@ -95,6 +98,13 @@ void PlayLevel::ReconstructLevel()
 
 void PlayLevel::ReconstructDynamicMenu()
 {
+	// TODO: Move it to GameWidgetManager.
+	if (GameMenu.IsValid())
+	{
+		RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
+		GameMenu->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
+	}
+
 	if (PlayerLostMenu.IsValid())
 	{
 		RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
@@ -153,6 +163,33 @@ void PlayLevel::HandlePlayerLost(SnakePlayerState* Instigator)
 			ReconstructDynamicMenu();
 		}
 	}
+}
+
+void PlayLevel::HandleGameMenuOpenClicked()
+{
+	LevelManager::GetInstance().PauseGame();
+
+	// TODO: Block the underlying HUD widget from getting input.
+	if (!GameMenu.IsValid())
+	{
+		GameMenu = CreateNewObject<GameMenuWidget>(this);
+		if (GameMenu.IsValid())
+		{
+			GameMenu->OnResumeClickEvent().Subscribe(this, &PlayLevel::HandleResumeGameClicked);
+			GameMenu->OnExitGameClickEvent().Subscribe(this, &PlayLevel::HandleExitGameClicked);
+		}
+
+		GameWidgetManager::GetInstance().PlaceUserWidgetOnScreen(GameMenu.Get());
+		ReconstructDynamicMenu();
+	}
+}
+
+void PlayLevel::HandleResumeGameClicked()
+{
+	LevelManager::GetInstance().ResumeGame();
+
+	GameWidgetManager::GetInstance().RemoveUserWidgetFromScreen(GameMenu.Get());
+	GameMenu = nullptr;
 }
 
 void PlayLevel::HandlePlayAgainClicked()

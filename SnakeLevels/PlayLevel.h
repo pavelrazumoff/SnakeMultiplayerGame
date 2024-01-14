@@ -3,9 +3,11 @@
 #include "Engine/Level/GameLevel.h"
 
 class SnakePawn;
-class PlayerHUDWidget;
-class PlayerLostMenuWidget;
 class SnakePlayerState;
+
+class PlayerHUDWidget;
+class GameMenuWidget;
+class PlayerLostMenuWidget;
 
 class PlayLevel : public GameLevel
 {
@@ -30,6 +32,11 @@ protected:
 	void HandleScoreChanged(SnakePlayerState* Instigator, uint32_t newScore);
 	void HandlePlayerLost(SnakePlayerState* Instigator);
 
+	// Menu events.
+	void HandleGameMenuOpenClicked();
+
+	void HandleResumeGameClicked();
+
 	void HandlePlayAgainClicked();
 	void HandleExitGameClicked();
 
@@ -37,6 +44,7 @@ protected:
 	TObjectPtr<SnakePawn> pSnakePawn;
 
 	TObjectPtr<PlayerHUDWidget> PlayerHUD;
+	TObjectPtr<GameMenuWidget> GameMenu;
 	TObjectPtr<PlayerLostMenuWidget> PlayerLostMenu;
 
 	float SpawnNewFoodTimeValue = 1.5f;

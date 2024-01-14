@@ -34,6 +34,9 @@ public:
 
 	bool ForceReconstruct(GameWidget* Instigator);
 
+	void SetWidgetModality(bool bModal);
+	bool IsWidgetModal() const { return bModalWidget; }
+
 protected:
 	void ReconstructWidgetTree();
 	bool DoesBelongToWidgetTree(GameWidget* widget);
@@ -48,4 +51,7 @@ protected:
 	WidgetTree Tree;
 
 	TObjectPtr<CanvasWidget> Canvas;
+
+private:
+	bool bModalWidget = false;
 };
