@@ -1,5 +1,7 @@
 #include "LevelManager.h"
 
+#include "Engine/GameWidget/GameWidgetManager.h"
+
 LevelManager::LevelManager()
 {
 }
@@ -40,6 +42,31 @@ void LevelManager::CloseLevel(GameLevel* level)
 	LevelCloseEvent.Trigger(level);
 }
 
+void LevelManager::Update()
+{
+	if (CurrentLevel.IsValid())
+	{
+		if (!IsGamePaused())
+			CurrentLevel->Update(GetLevelDeltaSeconds());
+
+		CurrentLevel->Render();
+	}
+
+	// Always update widgets no matter gam is paused or not.
+	GameWidgetManager::GetInstance().Update(GetLevelDeltaSeconds());
+}
+
+void LevelManager::PassInput(const InputState& is)
+{
+	if (!IsGamePaused() && 
+		CurrentLevel.IsValid())
+	{
+		if (CurrentLevel->PassInput(is)) return;
+	}
+
+	GameWidgetManager::GetInstance().PassInput(is);
+}
+
 void LevelManager::SetLevelDeltaSeconds(float deltaSeconds)
 {
 	LevelDeltaSeconds = deltaSeconds;
@@ -48,4 +75,14 @@ void LevelManager::SetLevelDeltaSeconds(float deltaSeconds)
 float LevelManager::GetLevelDeltaSeconds() const
 {
 	return LevelDeltaSeconds;
+}
+
+void LevelManager::PauseGame()
+{
+	bGameIsPaused = true;
+}
+
+void LevelManager::ResumeGame()
+{
+	bGameIsPaused = false;
 }

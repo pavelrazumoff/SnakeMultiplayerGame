@@ -24,8 +24,16 @@ public:
 	void OpenLevel(GameLevel* level);
 	void CloseLevel(GameLevel* level);
 
+	void Update();
+	void PassInput(const InputState& is);
+
 	void SetLevelDeltaSeconds(float deltaSeconds);
 	float GetLevelDeltaSeconds() const;
+
+	void PauseGame();
+	void ResumeGame();
+
+	bool IsGamePaused() const { return bGameIsPaused; }
 
 	GameLevel* GetCurrentLevel() { return CurrentLevel.Get(); }
 
@@ -60,4 +68,6 @@ protected:
 private:
 	TObjectPtr<GameLevel> CurrentLevel;
 	float LevelDeltaSeconds = 0.0f;
+
+	bool bGameIsPaused = false;
 };

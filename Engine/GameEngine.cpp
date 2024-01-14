@@ -139,12 +139,8 @@ void GameEngine::Run()
 		{
 			CollisionManager::GetInstance().UpdateTracking();
 
-			if (auto pLevel = LevelManager::GetInstance().GetCurrentLevel())
-			{
-				pLevel->PassInput(LastInputState);
-				pLevel->Update(LevelManager::GetInstance().GetLevelDeltaSeconds());
-			}
-			else break;
+			LevelManager::GetInstance().PassInput(LastInputState);
+			LevelManager::GetInstance().Update();
 		}
 
 		RenderManager::GetInstance().Render();

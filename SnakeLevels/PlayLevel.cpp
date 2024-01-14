@@ -138,7 +138,8 @@ void PlayLevel::HandlePlayerLost(SnakePlayerState* Instigator)
 	// If the player who has lost is us.
 	if (PlayerManager::GetInstance().GetPlayerState() == Instigator)
 	{
-		// TODO: Stop the game. Block the player input except menu handling.
+		LevelManager::GetInstance().PauseGame();
+
 		if (!PlayerLostMenu.IsValid())
 		{
 			PlayerLostMenu = CreateNewObject<PlayerLostMenuWidget>(this);
@@ -156,6 +157,8 @@ void PlayLevel::HandlePlayerLost(SnakePlayerState* Instigator)
 
 void PlayLevel::HandlePlayAgainClicked()
 {
+	LevelManager::GetInstance().ResumeGame();
+
 	PlayLevel* playLevel = CreateNewObject<PlayLevel>();
 	LevelManager::GetInstance().OpenLevel(playLevel);
 }

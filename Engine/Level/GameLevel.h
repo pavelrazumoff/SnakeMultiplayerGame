@@ -25,6 +25,7 @@ public:
 	virtual void CloseLevel();
 
 	virtual void Update(float DeltaTime);
+	virtual void Render();
 
 	virtual bool PassInput(const InputState& is) override;
 
