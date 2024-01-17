@@ -5,9 +5,6 @@
 
 void ApplyAlignmentSettings(GameWidget* parentWidget, GameWidget* underlayWidget)
 {
-	const AlignmentSettings* alignmentSettings = GameWidget::FindWidgetComponent<AlignmentSettings>(underlayWidget);
-	if (!alignmentSettings) return;
-
 	/*
 		TODO: Take parentWidget, get some component that handle positioning inside a widget.
 		Then take the free rect space from it, where we can put this underlayWidget.
@@ -15,10 +12,18 @@ void ApplyAlignmentSettings(GameWidget* parentWidget, GameWidget* underlayWidget
 	*/
 
 	WidgetContainerComponent* parentContainerComponent = GameWidget::FindWidgetComponent<WidgetContainerComponent>(parentWidget);
-
 	RC_RECT parentRect = parentContainerComponent ? parentContainerComponent->GetContainerFreeRect() : parentWidget->GetCachedActualRect();
-	RC_SIZE underlayWidgetDirtySize = underlayWidget->GetCachedDirtySize();
 
+	ApplyAlignmentSettings(underlayWidget, parentRect);
+	if (parentContainerComponent) parentContainerComponent->PlaceInContainer(underlayWidget->GetCachedActualRect());
+}
+
+void ApplyAlignmentSettings(GameWidget* underlayWidget, RC_RECT parentRect)
+{
+	const AlignmentSettings* alignmentSettings = GameWidget::FindWidgetComponent<AlignmentSettings>(underlayWidget);
+	if (!alignmentSettings) return;
+
+	RC_SIZE underlayWidgetDirtySize = underlayWidget->GetCachedDirtySize();
 	RC_RECT newUnderlayWidgetRect = { 0 };
 
 	const bool bAllowStretch = (alignmentSettings->Stretch != AlignmentSettings::StretchMode::NoStretch);
@@ -100,5 +105,16 @@ void ApplyAlignmentSettings(GameWidget* parentWidget, GameWidget* underlayWidget
 	}
 
 	underlayWidget->RepositionWidget(newUnderlayWidgetRect);
-	if (parentContainerComponent) parentContainerComponent->PlaceInContainer(newUnderlayWidgetRect);
+}
+
+RC_SIZE GetWidgetOccupiedSize(GameWidget* underlayWidget)
+{
+	const AlignmentSettings* alignmentSettings = GameWidget::FindWidgetComponent<AlignmentSettings>(underlayWidget);
+	if (!alignmentSettings) return RC_SIZE();
+
+	RC_SIZE underlayWidgetDirtySize = underlayWidget->GetCachedDirtySize();
+	RC_SIZE occupiedSize = { alignmentSettings->Padding.left + underlayWidgetDirtySize.cx + alignmentSettings->Padding.right,
+		alignmentSettings->Padding.top + underlayWidgetDirtySize.cy + alignmentSettings->Padding.bottom };
+
+	return occupiedSize;
 }

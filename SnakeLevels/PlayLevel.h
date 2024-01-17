@@ -9,6 +9,8 @@ class PlayerHUDWidget;
 class GameMenuWidget;
 class PlayerLostMenuWidget;
 
+class TimerHandler;
+
 class PlayLevel : public GameLevel
 {
 	typedef GameLevel Inherited;
@@ -40,6 +42,9 @@ protected:
 	void HandlePlayAgainClicked();
 	void HandleExitGameClicked();
 
+	// Timer events.
+	void UpdateFPSCounter();
+
 protected:
 	TObjectPtr<SnakePawn> pSnakePawn;
 
@@ -52,4 +57,6 @@ protected:
 
 private:
 	float SpawnNewFoodTimer = 0.0f;
+
+	TObjectPtr<TimerHandler> FPSCounterTimer;
 };

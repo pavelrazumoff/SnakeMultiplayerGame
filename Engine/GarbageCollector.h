@@ -1,7 +1,9 @@
 #pragma once
 
 #include <vector>
-#include "GameObject/GameObject.h"
+#include "GameObject/GameObjectPtr.h"
+
+class TimerHandler;
 
 class GarbageCollector
 {
@@ -13,13 +15,20 @@ public:
 
 	static GarbageCollector& GetInstance();
 
+	void Initialize();
+
 	void Update();
 	void Free();
 
 	void StartTrackObject(GameObject* Object);
 
+protected:
+	void PerformGarbageCollection();
+
 private:
 	std::vector<GameObject*> TrackGameObjects;
 
 	static uint32_t GameObjectsCounter;
+
+	TObjectPtr<TimerHandler> CollectTimer;
 };

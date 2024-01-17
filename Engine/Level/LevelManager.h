@@ -27,9 +27,6 @@ public:
 	void Update();
 	void PassInput(const InputState& is);
 
-	void SetLevelDeltaSeconds(float deltaSeconds);
-	float GetLevelDeltaSeconds() const;
-
 	void PauseGame();
 	void ResumeGame();
 
@@ -67,7 +64,6 @@ protected:
 
 private:
 	TObjectPtr<GameLevel> CurrentLevel;
-	float LevelDeltaSeconds = 0.0f;
 
 	bool bGameIsPaused = false;
 };

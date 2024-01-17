@@ -29,13 +29,14 @@ void RenderConsoleLibrary::FillConsoleRegion(TEX_PIXEL cCharacter, RC_INT x, RC_
 {
 	#if USE_VIRTUAL_TERMINAL_PROCESSING()
 
+	std::string buff;
 	for (RC_UINT i = 0; i < height; ++i)
 	{
-		RenderConsoleLibrary::SetCursorPosition(x, y + i);
-
-		std::string printBuf(width, cCharacter);
-		printf("%s", printBuf.c_str());
+		buff += GetCursorPosition(x, y + i);
+		buff += std::string(width, cCharacter);
 	}
+
+	printf("%s", buff.c_str());
 
 	#else
 	COORD coordScreen = { x, y };
@@ -53,10 +54,10 @@ void RenderConsoleLibrary::FillConsoleLineWithBlock(const TEX_PIXEL* cBlock, RC_
 {
 	#if USE_VIRTUAL_TERMINAL_PROCESSING()
 
-	RenderConsoleLibrary::SetCursorPosition(x, y);
+	std::string buff = GetCursorPosition(x, y);
 
-	std::string printBuf(cBlock, cBlock + blockLen);
-	printf("%s", printBuf.c_str());
+	buff += std::string(cBlock, cBlock + blockLen);
+	printf("%s", buff.c_str());
 
 	#else // USE_VIRTUAL_TERMINAL_PROCESSING()
 	COORD coordScreen = { x, y };
@@ -142,7 +143,12 @@ void RenderConsoleLibrary::SetConsoleCaption(const char* caption)
 
 void RenderConsoleLibrary::SetCursorPosition(RC_INT x, RC_INT y)
 {
-	printf("\x1B[%d;%dH", y + 1, x + 1);
+	printf("%s", GetCursorPosition(x, y).c_str());
+}
+
+std::string RenderConsoleLibrary::GetCursorPosition(RC_INT x, RC_INT y)
+{
+	return std::string("\x1B[" + std::to_string(y + 1) + ";" + std::to_string(x + 1) + "H");
 }
 
 void RenderConsoleLibrary::ShowCursor(bool bShow)

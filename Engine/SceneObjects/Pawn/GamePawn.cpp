@@ -1,7 +1,7 @@
 #include "GamePawn.h"
 #include "../Components/MovementComponent.h"
 
-#include "Engine/Level/LevelManager.h"
+#include "Engine/Other/TimeManager.h"
 
 GamePawn::GamePawn()
 {
@@ -31,7 +31,7 @@ void GamePawn::AddMovement(const LV_VECTOR& Direction, float Scale)
 void GamePawn::_MovePawn(const LV_VECTOR& ScaledDirection)
 {
 	LV_COORD currentLocation = GetLocation();
-	LV_COORD newLocation = currentLocation + ScaledDirection * LevelManager::GetInstance().GetLevelDeltaSeconds();
+	LV_COORD newLocation = currentLocation + ScaledDirection * TimeManager::GetInstance().GetFrameDeltaSeconds();
 
 	SetLocation(newLocation);
 }

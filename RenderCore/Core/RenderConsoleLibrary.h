@@ -3,6 +3,8 @@
 #include "RenderCore.h"
 #include "RCDataTypes.h"
 
+#include <string>
+
 #define USE_VIRTUAL_TERMINAL_PROCESSING() 1
 
 class RENDERCORE_API RenderConsoleLibrary
@@ -22,6 +24,8 @@ public:
 	static void SetConsoleCaption(const char* caption);
 
 	static void SetCursorPosition(RC_INT x, RC_INT y);
+	static std::string GetCursorPosition(RC_INT x, RC_INT y);
+
 	static void ShowCursor(bool bShow);
 	static void SetTextScrollingMargins(RC_INT top, RC_INT bottom);
 

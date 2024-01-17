@@ -40,3 +40,6 @@ public:
 class GameWidget;
 
 void ApplyAlignmentSettings(GameWidget* parentWidget, GameWidget* underlayWidget);
+void ApplyAlignmentSettings(GameWidget* underlayWidget, RC_RECT parentRect);
+
+RC_SIZE GetWidgetOccupiedSize(GameWidget* underlayWidget);

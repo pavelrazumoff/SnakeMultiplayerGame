@@ -154,6 +154,9 @@
     <Filter Include="Source Files\SnakeObjects\Components">
       <UniqueIdentifier>{c0f131a5-18df-4737-a005-ce20b703bfda}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Engine\Other">
+      <UniqueIdentifier>{c7c4e80a-a485-4d6a-8817-54ee24c5ad17}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -305,6 +308,9 @@
     </ClCompile>
     <ClCompile Include="SnakeWidgets\Menu\GameMenuWidget.cpp">
       <Filter>Source Files\SnakeWidgets\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Other\TimeManager.cpp">
+      <Filter>Source Files\Engine\Other</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

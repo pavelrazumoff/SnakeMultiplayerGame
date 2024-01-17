@@ -10,7 +10,7 @@
 PlayerHUDWidget::PlayerHUDWidget()
 {
 	TopPanelWidget = CreateNewObject<PanelWidget>(this);
-	if (TopPanelWidget.Get())
+	if (TopPanelWidget.IsValid())
 	{
 		if (auto pBrush = TopPanelWidget->GetBackgroundBrush())
 		{
@@ -31,17 +31,17 @@ PlayerHUDWidget::PlayerHUDWidget()
 	}
 
 	TopHorizontalBox = CreateNewObject<HorizontalBox>(this);
-	if (TopHorizontalBox.Get())
+	if (TopHorizontalBox.IsValid())
 	{
 		Tree.PlaceWidgetOn(TopHorizontalBox.Get(), TopPanelWidget.Get());
 	}
 
 	ScoreText = CreateNewObject<TextBlock>(this);
-	if (ScoreText.Get())
+	if (ScoreText.IsValid())
 	{
 		ScoreText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Left;
 		ScoreText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Center;
-		ScoreText->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
+		ScoreText->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
 		ScoreText->GetAlignment().Padding = { 2, 0, 0, 0 };
 
 		ScoreText->GetText().SetText("Score: 0");
@@ -50,8 +50,22 @@ PlayerHUDWidget::PlayerHUDWidget()
 		Tree.PlaceWidgetOn(ScoreText.Get(), TopHorizontalBox.Get());
 	}
 
+	FPSCounterText = CreateNewObject<TextBlock>(this);
+	if (FPSCounterText.IsValid())
+	{
+		FPSCounterText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Right;
+		FPSCounterText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Center;
+		FPSCounterText->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
+		FPSCounterText->GetAlignment().Padding = { 0, 0, 2, 0 };
+
+		FPSCounterText->GetText().SetText("FPS: 0");
+		FPSCounterText->GetText().SetFontStyle({ 1, FontPrintType::Simple, RenderConstants::LightGreenPixelColorRGB });
+
+		Tree.PlaceWidgetOn(FPSCounterText.Get(), TopHorizontalBox.Get());
+	}
+
 	MenuButton = CreateNewObject<Button>(this);
-	if (MenuButton.Get())
+	if (MenuButton.IsValid())
 	{
 		MenuButton->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Right;
 		MenuButton->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::NoAlignment;
@@ -68,7 +82,7 @@ PlayerHUDWidget::PlayerHUDWidget()
 	}
 
 	MenuButtonText = CreateNewObject<TextBlock>(this);
-	if (MenuButtonText.Get())
+	if (MenuButtonText.IsValid())
 	{
 		MenuButtonText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::NoAlignment;
 		MenuButtonText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::NoAlignment;
@@ -90,6 +104,14 @@ void PlayerHUDWidget::SetScore(uint32_t score)
 	if (ScoreText.IsValid())
 	{
 		ScoreText->SetText("Score: " + std::to_string(score));
+	}
+}
+
+void PlayerHUDWidget::SetFPSCounter(uint32_t fps)
+{
+	if (FPSCounterText.IsValid())
+	{
+		FPSCounterText->SetText("FPS: " + std::to_string(fps));
 	}
 }
 

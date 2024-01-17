@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 
+#include "Other/TimeManager.h"
 #include "GarbageCollector.h"
 #include "Render/RenderManager.h"
 #include "Input/InputManager.h"
@@ -14,7 +15,6 @@
 
 #include "Math/MathLibrary.h"
 
-#include <chrono>
 #include <shared_mutex>
 
 /*
@@ -76,6 +76,9 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 {
 	FillEngineProperties();
 
+	TimeManager::GetInstance().Initialize();
+	GarbageCollector::GetInstance().Initialize();
+
 	Logger::GetInstance().Initialize("engine_log.log");
 
 	#if _DEBUG
@@ -118,15 +121,7 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 
 void GameEngine::Run()
 {
-	using namespace std::chrono;
-
-	float GarbageCollectorWaitTime = 0.0f;
-	const float GarbageCollectorWaitTimeLimit = 2.0f;
-
-	float FPSWaitTime = 0.0f;
-	const float FPSWaitTimeLimit = 0.1f;
-
-	auto Start = high_resolution_clock::now();
+	TimeManager::GetInstance().StartClock();
 
 	bIsRunning = true;
 	StartThreads();
@@ -148,37 +143,7 @@ void GameEngine::Run()
 
 		RenderManager::GetInstance().Render();
 
-		// Calculating the DeltaTime.
-		{
-			auto End = high_resolution_clock::now();
-
-			LevelManager::GetInstance().SetLevelDeltaSeconds(duration_cast<duration<float>>(End - Start).count());
-			Start = End;
-		}
-
-		// Garbage collection.
-		{
-			GarbageCollectorWaitTime += LevelManager::GetInstance().GetLevelDeltaSeconds();
-
-			if (GarbageCollectorWaitTime >= GarbageCollectorWaitTimeLimit)
-			{
-				GarbageCollector::GetInstance().Update();
-				GarbageCollectorWaitTime -= GarbageCollectorWaitTimeLimit;
-			}
-		}
-
-		// FPS.
-		{
-			FPSWaitTime += LevelManager::GetInstance().GetLevelDeltaSeconds();
-
-			if (FPSWaitTime >= FPSWaitTimeLimit)
-			{
-				std::string logMessage = "FPS: " + std::to_string(1.0f / LevelManager::GetInstance().GetLevelDeltaSeconds());
-				Logger::GetInstance().Write(logMessage.c_str());
-
-				FPSWaitTime -= FPSWaitTimeLimit;
-			}
-		}
+		TimeManager::GetInstance().Update();
 	}
 
 	bIsRunning = false; // In case we did exit the loop with break.

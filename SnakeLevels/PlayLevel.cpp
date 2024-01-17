@@ -15,6 +15,7 @@
 #include "Core/RenderConsoleLibrary.h"
 
 #include "Engine/Math/MathLibrary.h"
+#include "Engine/Other/TimeManager.h"
 
 PlayLevel::PlayLevel()
 {
@@ -27,6 +28,15 @@ PlayLevel::~PlayLevel()
 void PlayLevel::OpenLevel()
 {
 	Inherited::OpenLevel();
+
+	FPSCounterTimer = CreateNewObject<TimerHandler>(this);
+	if (FPSCounterTimer.IsValid())
+	{
+		FPSCounterTimer->SetSingleFire(false);
+		FPSCounterTimer->SetTimeLimit(0.25f);
+
+		TimeManager::GetInstance().BindTimerHandler(FPSCounterTimer, this, &PlayLevel::UpdateFPSCounter);
+	}
 
 	RC_SIZE screenDim = RenderConsoleLibrary::GetConsoleDimensions();
 
@@ -138,9 +148,8 @@ void PlayLevel::CheckForBoundaries()
 
 void PlayLevel::HandleScoreChanged(SnakePlayerState* /*Instigator*/, uint32_t newScore)
 {
-	if (!PlayerHUD.IsValid()) return;
-
-	PlayerHUD->SetScore(newScore);
+	if (PlayerHUD.IsValid())
+		PlayerHUD->SetScore(newScore);
 }
 
 void PlayLevel::HandlePlayerLost(SnakePlayerState* Instigator)
@@ -203,4 +212,11 @@ void PlayLevel::HandlePlayAgainClicked()
 void PlayLevel::HandleExitGameClicked()
 {
 	LevelManager::GetInstance().CloseLevel(this);
+}
+
+void PlayLevel::UpdateFPSCounter()
+{
+	// TODO: Show average FPS instead of the last second.
+	if (PlayerHUD.IsValid())
+		PlayerHUD->SetFPSCounter((uint32_t)(1.0f / TimeManager::GetInstance().GetFrameDeltaSeconds()));
 }
