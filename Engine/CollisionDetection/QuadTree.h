@@ -36,8 +36,8 @@ public:
 	bool Insert(ICollider* collider);
 	bool Insert(QuadTreeNode* node, ICollider* collider);
 
-	void Remove(ICollider* collider);
-	void Remove(QuadTreeNode* node, ICollider* collider);
+	bool Remove(ICollider* collider);
+	bool Remove(QuadTreeNode* node, ICollider* collider);
 
 	void QueryRangeFor(const ICollider* colliderCheck, std::vector<ICollider*>& outColliders);
 	void QueryRange(QuadTreeNode* node, const ICollider* colliderCheck, std::vector<ICollider*>& outColliders);

@@ -1,6 +1,7 @@
 #include "GameLevel.h"
 
 #include "Engine/Render/RenderManager.h"
+#include "Engine/CollisionDetection/CollisionManager.h"
 
 GameLevel::GameLevel()
 {
@@ -12,6 +13,8 @@ GameLevel::~GameLevel()
 
 void GameLevel::OpenLevel()
 {
+	// Always reset the collision manager when opening a level.
+	CollisionManager::GetInstance().ResetAll();
 }
 
 void GameLevel::CloseLevel()

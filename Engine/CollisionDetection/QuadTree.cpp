@@ -44,26 +44,28 @@ bool QuadTree::Insert(QuadTreeNode* node, ICollider* collider)
 	return true;
 }
 
-void QuadTree::Remove(ICollider* collider)
+bool QuadTree::Remove(ICollider* collider)
 {
-	Remove(root, collider);
+	return Remove(root, collider);
 }
 
-void QuadTree::Remove(QuadTreeNode* node, ICollider* collider)
+bool QuadTree::Remove(QuadTreeNode* node, ICollider* collider)
 {
-	if (!node) return;
+	if (!node) return false;
 
 	for (auto it = node->colliders.begin(); it != node->colliders.end(); ++it)
 	{
 		if (*it == collider)
 		{
 			node->colliders.erase(it);
-			return;
+			return true;
 		}
 	}
 
 	for (int i = 0; i < 4; ++i)
-		Remove(node->children[i], collider);
+		if (Remove(node->children[i], collider)) return true;
+
+	return false;
 }
 
 void QuadTree::QueryRangeFor(const ICollider* colliderCheck, std::vector<ICollider*>& outColliders)
@@ -98,8 +100,8 @@ void QuadTree::Subdivide(QuadTreeNode* node)
 	float maxX = node->boundary.maxX;
 	float maxY = node->boundary.maxY;
 
-	float midX = round((minX + maxX) / 2.0f);
-	float midY = round((minY + maxY) / 2.0f);
+	float midX = (float)round((minX + maxX) / 2.0f);
+	float midY = (float)round((minY + maxY) / 2.0f);
 
 	node->children[0] = new QuadTreeNode(AABB(minX, minY, midX, midY));
 	node->children[1] = new QuadTreeNode(AABB(midX, minY, maxX, midY));

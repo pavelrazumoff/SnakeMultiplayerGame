@@ -237,16 +237,6 @@ void SnakePawn::SyncBodyMovementWithCollision()
 
 	AABB firstBodyAABB = { bodyPoint.x, bodyPoint.y, bodyPoint.x, bodyPoint.y };
 	TailCollisionComponent->AddBodyAABB(firstBodyAABB, 0);
-
-	//if (TailCollisionComponent->GetBodyAABBCount() < 2) return;
-	//
-	//TailCollisionComponent->RemoveBodyAABB(TailCollisionComponent->GetBodyAABBCount() - 1);
-	//
-	//bodyPoint = bodyPoints.back().Location;
-	//bodyPoint.Round();
-	//
-	//AABB lastBodyAABB = { bodyPoint.x, bodyPoint.y, bodyPoint.x, bodyPoint.y };
-	//TailCollisionComponent->AddBodyAABB(lastBodyAABB);
 }
 
 /*

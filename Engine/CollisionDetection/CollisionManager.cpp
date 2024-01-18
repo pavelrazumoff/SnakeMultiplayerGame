@@ -23,7 +23,7 @@ CollisionManager& CollisionManager::GetInstance()
 
 void CollisionManager::Initialize()
 {
-	ReconstructQuadTree();
+	//ReconstructQuadTree();
 }
 
 void CollisionManager::Reconstruct()
@@ -40,6 +40,12 @@ void CollisionManager::ReconstructQuadTree()
 	AABB treeBoundary(0.0f, 0.0f, (float)screenDim.cx, (float)screenDim.cy);
 
 	CollisionQuadTree = std::make_shared<QuadTree>(treeBoundary, 4);
+}
+
+void CollisionManager::ResetAll()
+{
+	ReconstructQuadTree();
+	TrackedCollisionComponents.clear();
 }
 
 void CollisionManager::UpdateTracking()

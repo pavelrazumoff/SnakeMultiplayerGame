@@ -83,7 +83,7 @@ void CollisionComponent::SetSceneLocation(LV_COORD sceneLocation)
 	LV_COORD oldSceneLocation = GetSceneLocation();
 	Inherited::SetSceneLocation(sceneLocation);
 
-	if (!oldSceneLocation.Compare(GetSceneLocation(), 1.0f))
+	//if (!oldSceneLocation.Compare(GetSceneLocation(), 1.0f))
 		CollisionManager::GetInstance().UpdateCollisionComponent(this);
 }
 
