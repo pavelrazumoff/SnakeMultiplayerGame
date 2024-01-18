@@ -9,6 +9,7 @@
 #include "Log/Logger.h"
 #include "EngineFactory.h"
 #include "Player/PlayerManager.h"
+#include "Other/ProfilerManager.h"
 
 #include "Core/RenderConsoleLibrary.h"
 #include "Draw/DrawConsoleLibrary.h"
@@ -117,6 +118,8 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 
 	EngineFactory::GetInstance().RegisterType("PlayerState", new PlayerState());
 	PlayerManager::GetInstance().Initialize();
+
+	ProfilerManager::GetInstance().Initialize();
 }
 
 void GameEngine::Run()
@@ -144,6 +147,7 @@ void GameEngine::Run()
 		RenderManager::GetInstance().Render();
 
 		TimeManager::GetInstance().Update();
+		ProfilerManager::GetInstance().Update();
 	}
 
 	bIsRunning = false; // In case we did exit the loop with break.

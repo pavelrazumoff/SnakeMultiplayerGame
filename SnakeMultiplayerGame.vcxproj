@@ -171,6 +171,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\Log\Logger.cpp" />
     <ClCompile Include="Engine\Math\MathLibrary.cpp" />
     <ClCompile Include="Engine\MemoryReflectionSystem.cpp" />
+    <ClCompile Include="Engine\Other\ProfilerManager.cpp" />
     <ClCompile Include="Engine\Other\TimeManager.cpp" />
     <ClCompile Include="Engine\Player\PlayerManager.cpp" />
     <ClCompile Include="Engine\Player\PlayerState.cpp" />
@@ -237,6 +238,8 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\Log\Logger.h" />
     <ClInclude Include="Engine\Math\MathLibrary.h" />
     <ClInclude Include="Engine\MemoryReflectionSystem.h" />
+    <ClInclude Include="Engine\Other\ProfilerManager.h" />
+    <ClInclude Include="Engine\Other\TimeManager.h" />
     <ClInclude Include="Engine\Player\PlayerManager.h" />
     <ClInclude Include="Engine\Player\PlayerState.h" />
     <ClInclude Include="Engine\Render\Renderable.h" />

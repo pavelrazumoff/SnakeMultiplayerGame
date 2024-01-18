@@ -12,6 +12,7 @@
 
 #include "Engine/EngineFactory.h"
 #include "Engine/Player/PlayerManager.h"
+#include "Engine/Other/ProfilerManager.h"
 
 #include "SnakePlayer/SnakePlayerState.h"
 
@@ -25,6 +26,8 @@ int main()
 	// TODO: Move out to the GameMode analogue class.
 	EngineFactory::GetInstance().RegisterType("SnakePlayerState", new SnakePlayerState());
 	PlayerManager::GetInstance().SetPlayerStateClass("SnakePlayerState");
+
+	ProfilerManager::GetInstance().EnableCategory(ProfilerCategory::FPS, true);
 
 	GameEngine gameEngine(gameProps);
 

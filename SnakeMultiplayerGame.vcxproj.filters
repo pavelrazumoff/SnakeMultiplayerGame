@@ -157,6 +157,9 @@
     <Filter Include="Source Files\Engine\Other">
       <UniqueIdentifier>{c7c4e80a-a485-4d6a-8817-54ee24c5ad17}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Other">
+      <UniqueIdentifier>{4888d10f-a2be-4001-9493-2ba8ac15025c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -310,6 +313,9 @@
       <Filter>Source Files\SnakeWidgets\Menu</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Other\TimeManager.cpp">
+      <Filter>Source Files\Engine\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Other\ProfilerManager.cpp">
       <Filter>Source Files\Engine\Other</Filter>
     </ClCompile>
   </ItemGroup>
@@ -511,6 +517,12 @@
     </ClInclude>
     <ClInclude Include="SnakeWidgets\Menu\GameMenuWidget.h">
       <Filter>Header Files\SnakeWidgets\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Other\TimeManager.h">
+      <Filter>Header Files\Engine\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Other\ProfilerManager.h">
+      <Filter>Header Files\Engine\Other</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

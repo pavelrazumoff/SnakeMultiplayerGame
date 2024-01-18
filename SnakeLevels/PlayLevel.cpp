@@ -16,6 +16,7 @@
 
 #include "Engine/Math/MathLibrary.h"
 #include "Engine/Other/TimeManager.h"
+#include "Engine/Other/ProfilerManager.h"
 
 PlayLevel::PlayLevel()
 {
@@ -216,7 +217,6 @@ void PlayLevel::HandleExitGameClicked()
 
 void PlayLevel::UpdateFPSCounter()
 {
-	// TODO: Show average FPS instead of the last second.
 	if (PlayerHUD.IsValid())
-		PlayerHUD->SetFPSCounter((uint32_t)(1.0f / TimeManager::GetInstance().GetFrameDeltaSeconds()));
+		PlayerHUD->SetFPSCounter((uint32_t)ProfilerManager::GetInstance().GetAverageFPS());
 }
