@@ -29,7 +29,7 @@ MainMenuWidget::MainMenuWidget()
 
 		TopPanelWidget->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::NoAlignment;
 		TopPanelWidget->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Top;
-		TopPanelWidget->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
+		TopPanelWidget->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
 
 		TopPanelWidget->GetLayout().DimensionsOverride.cy = 2;
 
@@ -40,10 +40,12 @@ MainMenuWidget::MainMenuWidget()
 	if (WelcomeCaptionText.Get())
 	{
 		WelcomeCaptionText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
-		WelcomeCaptionText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Center;
-		WelcomeCaptionText->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
+		WelcomeCaptionText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Bottom;
+		WelcomeCaptionText->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
 
-		WelcomeCaptionText->GetText().SetText("Welcome to the Snake Game!");
+		WelcomeCaptionText->GetAlignment().Padding = { 0, 0, 0, 2 };
+
+		WelcomeCaptionText->GetText().SetText("The Snake Game");
 		WelcomeCaptionText->GetText().SetFontStyle({ 1, FontPrintType::LetterBig, RenderConstants::LightGrayPixelColorRGB });
 
 		Tree.PlaceWidgetOn(WelcomeCaptionText.Get(), MainVerticalBox.Get());
@@ -55,6 +57,8 @@ MainMenuWidget::MainMenuWidget()
 		StartGameButton->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
 		StartGameButton->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Top;
 		StartGameButton->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
+
+		StartGameButton->GetAlignment().Padding = { 0, 0, 0, 1 };
 
 		StartGameButton->GetLayout().DimensionsOverride.cx = 14;
 		StartGameButton->GetLayout().DimensionsOverride.cy = 3;
@@ -80,6 +84,8 @@ MainMenuWidget::MainMenuWidget()
 	ExitGameButton = GameObject::CloneObject<Button>(StartGameButton.Get(), this);
 	if (ExitGameButton.Get())
 	{
+		ExitGameButton->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
+
 		Tree.PlaceWidgetOn(ExitGameButton.Get(), MainVerticalBox.Get());
 
 		ExitGameButton->OnClickEvent().Subscribe(this, &MainMenuWidget::HandleExitGameButtonClick);
@@ -105,6 +111,7 @@ MainMenuWidget::MainMenuWidget()
 		}
 
 		BottomPanelWidget->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Bottom;
+		BottomPanelWidget->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
 	
 		Tree.PlaceWidgetOn(BottomPanelWidget.Get(), MainVerticalBox.Get());
 	}

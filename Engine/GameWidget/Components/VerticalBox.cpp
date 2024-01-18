@@ -51,6 +51,8 @@ void VerticalBox::ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size_
 	RC_UINT stretchedFreeHeight = availableContainerHeight;
 	if (numStretchElements > 0) stretchedFreeHeight /= numStretchElements;
 
+	const bool bAddFinalPixel = (numStretchElements > 0) ? (availableContainerHeight % numStretchElements) != 0 : false;
+
 	for (size_t i = 0; i < underlayWidgetsCount; ++i)
 	{
 		const AlignmentSettings* alignmentSettings = GameWidget::FindWidgetComponent<AlignmentSettings>(underlayWidgets[i]);
@@ -60,16 +62,18 @@ void VerticalBox::ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size_
 		if (bAllowStretch)
 		{
 			containerFreeRect.bottom = containerFreeRect.top + stretchedFreeHeight - 1;
-
-			ApplyAlignmentSettings(underlayWidgets[i], containerFreeRect);
 		}
 		else
 		{
 			RC_SIZE underlayWidgetOccupiedSize = GetWidgetOccupiedSize(underlayWidgets[i]);
 			containerFreeRect.bottom = containerFreeRect.top + underlayWidgetOccupiedSize.cy - 1;
-
-			ApplyAlignmentSettings(underlayWidgets[i], containerFreeRect);
 		}
+
+		if (bAddFinalPixel &&
+			(i + 1 == underlayWidgetsCount))
+			containerFreeRect.bottom++;
+
+		ApplyAlignmentSettings(underlayWidgets[i], containerFreeRect);
 
 		// Prepare container free space for the next widget.
 		containerFreeRect.top = containerFreeRect.bottom + 1;

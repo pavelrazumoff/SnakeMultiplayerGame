@@ -17,7 +17,7 @@ PlayerLostMenuWidget::PlayerLostMenuWidget()
 		if (auto pBrush = MenuFrameWidget->GetBackgroundBrush())
 		{
 			BrushStyle panelStyle;
-			panelStyle.FillPixel = '*';
+			panelStyle.FillPixel = '.';
 			panelStyle.FillColorRGB = RenderConstants::DarkGrayPixelColorRGB;
 
 			pBrush->SetBrushStyle(panelStyle);
@@ -44,7 +44,7 @@ PlayerLostMenuWidget::PlayerLostMenuWidget()
 	{
 		CaptionText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
 		CaptionText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Top;
-		CaptionText->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
+		CaptionText->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
 
 		CaptionText->GetAlignment().Padding = { 0, 2, 0, 0 };
 
