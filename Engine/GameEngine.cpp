@@ -138,7 +138,8 @@ void GameEngine::Run()
 
 		// Do the game logic here.
 		{
-			CollisionManager::GetInstance().UpdateTracking();
+			if (!LevelManager::GetInstance().IsGamePaused())
+				CollisionManager::GetInstance().UpdateTracking();
 
 			LevelManager::GetInstance().PassInput(LastInputState);
 			LevelManager::GetInstance().Update();
@@ -208,6 +209,8 @@ void GameEngine::RefreshInputState()
 // Input Events.
 void GameEngine::HandleKeyPressEvent(WORD keyCode)
 {
+	std::lock_guard<std::mutex> lock(InputStateMutex);
+
 	auto& keyQueue = ActualInputState.KeyPressedQueue;
 	if (std::find(keyQueue.begin(), keyQueue.end(), keyCode) == keyQueue.end())
 		keyQueue.push_back(keyCode);
@@ -215,15 +218,41 @@ void GameEngine::HandleKeyPressEvent(WORD keyCode)
 
 void GameEngine::HandleKeyReleaseEvent(WORD keyCode)
 {
+	std::lock_guard<std::mutex> lock(InputStateMutex);
+
 	std::erase(ActualInputState.KeyPressedQueue, keyCode);
+	const bool bOnlyOneKeyPressed = ActualInputState.KeyPressedQueue.empty();
+
+	// TODO: Make exceptions here, of there will be some combos.
+	if (!bOnlyOneKeyPressed) return;
+
+	ProfilerEngineFeature pickedFeature = ProfilerEngineFeature::CollisionDetection;
 
 	switch (keyCode)
 	{
 		case VK_ESCAPE:
 			StopEngine();
 			break;
+		case VK_F1:
+			pickedFeature = ProfilerEngineFeature::CollisionDetection;
+			break;
+		case VK_F2:
+			pickedFeature = ProfilerEngineFeature::RenderScene;
+			break;
+		case VK_F3:
+			pickedFeature = ProfilerEngineFeature::RenderWidgets;
+			break;
+		case VK_F4:
+			pickedFeature = ProfilerEngineFeature::UpdateScene;
+			break;
 		default:
 			break;
+	}
+
+	if (keyCode >= VK_F1 && keyCode <= VK_F4)
+	{
+		ProfilerManager::GetInstance().EnableEngineFeature(pickedFeature,
+			!ProfilerManager::GetInstance().IsEngineFeatureEnabled(pickedFeature));
 	}
 }
 

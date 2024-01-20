@@ -58,6 +58,8 @@ private:
 
 	void _OnWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr);
 
+	bool _CheckIfAlreadyHandled(const INPUT_RECORD* irs, int indexToCheck) const;
+
 protected:
 	KeyDelegate KeyPressEvent;
 	KeyDelegate KeyReleaseEvent;

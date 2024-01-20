@@ -7,7 +7,7 @@
 #include "Engine/EngineUtility.h"
 #include "Engine/Log/Logger.h"
 
-#include <chrono>
+//#include <chrono>
 
 RenderManager::RenderManager()
 {
@@ -26,6 +26,9 @@ void RenderManager::Initialize()
 
 	RenderConsoleLibrary::ShowCursor(false);
 	#endif // USE_VIRTUAL_TERMINAL_PROCESSING()
+
+	RenderManager::GetInstance().ReserveRenderQueueSpace(RenderPriorityGroup::SceneObject, 100);
+	RenderManager::GetInstance().ReserveRenderQueueSpace(RenderPriorityGroup::UI, 10);
 
 	ReconstructRenderBuffer();
 }
@@ -53,10 +56,9 @@ void RenderManager::Render()
 
 	for (auto& renderGroup : RenderGroupQueue)
 	{
-		while (!renderGroup.second.empty())
+		for (auto& renderable : renderGroup.second)
 		{
-			renderGroup.second.back()->Render(SecondRenderBuffer.get());
-			renderGroup.second.pop_back();
+			renderable->Render(SecondRenderBuffer.get());
 		}
 	}
 
@@ -65,11 +67,11 @@ void RenderManager::Render()
 	//auto PushEnd = high_resolution_clock::now();
 	//float TimePassed = duration_cast<duration<float>>(PushEnd - PushStart).count();
 
-	//std::string logMessage = "RenderManager::Render() - Rendered renderables in " + std::to_string(TimePassed) + " seconds.";
-	//Logger::GetInstance().Write(logMessage.c_str());
-
 	DrawRenderBuffer();
 	SwapRenderBuffers();
+
+	//std::string logMessage = "RenderManager::Render() - render time: " + std::to_string(TimePassed) + " seconds.";
+	//Logger::GetInstance().Write(logMessage.c_str());
 }
 
 void RenderManager::DrawRenderBuffer()
@@ -104,6 +106,11 @@ void RenderManager::ReconstructRenderBuffer()
 	DrawConsoleLibrary::DrawTexture(CurrentRenderBuffer.get(), 0, 0);
 }
 
+void RenderManager::ReserveRenderQueueSpace(RenderPriorityGroup group, uint32_t size)
+{
+	RenderGroupQueue[group].reserve(size);
+}
+
 bool RenderManager::PushToRenderQueue(IRenderable* renderable)
 {
 	if (!renderable) { DebugEngineTrap(); return false; }
@@ -120,16 +127,16 @@ bool RenderManager::PushToRenderQueue(IRenderable* renderable)
 	auto& renderGroup = RenderGroupQueue[renderable->GetRenderPriorityGroup()];
 
 	auto it = std::find_if(renderGroup.begin(), renderGroup.end(), [&priority](const IRenderable* other) -> bool {
-		return other->GetRenderPriority() <= priority;
+		return other->GetRenderPriority() > priority;
 	});
-
+	
 	if (it != renderGroup.end())
 	{
 		renderGroup.insert(it, renderable);
 		return true;
 	}
 
-	renderGroup.insert(renderGroup.begin(), renderable);
+	renderGroup.push_back(renderable);
 
 	//auto PushEnd = high_resolution_clock::now();
 	//float TimePassed = duration_cast<duration<float>>(PushEnd - PushStart).count();

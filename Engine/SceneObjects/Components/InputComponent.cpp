@@ -2,7 +2,10 @@
 
 bool InputComponent::PassInput(const InputState& is)
 {
-	bool bFoundAnyAction = false;
+	//bool bFoundAnyAction = false;
+
+	// TODO: Handle input release actions.
+
 	for (const auto& key : is.KeyPressedQueue)
 	{
 		auto it = InputActions.begin();
@@ -22,7 +25,7 @@ bool InputComponent::PassInput(const InputState& is)
 			if (itNext == InputActions.end()) break;
 
 			itNext->second.Trigger(keyValue);
-			bFoundAnyAction = true;
+			//bFoundAnyAction = true;
 
 			it = itNext;
 			it++;

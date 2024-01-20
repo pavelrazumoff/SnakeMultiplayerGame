@@ -59,9 +59,9 @@ SnakePawn::SnakePawn()
 		TailCollisionComponent = CreateChildComponent<BodyCollisionComponent>();
 
 		TailCollisionComponent->Settings.SetCollisionObjectType(CollisionObjectType::PlayerPawn);
-		TailCollisionComponent->Settings.SetCollisionResponse(CollisionObjectType::Static, true);
-		TailCollisionComponent->Settings.SetCollisionResponse(CollisionObjectType::Dynamic, true);
-		TailCollisionComponent->Settings.SetCollisionResponse(CollisionObjectType::PlayerPawn, true);
+		//TailCollisionComponent->Settings.SetCollisionResponse(CollisionObjectType::Static, true);
+		//TailCollisionComponent->Settings.SetCollisionResponse(CollisionObjectType::Dynamic, true);
+		//TailCollisionComponent->Settings.SetCollisionResponse(CollisionObjectType::PlayerPawn, true);
 
 		TailCollisionComponent->OnCollisionStartEvent().Subscribe(this, &SnakePawn::HandleBodyCollisionStartEvent);
 	}

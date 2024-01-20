@@ -3,6 +3,7 @@
 #include "Engine/GameWidget/GameWidgetManager.h"
 
 #include "Engine/Other/TimeManager.h"
+#include "Engine/Other/ProfilerManager.h"
 
 LevelManager::LevelManager()
 {
@@ -49,14 +50,17 @@ void LevelManager::Update()
 	const float deltaTime = TimeManager::GetInstance().GetFrameDeltaSeconds();
 	if (CurrentLevel.IsValid())
 	{
-		if (!IsGamePaused())
+		if (ProfilerManager::GetInstance().IsEngineFeatureEnabled(ProfilerEngineFeature::UpdateScene) &&
+			!IsGamePaused())
 			CurrentLevel->Update(deltaTime);
 
-		CurrentLevel->Render();
+		if (ProfilerManager::GetInstance().IsEngineFeatureEnabled(ProfilerEngineFeature::RenderScene))
+			CurrentLevel->Render();
 	}
 
-	// Always update widgets no matter gam is paused or not.
-	GameWidgetManager::GetInstance().Update(deltaTime);
+	// Always update widgets no matter game is paused or not.
+	if (ProfilerManager::GetInstance().IsEngineFeatureEnabled(ProfilerEngineFeature::RenderWidgets))
+		GameWidgetManager::GetInstance().Update(deltaTime);
 }
 
 void LevelManager::PassInput(const InputState& is)

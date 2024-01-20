@@ -50,12 +50,23 @@ PlayerHUDWidget::PlayerHUDWidget()
 		Tree.PlaceWidgetOn(ScoreText.Get(), TopHorizontalBox.Get());
 	}
 
-	FPSCounterText = CreateNewObject<TextBlock>(this);
+	ProfilerInfoText = CreateNewObject<TextBlock>(this);
+	if (ProfilerInfoText.IsValid())
+	{
+		ProfilerInfoText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Right;
+		ProfilerInfoText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Center;
+		ProfilerInfoText->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
+		ProfilerInfoText->GetAlignment().Padding = { 2, 0, 2, 0 };
+
+		ProfilerInfoText->GetText().SetText("");
+		ProfilerInfoText->GetText().SetFontStyle({ 1, FontPrintType::Simple, RenderConstants::LightRedPixelColorRGB });
+
+		Tree.PlaceWidgetOn(ProfilerInfoText.Get(), TopHorizontalBox.Get());
+	}
+
+	FPSCounterText = GameObject::CloneObject<TextBlock>(ProfilerInfoText.Get(), this);
 	if (FPSCounterText.IsValid())
 	{
-		FPSCounterText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Right;
-		FPSCounterText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Center;
-		FPSCounterText->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
 		FPSCounterText->GetAlignment().Padding = { 0, 0, 2, 0 };
 
 		FPSCounterText->GetText().SetText("FPS: 0");
@@ -104,6 +115,14 @@ void PlayerHUDWidget::SetScore(uint32_t score)
 	if (ScoreText.IsValid())
 	{
 		ScoreText->SetText("Score: " + std::to_string(score));
+	}
+}
+
+void PlayerHUDWidget::SetProfilerInfoText(const char* info)
+{
+	if (ProfilerInfoText.IsValid())
+	{
+		ProfilerInfoText->SetText(std::string(info));
 	}
 }
 

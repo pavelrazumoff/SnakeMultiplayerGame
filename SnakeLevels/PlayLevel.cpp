@@ -37,6 +37,7 @@ void PlayLevel::OpenLevel()
 		FPSCounterTimer->SetTimeLimit(0.25f);
 
 		TimeManager::GetInstance().BindTimerHandler(FPSCounterTimer, this, &PlayLevel::UpdateFPSCounter);
+		ProfilerManager::GetInstance().OnEngineFeatureChangedEvent().Subscribe(this, &PlayLevel::HandleProfilerEngineFeatureChanged);
 	}
 
 	RC_SIZE screenDim = RenderConsoleLibrary::GetConsoleDimensions();
@@ -219,4 +220,30 @@ void PlayLevel::UpdateFPSCounter()
 {
 	if (PlayerHUD.IsValid())
 		PlayerHUD->SetFPSCounter((uint32_t)ProfilerManager::GetInstance().GetAverageFPS());
+}
+
+void PlayLevel::HandleProfilerEngineFeatureChanged(ProfilerEngineFeature /*feature*/, bool /*bEnabled*/)
+{
+	if (!PlayerHUD.IsValid()) return;
+
+	uint64_t disabledFeaturesMask = ProfilerManager::GetInstance().GetEngineDisabledFeatureMask();
+	std::string profilerInfoText;
+
+	auto ADD_PROFILER_STR = [&profilerInfoText](const char* str) -> void {
+		if (profilerInfoText.empty())
+			profilerInfoText += str;
+		else
+			profilerInfoText += ", " + std::string(str);
+	};
+
+	if (disabledFeaturesMask & ENUM2BIT(ProfilerEngineFeature::CollisionDetection))
+		ADD_PROFILER_STR("Collision: Disabled");
+	if (disabledFeaturesMask & ENUM2BIT(ProfilerEngineFeature::RenderScene))
+		ADD_PROFILER_STR("Render Scene: Disabled");
+	if (disabledFeaturesMask & ENUM2BIT(ProfilerEngineFeature::RenderWidgets))
+		ADD_PROFILER_STR(/*"Widgets: Disabled"*/""); // Anyway we won't see anything.
+	if (disabledFeaturesMask & ENUM2BIT(ProfilerEngineFeature::UpdateScene))
+		ADD_PROFILER_STR("Update Scene: Disabled");
+
+	PlayerHUD->SetProfilerInfoText(profilerInfoText.c_str());
 }

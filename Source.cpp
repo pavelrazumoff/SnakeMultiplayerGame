@@ -27,7 +27,7 @@ int main()
 	EngineFactory::GetInstance().RegisterType("SnakePlayerState", new SnakePlayerState());
 	PlayerManager::GetInstance().SetPlayerStateClass("SnakePlayerState");
 
-	ProfilerManager::GetInstance().EnableCategory(ProfilerCategory::FPS, true);
+	ProfilerManager::GetInstance().EnableTrackCategory(ProfilerCategory::FPS, true);
 
 	GameEngine gameEngine(gameProps);
 

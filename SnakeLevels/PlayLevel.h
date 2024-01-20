@@ -11,6 +11,8 @@ class PlayerLostMenuWidget;
 
 class TimerHandler;
 
+enum class ProfilerEngineFeature;
+
 class PlayLevel : public GameLevel
 {
 	typedef GameLevel Inherited;
@@ -44,6 +46,9 @@ protected:
 
 	// Timer events.
 	void UpdateFPSCounter();
+
+	// Profiler events.
+	void HandleProfilerEngineFeatureChanged(ProfilerEngineFeature feature, bool bEnabled);
 
 protected:
 	TObjectPtr<SnakePawn> pSnakePawn;

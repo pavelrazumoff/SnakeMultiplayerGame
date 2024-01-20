@@ -22,6 +22,7 @@ public:
 	void Render();
 	void ReconstructRenderBuffer();
 
+	void ReserveRenderQueueSpace(RenderPriorityGroup group, uint32_t size);
 	bool PushToRenderQueue(IRenderable* renderable);
 	void ClearRenderQueue();
 

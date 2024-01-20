@@ -17,6 +17,7 @@ public:
 	~PlayerHUDWidget();
 
 	void SetScore(uint32_t score);
+	void SetProfilerInfoText(const char* info);
 	void SetFPSCounter(uint32_t fps);
 
 	RC_RECT GetScreenFreeRect() const;
@@ -34,6 +35,7 @@ protected:
 	TObjectPtr<HorizontalBox> TopHorizontalBox;
 
 	TObjectPtr<TextBlock> ScoreText;
+	TObjectPtr<TextBlock> ProfilerInfoText;
 	TObjectPtr<TextBlock> FPSCounterText;
 
 	TObjectPtr<Button> MenuButton;

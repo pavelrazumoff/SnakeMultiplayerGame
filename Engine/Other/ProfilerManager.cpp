@@ -27,12 +27,37 @@ void ProfilerManager::Update()
 		DoTrackFPS();
 }
 
-void ProfilerManager::EnableCategory(ProfilerCategory category, bool bEnable)
+/*
+	Force disable Engine features.
+*/
+
+void ProfilerManager::EnableEngineFeature(ProfilerEngineFeature feature, bool bEnable)
+{
+	if (bEnable)
+		engineDisabledFeatureMask &= ~ENUM2BIT(feature);
+	else
+		engineDisabledFeatureMask |= ENUM2BIT(feature);
+
+	EngineFeatureChangedEvent.Trigger(feature, bEnable);
+}
+
+bool ProfilerManager::IsEngineFeatureEnabled(ProfilerEngineFeature feature) const
+{
+	return !(engineDisabledFeatureMask & ENUM2BIT(feature));
+}
+
+/*
+	Track Categories.
+*/
+
+void ProfilerManager::EnableTrackCategory(ProfilerCategory category, bool bEnable)
 {
 	if (bEnable)
 		categoryMask |= ENUM2BIT(category);
 	else
 		categoryMask &= ~ENUM2BIT(category);
+
+	CategoryChangedEvent.Trigger(category, bEnable);
 }
 
 void ProfilerManager::DoTrackFPS()

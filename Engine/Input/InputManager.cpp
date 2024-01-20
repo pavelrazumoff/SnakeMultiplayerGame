@@ -1,6 +1,7 @@
 #include "InputManager.h"
 
 #include "Engine/EngineUtility.h"
+#include "Engine/Log/Logger.h"
 
 #include <unordered_set>
 
@@ -53,15 +54,17 @@ void InputManager::ReadInput()
 		return;
 	}
 
-	std::unordered_set<WORD> HandledTypes;
 	for (int i = numEvents - 1; i >= 0; --i)
 	{
 		WORD eventType = irInBuf[i].EventType;
 
-		auto result = HandledTypes.insert(eventType);
-		if (!result.second) continue;
-
-		HandledTypes.insert(eventType);
+		if ((i < (int)numEvents - 1) &&
+			_CheckIfAlreadyHandled(irInBuf, i))
+		{
+			//std::string msg = "already handled eventType = " + std::to_string(eventType);
+			//Logger::GetInstance().Write(msg.c_str());
+			continue;
+		}
 
 		switch (eventType)
 		{
@@ -135,4 +138,31 @@ void InputManager::_OnMouseEvent(const MOUSE_EVENT_RECORD& mer)
 void InputManager::_OnWindowResizeEvent(const WINDOW_BUFFER_SIZE_RECORD& wbsr)
 {
 	WindowResizeEvent.Trigger(wbsr);
+}
+
+bool InputManager::_CheckIfAlreadyHandled(const INPUT_RECORD* irs, int indexToCheck) const
+{
+	for (int i = indexToCheck - 1; i >= 0; --i)
+	{
+		if (irs[i].EventType != irs[indexToCheck].EventType) continue;
+
+		switch (irs[i].EventType)
+		{
+			case KEY_EVENT:
+				if (irs[i].Event.KeyEvent.wVirtualKeyCode == irs[indexToCheck].Event.KeyEvent.wVirtualKeyCode &&
+					irs[i].Event.KeyEvent.bKeyDown == irs[indexToCheck].Event.KeyEvent.bKeyDown)
+					return true;
+				break;
+			case MOUSE_EVENT:
+				if (irs[i].Event.MouseEvent.dwEventFlags == irs[indexToCheck].Event.MouseEvent.dwEventFlags)
+					return true;
+				break;
+			case WINDOW_BUFFER_SIZE_EVENT:
+				return true;
+			default:
+				break;
+		}
+	}
+
+	return false;
 }

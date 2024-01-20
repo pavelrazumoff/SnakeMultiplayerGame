@@ -1,11 +1,11 @@
 #include "CollisionManager.h"
 
-#include "Engine/SceneObjects/Components/CollisionComponent.h"
+#include "Engine/SceneObjects/Components/BoxComponent.h"
 #include "QuadTree.h"
 
 #include "Core/RenderConsoleLibrary.h"
 
-#include "Engine/SceneObjects/Components/BoxComponent.h"
+#include "Engine/Other/ProfilerManager.h"
 
 CollisionManager::CollisionManager()
 {
@@ -50,6 +50,9 @@ void CollisionManager::ResetAll()
 
 void CollisionManager::UpdateTracking()
 {
+	if (!ProfilerManager::GetInstance().IsEngineFeatureEnabled(ProfilerEngineFeature::CollisionDetection))
+		return;
+
 	for (auto& trackCollisionComp : TrackedCollisionComponents)
 	{
 		if (!trackCollisionComp->CanCollide()) continue;
