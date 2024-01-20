@@ -95,14 +95,9 @@ void SnakePawn::BeginPlay()
 	tailLocation.Round();
 
 	BodyImageComponent->SetAbsoluteLocation(tailLocation);
+	bodyPoints.push_back(tailLocation);
 
-	BODY_POINT tailPoint;
-	tailPoint.Location = tailLocation;
-	tailPoint.Direction = LV_VECTOR::Zero();
-
-	bodyPoints.push_back(tailPoint);
-
-	AABB lastBodyAABB = { tailPoint.Location.x, tailPoint.Location.y, tailPoint.Location.x, tailPoint.Location.y };
+	AABB lastBodyAABB = { tailLocation.x, tailLocation.y, tailLocation.x, tailLocation.y };
 	TailCollisionComponent->AddBodyAABB(lastBodyAABB);
 }
 
@@ -122,7 +117,7 @@ void SnakePawn::Render(RCTexture* RenderTargetTexture)
 	LV_COORD savedFirstBodyLoc = BodyImageComponent->GetSceneLocation();
 	for (int i = 1; i < bodyPoints.size(); ++i)
 	{
-		BodyImageComponent->SetAbsoluteLocation(bodyPoints[i].Location);
+		BodyImageComponent->SetAbsoluteLocation(bodyPoints[i]);
 		BodyImageComponent->DrawComponent(RenderTargetTexture);
 	}
 
@@ -158,7 +153,6 @@ void SnakePawn::UpdateBodyMovement(float DeltaTime)
 	if (MovingDirection == LV_VECTOR::Zero()) return;
 	
 	static LV_COORD LastSavedHeadPoint = HeadImageComponent->GetSceneLocation();
-	LastSavedHeadPoint.Round();
 
 	AddMovement(MovingDirection, 1.0f);
 
@@ -167,62 +161,29 @@ void SnakePawn::UpdateBodyMovement(float DeltaTime)
 
 	if (!LastSavedHeadPoint.Compare(headLocation, 1.0f))
 	{
-		LV_COORD lastSavedBodyPoint = bodyPoints[0].Location;
-		bodyPoints[0].Location = LastSavedHeadPoint;
-		bodyPoints[0].Direction = MovingDirection;
-
-		for (size_t i = 1; i < bodyPoints.size(); i++)
-		{
-			LV_COORD temp = bodyPoints[i].Location;
-
-			// Making sure that every body part is up to date with its predecessor.
-			// Because if there will be a huge delay between frames, then the body parts will be out of sync.
-			// So we always calc the displacement vector between updated body part and non-updated version of it to get the direction 
-			// to move the next one instead of just setting the next one's location to its predecessor old one.
-			LV_VECTOR dir = bodyPoints[i - 1].Location - lastSavedBodyPoint;
-			dir.Normalize();
-
-			// We need to handle the case when the snake moves out of boundaries and its head is teleported to the other side.
-			// In such a case the dir vector will be reversed, so we need to track that and reverse it back.
-			bool bChangedDir = false;
-			if (bodyPoints[i - 1].Direction.x != 0.0f && dir.x != 0.0f && bodyPoints[i - 1].Direction.x != dir.x)
-			{
-				dir.x *= -1.0f;
-				bChangedDir = true;
-			}
-			if (bodyPoints[i - 1].Direction.y != 0.0f && dir.y != 0.0f && bodyPoints[i - 1].Direction.y != dir.y)
-			{
-				dir.y *= -1.0f;
-				bChangedDir = true;
-			}
-
-			bodyPoints[i].Location = bChangedDir ? lastSavedBodyPoint : (bodyPoints[i - 1].Location - dir);
-			bodyPoints[i].Direction = dir;
-			lastSavedBodyPoint = temp;
-		}
+		bodyPoints.insert(bodyPoints.begin(), LastSavedHeadPoint);
+		bodyPoints.pop_back();
 
 		LastSavedHeadPoint = headLocation;
 
 		SyncBodyMovementWithCollision();
 	}
 
-	BodyImageComponent->SetAbsoluteLocation(bodyPoints[0].Location);
+	BodyImageComponent->SetAbsoluteLocation(bodyPoints[0]);
 }
 
 void SnakePawn::IncreaseBody()
 {
-	LV_COORD localHeadLoc = (bodyPoints.size() > 1) ? bodyPoints[bodyPoints.size() - 2].Location : HeadImageComponent->GetSceneLocation();
-	LV_VECTOR newBodyPartDir = localHeadLoc - bodyPoints.back().Location;
+	LV_COORD localHeadLoc = (bodyPoints.size() > 1) ? bodyPoints[bodyPoints.size() - 2] : HeadImageComponent->GetSceneLocation();
+	LV_VECTOR newBodyPartDir = localHeadLoc - bodyPoints.back();
 	newBodyPartDir.Normalize();
 
-	BODY_POINT newBodyPart;
-	newBodyPart.Location = bodyPoints.back().Location - newBodyPartDir;
-	newBodyPart.Direction = newBodyPartDir;
+	LV_COORD NewBodyLocation = bodyPoints.back() - newBodyPartDir;
+	NewBodyLocation.Round();
 
-	newBodyPart.Location.Round();
-	bodyPoints.push_back(newBodyPart);
+	bodyPoints.push_back(NewBodyLocation);
 
-	AABB lastBodyAABB = { newBodyPart.Location.x, newBodyPart.Location.y, newBodyPart.Location.x, newBodyPart.Location.y };
+	AABB lastBodyAABB = { NewBodyLocation.x, NewBodyLocation.y, NewBodyLocation.x, NewBodyLocation.y };
 	TailCollisionComponent->AddBodyAABB(lastBodyAABB);
 }
 
@@ -232,10 +193,7 @@ void SnakePawn::SyncBodyMovementWithCollision()
 
 	TailCollisionComponent->RemoveBodyAABB(TailCollisionComponent->GetBodyAABBCount() - 1);
 
-	LV_COORD bodyPoint = bodyPoints[0].Location;
-	bodyPoint.Round();
-
-	AABB firstBodyAABB = { bodyPoint.x, bodyPoint.y, bodyPoint.x, bodyPoint.y };
+	AABB firstBodyAABB = { bodyPoints[0].x, bodyPoints[0].y, bodyPoints[0].x, bodyPoints[0].y };
 	TailCollisionComponent->AddBodyAABB(firstBodyAABB, 0);
 }
 

@@ -56,13 +56,7 @@ protected:
 	TObjectPtr<BoxComponent> HeadBoxComponent;
 	TObjectPtr<BodyCollisionComponent> TailCollisionComponent;
 
-	struct BODY_POINT
-	{
-		LV_COORD Location;
-		LV_VECTOR Direction;
-	};
-
-	std::vector<BODY_POINT> bodyPoints;
+	std::vector<LV_COORD> bodyPoints;
 
 	/** Input Actions */
 
