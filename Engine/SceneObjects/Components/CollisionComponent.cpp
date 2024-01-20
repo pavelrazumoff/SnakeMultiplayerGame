@@ -84,10 +84,18 @@ void CollisionComponent::SetSceneLocation(LV_COORD sceneLocation)
 {
 	if (GetSceneLocation() == sceneLocation) return;
 
+	LV_COORD prevSceneLocation = GetSceneLocation();
 	Inherited::SetSceneLocation(sceneLocation);
 
 	if (ProfilerManager::GetInstance().IsEngineFeatureEnabled(ProfilerEngineFeature::CollisionDetection))
-		CollisionManager::GetInstance().UpdateCollisionComponent(this);
+	{
+		// For collision updates we should really only check, if the actual visible location has changed or not (we moved to another pixel on screen).
+		sceneLocation.Round();
+		prevSceneLocation.Round();
+
+		if (sceneLocation != prevSceneLocation)
+			CollisionManager::GetInstance().UpdateCollisionComponent(this);
+	}
 }
 
 bool CollisionComponent::WasAlreadyCollidingWith(ICollider* otherCollider)
