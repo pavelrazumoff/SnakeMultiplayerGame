@@ -11,7 +11,6 @@ public:
 	virtual ~SceneComponent() {}
 
 	virtual void DrawComponent(RCTexture* /*RenderTargetTexture*/) {}
-	virtual void UpdateComponent(float DeltaTime);
 
 	void UpdateSceneLocation(LV_COORD parentLocation);
 

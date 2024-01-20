@@ -3,6 +3,8 @@
 #include "Engine/CollisionDetection/CollisionManager.h"
 #include "Engine/SceneObjects/SceneObject.h"
 
+#include "Engine/Other/ProfilerManager.h"
+
 std::unordered_set<std::string> CollisionComponent::registeredTypes;
 
 CollisionComponent::CollisionComponent()
@@ -80,10 +82,11 @@ void CollisionComponent::HandleCollisionWith(std::vector<ICollider*> Intersectio
 
 void CollisionComponent::SetSceneLocation(LV_COORD sceneLocation)
 {
-	LV_COORD oldSceneLocation = GetSceneLocation();
+	if (GetSceneLocation() == sceneLocation) return;
+
 	Inherited::SetSceneLocation(sceneLocation);
 
-	//if (!oldSceneLocation.Compare(GetSceneLocation(), 1.0f))
+	if (ProfilerManager::GetInstance().IsEngineFeatureEnabled(ProfilerEngineFeature::CollisionDetection))
 		CollisionManager::GetInstance().UpdateCollisionComponent(this);
 }
 
