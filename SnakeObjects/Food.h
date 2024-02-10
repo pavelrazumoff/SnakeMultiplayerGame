@@ -9,6 +9,8 @@ class FoodObject : public SceneObject
 {
 	typedef SceneObject Inherited;
 
+	GAMEOBJECT_BODY(FoodObject)
+
 public:
 	FoodObject();
 	virtual ~FoodObject();

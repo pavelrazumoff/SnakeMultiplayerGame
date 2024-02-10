@@ -43,6 +43,14 @@ void GameWidgetManager::RequestWidgetReconstruction(GameWidget* Instigator)
 	}
 }
 
+bool GameWidgetManager::GetBottomPlacedUserWidget(TObjectPtr<UserWidget>& userWidget) const
+{
+	if (UserWidgetList.empty()) return false;
+
+	userWidget = UserWidgetList.back();
+	return true;
+}
+
 void GameWidgetManager::Update(float DeltaTime)
 {
 	for (auto& userWidget : UserWidgetList)

@@ -5,10 +5,6 @@
 #include "Engine/Other/TimeManager.h"
 #include "Engine/Other/ProfilerManager.h"
 
-LevelManager::LevelManager()
-{
-}
-
 LevelManager& LevelManager::GetInstance()
 {
 	static LevelManager instance;
@@ -24,8 +20,8 @@ void LevelManager::OpenLevel(GameLevel* level)
 {
 	if (CurrentLevel.Get())
 	{
-		// TODO: Close the current level first.
 		CurrentLevel->CloseLevel();
+		CurrentLevel->Destroy();
 	}
 
 	CurrentLevel = level;
@@ -39,10 +35,19 @@ void LevelManager::OpenLevel(GameLevel* level)
 
 void LevelManager::CloseLevel(GameLevel* level)
 {
+	/*
+		Call this method only when you has no other level to open.
+		It means that we want to close the game actually.
+	*/
+
 	if (GetCurrentLevel() != level) { DebugEngineTrap(); return; }
 
 	level->CloseLevel();
-	LevelCloseEvent.Trigger(level);
+	LevelCloseEvent.Trigger(level); // TODO: Not the best idea to pass the closing level with some event.
+
+	// For just a case use our safe pointer to destroy the level after sending the event.
+	if (CurrentLevel.IsValid())
+		CurrentLevel->Destroy();
 }
 
 void LevelManager::Update()

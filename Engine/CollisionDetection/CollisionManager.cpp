@@ -7,10 +7,6 @@
 
 #include "Engine/Other/ProfilerManager.h"
 
-CollisionManager::CollisionManager()
-{
-}
-
 CollisionManager::~CollisionManager()
 {
 }

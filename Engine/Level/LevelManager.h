@@ -13,8 +13,10 @@ DECLARE_EVENT_DELEGATE(LevelActionDelegate, GameLevel*);
 
 class LevelManager
 {
+private:
+	LevelManager() {}
+
 public:
-	LevelManager();
 	~LevelManager() {}
 
 	static LevelManager& GetInstance();

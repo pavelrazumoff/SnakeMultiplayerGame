@@ -25,6 +25,11 @@ public:
 		va_end(args);
 		return bitMask;
 	}
+
+	static constexpr uint32_t StringToUint32(const char* str, int h = 0)
+	{
+		return !str[h] ? 5381 : (StringToUint32(str, h + 1) * 33) ^ str[h];
+	}
 };
 
 // More convenient way to convert enum to bit mask.

@@ -95,3 +95,21 @@ void HorizontalBox::ReconstructUnderlayWidgets(GameWidget** underlayWidgets, siz
 	containerFreeRect.right = ContainerComponent.GetContainerFreeRect().right;
 	ContainerComponent.ResetContainerFreeRect(containerFreeRect);
 }
+
+RC_SIZE HorizontalBox::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRecalc)
+{
+	RC_SIZE dirtySize = Inherited::CalcDirtySize(_bSizeXNeedsToRecalc, _bSizeYNeedToRecalc);
+
+	const uint32_t numChildren = ContainerComponent.GetNumWidgetsInContainer();
+	for (uint32_t i = 0; i < numChildren; ++i)
+	{
+		auto child = ContainerComponent.GetWidgetFromContainer(i);
+		if (!child.IsValid()) continue;
+
+		RC_SIZE childDirtySize = child->GetCachedDirtySize();
+		dirtySize.cx += childDirtySize.cx;
+		dirtySize.cy = std::max(dirtySize.cy, childDirtySize.cy);
+	}
+
+	return dirtySize;
+}

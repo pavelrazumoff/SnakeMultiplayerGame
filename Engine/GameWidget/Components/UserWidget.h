@@ -37,6 +37,8 @@ public:
 	void SetWidgetModality(bool bModal);
 	bool IsWidgetModal() const { return bModalWidget; }
 
+	WidgetTree& GetWidgetTree() { return Tree; }
+
 protected:
 	void ReconstructWidgetTree();
 	bool DoesBelongToWidgetTree(GameWidget* widget);
@@ -45,7 +47,7 @@ private:
 	void CalculateDirtySizeWidgetsRecursive(TreeNode* node);
 	void ClarifyUnderlaySizeWidgetsRecursive(TreeNode* node);
 
-	bool ProceedWidgetTreeRecursive(TreeNode* node, std::function<bool(GameWidget*)> func);
+	bool ProceedWidgetTreeRecursive(TreeNode* node, std::function<bool(GameWidget*, bool&)> func);
 
 protected:
 	WidgetTree Tree;

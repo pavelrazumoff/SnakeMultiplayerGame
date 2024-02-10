@@ -83,3 +83,21 @@ void VerticalBox::ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size_
 	containerFreeRect.bottom = ContainerComponent.GetContainerFreeRect().bottom;
 	ContainerComponent.ResetContainerFreeRect(containerFreeRect);
 }
+
+RC_SIZE VerticalBox::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRecalc)
+{
+	RC_SIZE dirtySize = Inherited::CalcDirtySize(_bSizeXNeedsToRecalc, _bSizeYNeedToRecalc);
+
+	const uint32_t numChildren = ContainerComponent.GetNumWidgetsInContainer();
+	for (uint32_t i = 0; i < numChildren; ++i)
+	{
+		auto child = ContainerComponent.GetWidgetFromContainer(i);
+		if (!child.IsValid()) continue;
+
+		RC_SIZE childDirtySize = child->GetCachedDirtySize();
+		dirtySize.cx = std::max(dirtySize.cx, childDirtySize.cx);
+		dirtySize.cy += childDirtySize.cy;
+	}
+
+	return dirtySize;
+}

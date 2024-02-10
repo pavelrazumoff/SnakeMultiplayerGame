@@ -20,13 +20,18 @@ void UserWidget::Render(RCTexture* RenderTargetTexture)
 
 bool UserWidget::PassInput(const InputState& is)
 {
-	return ProceedWidgetTreeRecursive(Tree.GetRootNode(), [&is](GameWidget* widget) -> bool {
+	return ProceedWidgetTreeRecursive(Tree.GetRootNode(), [&is](GameWidget* widget, bool& bProceedWithChildren) -> bool {
 
-		if (auto inputHandler = dynamic_cast<IInputHandler*>(widget))
+		if (widget &&
+			widget->IsVisible())
 		{
-			bool bConsumed = inputHandler->PassInput(is);
-			return bConsumed;
+			if (auto inputHandler = dynamic_cast<IInputHandler*>(widget))
+			{
+				bool bConsumed = inputHandler->PassInput(is);
+				return bConsumed;
+			}
 		}
+		else bProceedWithChildren = false;
 
 		return false;
 	});
@@ -34,9 +39,15 @@ bool UserWidget::PassInput(const InputState& is)
 
 void UserWidget::DrawWidget(RCTexture* RenderTargetTexture)
 {
-	ProceedWidgetTreeRecursive(Tree.GetRootNode(), [&RenderTargetTexture](GameWidget* widget) -> bool {
+	ProceedWidgetTreeRecursive(Tree.GetRootNode(), [&RenderTargetTexture](GameWidget* widget, bool& bProceedWithChildren) -> bool {
 
-		widget->DrawWidget(RenderTargetTexture);
+		if (widget &&
+			widget->IsVisible())
+		{
+			widget->DrawWidget(RenderTargetTexture);
+			bProceedWithChildren = true;
+		}
+		else bProceedWithChildren = false;
 		return false;
 	});
 }
@@ -71,7 +82,7 @@ void UserWidget::ReconstructWidgetTree()
 
 bool UserWidget::DoesBelongToWidgetTree(GameWidget* widget)
 {
-	return ProceedWidgetTreeRecursive(Tree.GetRootNode(), [widget](GameWidget* widgetToCheck) -> bool {
+	return ProceedWidgetTreeRecursive(Tree.GetRootNode(), [widget](GameWidget* widgetToCheck, bool&) -> bool {
 		return widgetToCheck == widget;
 	});
 }
@@ -103,6 +114,9 @@ void UserWidget::ClarifyUnderlaySizeWidgetsRecursive(TreeNode* node)
 		rect of child widget based on the parent widget layouting (eg. vertical/horizontal box) and layouting of the child itself.
 	*/
 
+	GameWidget* widget = node->GetWidget();
+	if (!widget || !widget->IsVisible()) return;
+
 	const size_t numChildren = node->GetChildrenCount();
 	GameWidget** underlayWidgets = new GameWidget * [numChildren];
 
@@ -112,10 +126,7 @@ void UserWidget::ClarifyUnderlaySizeWidgetsRecursive(TreeNode* node)
 		underlayWidgets[i] = childNode ? childNode->GetWidget() : nullptr;
 	}
 
-	if (GameWidget* widget = node->GetWidget())
-	{
-		widget->ReconstructUnderlayWidgets(underlayWidgets, numChildren);
-	}
+	widget->ReconstructUnderlayWidgets(underlayWidgets, numChildren);
 
 	delete[] underlayWidgets;
 	underlayWidgets = nullptr;
@@ -127,12 +138,15 @@ void UserWidget::ClarifyUnderlaySizeWidgetsRecursive(TreeNode* node)
 	}
 }
 
-bool UserWidget::ProceedWidgetTreeRecursive(TreeNode* node, std::function<bool(GameWidget*)> func)
+bool UserWidget::ProceedWidgetTreeRecursive(TreeNode* node, std::function<bool(GameWidget*, bool&)> func)
 {
 	if (GameWidget* widget = node->GetWidget())
 	{
-		if (func(widget))
+		bool bProceedWithChildren = true;
+		if (func(widget, bProceedWithChildren))
 			return true;
+
+		if (!bProceedWithChildren) return false;
 	}
 
 	const size_t numChildren = node->GetChildrenCount();

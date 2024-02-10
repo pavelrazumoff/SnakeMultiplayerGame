@@ -5,10 +5,6 @@
 
 #include <unordered_set>
 
-InputManager::InputManager()
-{
-}
-
 InputManager& InputManager::GetInstance()
 {
 	static InputManager instance;

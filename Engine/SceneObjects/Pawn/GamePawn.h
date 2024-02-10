@@ -8,6 +8,8 @@ class GamePawn : public SceneObject
 {
 	typedef SceneObject Inherited;
 
+	GAMEOBJECT_BODY(GamePawn)
+
 public:
 	GamePawn();
 	virtual ~GamePawn();

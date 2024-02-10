@@ -19,6 +19,8 @@ public:
 
 	void RequestWidgetReconstruction(GameWidget* Instigator);
 
+	bool GetBottomPlacedUserWidget(TObjectPtr<UserWidget>& userWidget) const;
+
 	void Update(float DeltaTime);
 	virtual bool PassInput(const InputState& is);
 

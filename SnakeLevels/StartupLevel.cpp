@@ -1,13 +1,17 @@
 #include "StartupLevel.h"
 
 #include "SnakeWidgets/Menu/MainMenuWidget.h"
+
 #include "Engine/GameObject/GameObjectUtility.h"
 #include "Engine/Level/LevelManager.h"
 #include "Engine/GameWidget/GameWidgetManager.h"
 
 #include "Core/RenderConsoleLibrary.h"
 
+#include "Engine/Network/NetworkManager.h"
+
 #include "PlayLevel.h"
+#include "LobbyLevel.h"
 
 StartupLevel::StartupLevel()
 {
@@ -42,10 +46,13 @@ void StartupLevel::CloseLevel()
 
 void StartupLevel::ReconstructLevel()
 {
-	if (!StartupMenuWidget.Get()) return;
+	TObjectPtr<UserWidget> bottomPlacedWidget;
+	if (!GameWidgetManager::GetInstance().GetBottomPlacedUserWidget(bottomPlacedWidget)) return;
+
+	if (!bottomPlacedWidget.Get()) return;
 	
 	RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
-	StartupMenuWidget->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
+	bottomPlacedWidget->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
 }
 
 void StartupLevel::HandleMainMenuResponse(uint8_t responseType)
@@ -53,12 +60,42 @@ void StartupLevel::HandleMainMenuResponse(uint8_t responseType)
 	MainMenuResponse mainMenuResponse = static_cast<MainMenuResponse>(responseType);
 	switch (mainMenuResponse)
 	{
+		/** Welcome page. */
+
 		case MainMenuResponse::StartGame:
 			StartPlay();
+			break;
+		case MainMenuResponse::Multiplayer:
+			OpenMultiplayerMenu();
 			break;
 		case MainMenuResponse::ExitGame:
 			LevelManager::GetInstance().CloseLevel(this);
 			break;
+
+		/** Mutliplayer page. */
+
+		case MainMenuResponse::CreateServer:
+			OpenCreateServerMenu();
+			break;
+		case MainMenuResponse::JoinServer:
+			OpenJoinServerMenu();
+			break;
+		case MainMenuResponse::ReturnToMainMenu:
+			ReturnToMainMenu();
+			break;
+
+		/** Create Server page. */
+
+		case MainMenuResponse::MakeLocalServer:
+			MakeLocalServer();
+			break;
+
+		/** Join Server page. */
+
+		case MainMenuResponse::JoinLocalHost:
+			JoinLocalHost();
+			break;
+
 		default:
 			break;
 	}
@@ -68,4 +105,56 @@ void StartupLevel::StartPlay()
 {
 	PlayLevel* playLevel = CreateNewObject<PlayLevel>();
 	LevelManager::GetInstance().OpenLevel(playLevel);
+}
+
+void StartupLevel::OpenMultiplayerMenu()
+{
+	StartupMenuWidget->OpenPage(ContentPageType::Multiplayer);
+}
+
+void StartupLevel::OpenCreateServerMenu()
+{
+	StartupMenuWidget->OpenPage(ContentPageType::CreateServer);
+}
+
+void StartupLevel::MakeLocalServer()
+{
+	if (!NetworkManager::GetInstance().MakeListenServer())
+	{
+		// TODO: Print some error message.
+		return;
+	}
+
+	NetworkManager::GetInstance().StartListenServer();
+
+	OpenLobbyLevel();
+}
+
+void StartupLevel::OpenJoinServerMenu()
+{
+	StartupMenuWidget->OpenPage(ContentPageType::JoinServer);
+}
+
+void StartupLevel::JoinLocalHost()
+{
+	if (!NetworkManager::GetInstance().ConnectClient("127.0.0.1:48000"))
+	{
+		// TODO: Print some error message.
+		return;
+	}
+
+	NetworkManager::GetInstance().StartClientLoop();
+
+	OpenLobbyLevel();
+}
+
+void StartupLevel::OpenLobbyLevel()
+{
+	LobbyLevel* lobbyLevel = CreateNewObject<LobbyLevel>();
+	LevelManager::GetInstance().OpenLevel(lobbyLevel);
+}
+
+void StartupLevel::ReturnToMainMenu()
+{
+	StartupMenuWidget->OpenPage(ContentPageType::Welcome);
 }

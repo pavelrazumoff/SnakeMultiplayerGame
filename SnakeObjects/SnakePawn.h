@@ -14,6 +14,8 @@ class SnakePawn : public GamePawn
 {
 	typedef GamePawn Inherited;
 
+	GAMEOBJECT_BODY(SnakePawn)
+
 public:
 	SnakePawn();
 	~SnakePawn();

@@ -19,11 +19,15 @@ public:
 
 	virtual void DrawWidget(RCTexture* RenderTargetTexture) {}
 
+	virtual void SetVisibility(bool newVisibility);
+
 	RC_SIZE GetCachedDirtySize() const { return CachedDirtySize; }
 	bool IsSizeXNeedsToRecalc() const { return bSizeXNeedsToRecalc; }
 	bool IsSizeYNeedToRecalc() const { return bSizeYNeedToRecalc; }
 
 	RC_RECT GetCachedActualRect() const { return CachedActualRect; }
+
+	virtual bool IsVisible() const;
 
 	template<typename T>
 	static T* FindWidgetComponent(GameWidget* widget)
@@ -48,6 +52,7 @@ protected:
 
 protected:
 	std::vector<IWidgetComponent*> WidgetComponents;
+	bool bIsVisible = true;
 
 private:
 	RC_SIZE CachedDirtySize = { 0, 0 };

@@ -6,7 +6,7 @@
 #include "Engine/GarbageCollector.h"
 
 template<typename T>
-T* CreateNewObject(GameObject* Owner = GetRootObject())
+T* CreateNewObject(GameObject* Owner)
 {
 	static_assert(std::is_base_of<GameObject, T>::value, "T must be derived from GameObject.");
 

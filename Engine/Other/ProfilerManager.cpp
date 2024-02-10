@@ -3,10 +3,6 @@
 #include "TimeManager.h"
 #include "Engine/EngineUtility.h"
 
-ProfilerManager::ProfilerManager()
-{
-}
-
 ProfilerManager::~ProfilerManager()
 {
 }

@@ -20,8 +20,10 @@ DECLARE_EVENT_DELEGATE(WindowResizeDelegate, const WINDOW_BUFFER_SIZE_RECORD&);
 
 class InputManager
 {
+private:
+	InputManager() {}
+
 public:
-	InputManager();
 	~InputManager() {}
 
 	static InputManager& GetInstance();

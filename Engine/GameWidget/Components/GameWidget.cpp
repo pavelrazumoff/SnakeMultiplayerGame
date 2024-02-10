@@ -28,6 +28,16 @@ void GameWidget::RepositionWidget(const RC_RECT& newRect)
 	CachedActualRect = newRect;
 }
 
+void GameWidget::SetVisibility(bool newVisibility)
+{
+	bIsVisible = newVisibility;
+}
+
+bool GameWidget::IsVisible() const
+{
+	return bIsVisible;
+}
+
 RC_SIZE GameWidget::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRecalc)
 {
 	/*

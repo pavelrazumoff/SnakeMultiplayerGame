@@ -7,8 +7,10 @@
 
 class EngineFactory
 {
-public:
+private:
 	EngineFactory() {}
+
+public:
 	~EngineFactory();
 
 	static EngineFactory& GetInstance();

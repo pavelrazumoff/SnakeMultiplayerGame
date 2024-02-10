@@ -10,6 +10,7 @@
 #include "EngineFactory.h"
 #include "Player/PlayerManager.h"
 #include "Other/ProfilerManager.h"
+#include "Network/NetworkManager.h"
 
 #include "Core/RenderConsoleLibrary.h"
 #include "Draw/DrawConsoleLibrary.h"
@@ -39,6 +40,18 @@
 static std::shared_mutex EngineMainProcessMtx;
 static std::mutex InputStateMutex;
 
+static void _Cleanup()
+{
+	// Reset the cursor to the bottom left corner so the service info starts to be printed from there.
+	DrawConsoleLibrary::SetCursorToBottomLeft();
+
+	LevelManager::GetInstance().Release();
+	NetworkManager::GetInstance().Cleanup();
+	InputManager::GetInstance().Release();
+	GarbageCollector::GetInstance().Free();
+	Logger::GetInstance().Release();
+}
+
 static BOOL WINAPI ConsoleHandlerRoutine(DWORD dwCtrlType)
 {
 	std::unique_lock<std::shared_mutex> lock(EngineMainProcessMtx);
@@ -51,8 +64,7 @@ static BOOL WINAPI ConsoleHandlerRoutine(DWORD dwCtrlType)
 		case CTRL_LOGOFF_EVENT:
 		case CTRL_SHUTDOWN_EVENT:
 		{
-			InputManager::GetInstance().Release();
-			GarbageCollector::GetInstance().Free();
+			_Cleanup();
 			return TRUE;
 		}
 	}
@@ -73,7 +85,7 @@ GameEngine::~GameEngine()
 	Cleanup();
 }
 
-void GameEngine::Initialization(GameLevel* StartupLevel)
+void GameEngine::Initialize(GameLevel* StartupLevel)
 {
 	FillEngineProperties();
 
@@ -106,6 +118,8 @@ void GameEngine::Initialization(GameLevel* StartupLevel)
 
 	RenderManager::GetInstance().Initialize();
 	RenderConsoleLibrary::SetConsoleCaption(GameProperties.GameName.c_str());
+
+	NetworkManager::GetInstance().Initialize();
 
 	{
 		LevelManager::GetInstance().OnLevelOpenEvent().Subscribe(this, &GameEngine::HandleLevelOpenEvent);
@@ -395,11 +409,7 @@ void GameEngine::StopEngine()
 
 void GameEngine::Cleanup()
 {
-	// Reset the cursor to the bottom left corner so the service info starts to be printed from there.
-	DrawConsoleLibrary::SetCursorToBottomLeft();
+	_Cleanup();
 
-	LevelManager::GetInstance().Release();
-	InputManager::GetInstance().Release();
-	GarbageCollector::GetInstance().Free();
 	DestroyRootObject();
 }

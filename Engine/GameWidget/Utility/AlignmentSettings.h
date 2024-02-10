@@ -9,7 +9,7 @@ class AlignmentSettings : public IWidgetComponent
 public:
 	enum class HorizontalAlignment
 	{
-		NoAlignment, // Left side.
+		NoAlignment, // Stretch to the whole available width.
 
 		Left,
 		Center,
@@ -18,7 +18,7 @@ public:
 
 	enum class VerticalAlignment
 	{
-		NoAlignment, // Top side.
+		NoAlignment, // Stretch to the whole available height.
 
 		Top,
 		Center,

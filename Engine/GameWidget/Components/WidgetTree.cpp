@@ -1,5 +1,7 @@
 #include "WidgetTree.h"
 
+#include "../Utility/WidgetContainerComponent.h"
+
 WidgetTree::WidgetTree()
 {
 }
@@ -15,6 +17,12 @@ void WidgetTree::PlaceWidgetOn(GameWidget* widget, GameWidget* parentWidget)
 		TreeNode node;
 		node.Widget = widget;
 		parentNode->Children.push_back(node);
+
+		if (WidgetContainerComponent* parentContainerComponent =
+			GameWidget::FindWidgetComponent<WidgetContainerComponent>(parentWidget))
+		{
+			parentContainerComponent->PutWidgetInContainer(widget);
+		}
 	}
 	else if (!RootNode.Widget.Get())  // Only Canvas is allowed to be the root node.
 	{
@@ -30,7 +38,8 @@ TreeNode* WidgetTree::FindNode(GameWidget* widget)
 TreeNode* WidgetTree::FindNode(TreeNode* nodeStart, GameWidget* widget)
 {
 	if (!nodeStart) return nullptr;
-	if (nodeStart->Widget.Get() == widget) return nodeStart;
+	if (widget &&
+		(nodeStart->Widget.Get() == widget)) return nodeStart;
 
 	for (int i = 0; i < nodeStart->Children.size(); i++)
 	{

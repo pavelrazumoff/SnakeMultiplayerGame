@@ -15,6 +15,8 @@ class SceneObject : public GameObject, public IInputHandler, public IRenderable
 {
 	typedef GameObject Inherited;
 
+	GAMEOBJECT_BODY(SceneObject)
+
 public:
 	SceneObject();
 	virtual ~SceneObject();

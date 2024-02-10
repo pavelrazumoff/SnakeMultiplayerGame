@@ -32,7 +32,7 @@ int main()
 	GameEngine gameEngine(gameProps);
 
 	StartupLevel* openLevel = CreateNewObject<StartupLevel>();
-	gameEngine.Initialization(openLevel);
+	gameEngine.Initialize(openLevel);
 	gameEngine.Run();
 
 	return 0;

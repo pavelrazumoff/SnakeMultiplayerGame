@@ -11,8 +11,10 @@
 
 class RenderManager
 {
+private:
+	RenderManager() {}
+
 public:
-	RenderManager();
 	~RenderManager() {}
 
 	static RenderManager& GetInstance();

@@ -7,12 +7,6 @@
 #include "Engine/EngineUtility.h"
 #include "Engine/Log/Logger.h"
 
-//#include <chrono>
-
-RenderManager::RenderManager()
-{
-}
-
 RenderManager& RenderManager::GetInstance()
 {
 	static RenderManager instance;

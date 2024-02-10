@@ -27,8 +27,10 @@ DECLARE_EVENT_DELEGATE(ProfilerCategoryDelegate, ProfilerCategory, bool);
 
 class ProfilerManager
 {
+private:
+	ProfilerManager() {}
+
 public:
-	ProfilerManager();
 	~ProfilerManager();
 
 	static ProfilerManager& GetInstance();

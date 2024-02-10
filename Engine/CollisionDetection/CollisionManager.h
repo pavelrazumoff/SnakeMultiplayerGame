@@ -17,8 +17,10 @@ class CollisionManager
 protected:
 	using CollisionChecker = std::function<bool(const ICollider*, const ICollider*)>;
 
+private:
+	CollisionManager() {}
+
 public:
-	CollisionManager();
 	~CollisionManager();
 
 	static CollisionManager& GetInstance();

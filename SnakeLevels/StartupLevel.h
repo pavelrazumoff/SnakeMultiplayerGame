@@ -3,6 +3,7 @@
 #include "Engine/Level/GameLevel.h"
 
 class MainMenuWidget;
+class MultiplayerMenuWidget;
 
 class StartupLevel : public GameLevel
 {
@@ -21,6 +22,17 @@ protected:
 	void HandleMainMenuResponse(uint8_t responseType);
 
 	void StartPlay();
+	void OpenMultiplayerMenu();
+
+	void OpenCreateServerMenu();
+	void MakeLocalServer();
+
+	void OpenJoinServerMenu();
+	void JoinLocalHost();
+
+	void OpenLobbyLevel();
+
+	void ReturnToMainMenu();
 
 protected:
 	TObjectPtr<MainMenuWidget> StartupMenuWidget;

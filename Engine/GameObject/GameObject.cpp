@@ -72,6 +72,27 @@ void GameObject::Destroy()
 	bWaitForDestroy = true;
 }
 
+/*
+	IReplicationObject implementation.
+*/
+
+void GameObject::Write(OutputMemoryBitStream& outStream)
+{
+}
+
+void GameObject::Read(InputMemoryBitStream& inStream)
+{
+}
+
+void GameObject::SafeDestroy()
+{
+	Destroy();
+}
+
+/*
+
+*/
+
 GameObject* InitializeRootObject()
 {
 	if (g_RootObject) return g_RootObject;

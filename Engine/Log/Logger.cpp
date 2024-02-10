@@ -7,7 +7,6 @@
 
 Logger::~Logger()
 {
-	if (logFile) logFile.close();
 }
 
 Logger& Logger::GetInstance()
@@ -22,6 +21,11 @@ void Logger::Initialize(const char* filename)
 
 	if (!logFile)
 		DebugEngineTrap();
+}
+
+void Logger::Release()
+{
+	if (logFile) logFile.close();
 }
 
 void Logger::Write(const char* message)

@@ -160,6 +160,12 @@
     <Filter Include="Header Files\Engine\Other">
       <UniqueIdentifier>{4888d10f-a2be-4001-9493-2ba8ac15025c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\Network">
+      <UniqueIdentifier>{d48bbf78-a958-4ad9-885e-32b9d0bac15f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Network">
+      <UniqueIdentifier>{ee0cbaa8-5971-4868-97f4-0d3312ca7e75}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -317,6 +323,33 @@
     </ClCompile>
     <ClCompile Include="Engine\Other\ProfilerManager.cpp">
       <Filter>Source Files\Engine\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Network\NetworkManager.cpp">
+      <Filter>Source Files\Engine\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Network\ListenServer.cpp">
+      <Filter>Source Files\Engine\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Components\PageContainer.cpp">
+      <Filter>Source Files\Engine\GameWidget\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakeWidgets\WidgetsFactory.cpp">
+      <Filter>Source Files\SnakeWidgets</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Network\SocketHandler.cpp">
+      <Filter>Source Files\Engine\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Network\NetClient.cpp">
+      <Filter>Source Files\Engine\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakeLevels\LobbyLevel.cpp">
+      <Filter>Source Files\SnakeLevels</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakeWidgets\Menu\LobbyServerWidget.cpp">
+      <Filter>Source Files\SnakeWidgets\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakeWidgets\Menu\LobbyClientWidget.cpp">
+      <Filter>Source Files\SnakeWidgets\Menu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -523,6 +556,36 @@
     </ClInclude>
     <ClInclude Include="Engine\Other\ProfilerManager.h">
       <Filter>Header Files\Engine\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Network\NetworkManager.h">
+      <Filter>Header Files\Engine\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Network\ListenServer.h">
+      <Filter>Header Files\Engine\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Network\NetworkEngineUtility.h">
+      <Filter>Header Files\Engine\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Components\PageContainer.h">
+      <Filter>Header Files\Engine\GameWidget\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeWidgets\WidgetsFactory.h">
+      <Filter>Header Files\SnakeWidgets</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Network\SocketHandler.h">
+      <Filter>Header Files\Engine\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Network\NetClient.h">
+      <Filter>Header Files\Engine\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeLevels\LobbyLevel.h">
+      <Filter>Header Files\SnakeLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeWidgets\Menu\LobbyServerWidget.h">
+      <Filter>Header Files\SnakeWidgets\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakeWidgets\Menu\LobbyClientWidget.h">
+      <Filter>Header Files\SnakeWidgets\Menu</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

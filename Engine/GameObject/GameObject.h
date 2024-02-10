@@ -1,10 +1,31 @@
 #pragma once
 
 #include "Engine/EngineUtility.h"
+#include "Replication/ReplicationObject.h"
+
 #include <vector>
 
-class GameObject
+class GameObject;
+class OutputMemoryBitStream;
+class InputMemoryBitStream;
+
+GameObject* InitializeRootObject();
+GameObject* GetRootObject();
+void DestroyRootObject();
+
+template<typename T>
+T* CreateNewObject(GameObject* Owner = GetRootObject());
+
+#define GAMEOBJECT_BODY(inClassName) \
+public: \
+	enum { kClassId = EngineUtilityLibrary::StringToUint32(#inClassName) }; \
+	virtual uint32_t GetClassId() const override { return kClassId; } \
+	static IReplicationObject* CreateReplicationInstance() { return CreateNewObject<inClassName>(); }
+
+class GameObject : public IReplicationObject
 {
+	GAMEOBJECT_BODY(GameObject)
+
 public:
 	GameObject();
 	GameObject(const GameObject& _other) = delete;
@@ -21,6 +42,13 @@ public:
 
 	uint32_t GetID() const { return ID; }
 	GameObject* GetOwner() const { return Owner; }
+
+	/** IReplicationObject implementation. */
+
+	virtual void Write(OutputMemoryBitStream& outStream) override;
+	virtual void Read(InputMemoryBitStream& inStream) override;
+
+	virtual void SafeDestroy() override;
 
 public:
 	template<typename T>
@@ -56,7 +84,3 @@ private:
 
 	uint32_t ID = 0;
 };
-
-GameObject* InitializeRootObject();
-GameObject* GetRootObject();
-void DestroyRootObject();

@@ -15,8 +15,10 @@
 
 class PlayerManager
 {
+private:
+	PlayerManager() {}
+
 public:
-	PlayerManager();
 	~PlayerManager();
 
 	void Initialize();
@@ -27,7 +29,7 @@ public:
 	PlayerState* GetPlayerState(uint16_t playerIndex = 0) const { return pPlayerState; }
 
 protected:
-	// TODO: When the mulitplayer is implemented, this should be a vector of player states.
+	// TODO: When the multiplayer is implemented, this should be a vector of player states.
 	PlayerState* pPlayerState = nullptr;
 
 private:

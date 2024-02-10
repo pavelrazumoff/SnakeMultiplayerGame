@@ -2,10 +2,6 @@
 
 #include "Engine/EngineFactory.h"
 
-PlayerManager::PlayerManager()
-{
-}
-
 PlayerManager::~PlayerManager()
 {
 	delete pPlayerState;

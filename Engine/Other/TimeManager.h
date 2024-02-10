@@ -39,8 +39,10 @@ DECLARE_EVENT_DELEGATE(TimerDelegate);
 
 class TimeManager
 {
+private:
+	TimeManager() {}
+
 public:
-	TimeManager();
 	~TimeManager();
 
 	static TimeManager& GetInstance();

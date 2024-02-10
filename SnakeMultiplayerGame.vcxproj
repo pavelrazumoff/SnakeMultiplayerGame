@@ -111,7 +111,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>NetworkCore\$(IntDir);RenderCore\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>NetworkCore.lib;RenderCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>NetworkCore.lib;RenderCore.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d "NetworkCore\$(IntDir)NetworkCore.dll" "$(OutDir)"
@@ -135,7 +135,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>NetworkCore\$(IntDir);RenderCore\$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>NetworkCore.lib;RenderCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>NetworkCore.lib;RenderCore.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y /d "NetworkCore\$(IntDir)NetworkCore.dll" "$(OutDir)"
@@ -152,6 +152,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\GameWidget\Components\CanvasWidget.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\GameWidget.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\HorizontalBox.cpp" />
+    <ClCompile Include="Engine\GameWidget\Components\PageContainer.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\PanelWidget.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\TextBlock.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\UserWidget.cpp" />
@@ -171,6 +172,10 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\Log\Logger.cpp" />
     <ClCompile Include="Engine\Math\MathLibrary.cpp" />
     <ClCompile Include="Engine\MemoryReflectionSystem.cpp" />
+    <ClCompile Include="Engine\Network\ListenServer.cpp" />
+    <ClCompile Include="Engine\Network\NetClient.cpp" />
+    <ClCompile Include="Engine\Network\NetworkManager.cpp" />
+    <ClCompile Include="Engine\Network\SocketHandler.cpp" />
     <ClCompile Include="Engine\Other\ProfilerManager.cpp" />
     <ClCompile Include="Engine\Other\TimeManager.cpp" />
     <ClCompile Include="Engine\Player\PlayerManager.cpp" />
@@ -184,6 +189,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\SceneObjects\Components\SceneComponent.cpp" />
     <ClCompile Include="Engine\SceneObjects\Pawn\GamePawn.cpp" />
     <ClCompile Include="Engine\SceneObjects\SceneObject.cpp" />
+    <ClCompile Include="SnakeLevels\LobbyLevel.cpp" />
     <ClCompile Include="SnakeLevels\PlayLevel.cpp" />
     <ClCompile Include="SnakeLevels\StartupLevel.cpp" />
     <ClCompile Include="SnakeObjects\Components\BodyCollisionComponent.cpp" />
@@ -192,8 +198,11 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="SnakePlayer\SnakePlayerState.cpp" />
     <ClCompile Include="SnakeWidgets\HUD\PlayerHUDWidget.cpp" />
     <ClCompile Include="SnakeWidgets\Menu\GameMenuWidget.cpp" />
+    <ClCompile Include="SnakeWidgets\Menu\LobbyClientWidget.cpp" />
+    <ClCompile Include="SnakeWidgets\Menu\LobbyServerWidget.cpp" />
     <ClCompile Include="SnakeWidgets\Menu\MainMenuWidget.cpp" />
     <ClCompile Include="SnakeWidgets\Menu\PlayerLostMenuWidget.cpp" />
+    <ClCompile Include="SnakeWidgets\WidgetsFactory.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +223,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\GameWidget\Components\CanvasWidget.h" />
     <ClInclude Include="Engine\GameWidget\Components\GameWidget.h" />
     <ClInclude Include="Engine\GameWidget\Components\HorizontalBox.h" />
+    <ClInclude Include="Engine\GameWidget\Components\PageContainer.h" />
     <ClInclude Include="Engine\GameWidget\Components\PanelWidget.h" />
     <ClInclude Include="Engine\GameWidget\Components\TextBlock.h" />
     <ClInclude Include="Engine\GameWidget\Components\UserWidget.h" />
@@ -238,6 +248,11 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\Log\Logger.h" />
     <ClInclude Include="Engine\Math\MathLibrary.h" />
     <ClInclude Include="Engine\MemoryReflectionSystem.h" />
+    <ClInclude Include="Engine\Network\ListenServer.h" />
+    <ClInclude Include="Engine\Network\NetClient.h" />
+    <ClInclude Include="Engine\Network\NetworkManager.h" />
+    <ClInclude Include="Engine\Network\NetworkEngineUtility.h" />
+    <ClInclude Include="Engine\Network\SocketHandler.h" />
     <ClInclude Include="Engine\Other\ProfilerManager.h" />
     <ClInclude Include="Engine\Other\TimeManager.h" />
     <ClInclude Include="Engine\Player\PlayerManager.h" />
@@ -254,6 +269,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\SceneObjects\Pawn\GamePawn.h" />
     <ClInclude Include="Engine\SceneObjects\SceneObject.h" />
     <ClInclude Include="SnakeDelegates.h" />
+    <ClInclude Include="SnakeLevels\LobbyLevel.h" />
     <ClInclude Include="SnakeLevels\PlayLevel.h" />
     <ClInclude Include="SnakeLevels\StartupLevel.h" />
     <ClInclude Include="SnakeObjects\Components\BodyCollisionComponent.h" />
@@ -263,8 +279,11 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="SnakeUtility.h" />
     <ClInclude Include="SnakeWidgets\HUD\PlayerHUDWidget.h" />
     <ClInclude Include="SnakeWidgets\Menu\GameMenuWidget.h" />
+    <ClInclude Include="SnakeWidgets\Menu\LobbyClientWidget.h" />
+    <ClInclude Include="SnakeWidgets\Menu\LobbyServerWidget.h" />
     <ClInclude Include="SnakeWidgets\Menu\MainMenuWidget.h" />
     <ClInclude Include="SnakeWidgets\Menu\PlayerLostMenuWidget.h" />
+    <ClInclude Include="SnakeWidgets\WidgetsFactory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
