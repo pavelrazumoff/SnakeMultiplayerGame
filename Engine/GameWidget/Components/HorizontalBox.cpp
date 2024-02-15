@@ -113,3 +113,8 @@ RC_SIZE HorizontalBox::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNe
 
 	return dirtySize;
 }
+
+void HorizontalBox::ClearChildren()
+{
+	ContainerComponent.ClearContainer();
+}

@@ -9,9 +9,13 @@ class RCTexture;
 
 class GameWidget : public GameObject
 {
+	typedef GameObject Inherited;
+
 public:
 	GameWidget();
 	virtual ~GameWidget();
+
+	virtual void Destroy() override;
 
 	virtual void ReconstructWidget();
 	virtual void ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size_t underlayWidgetsCount);

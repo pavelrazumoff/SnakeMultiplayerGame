@@ -18,7 +18,7 @@ LobbyClientWidget::LobbyClientWidget()
 		CaptionText->GetAlignment().Padding = { 0, 0, 0, 2 };
 
 		CaptionText->GetText().SetText("Lobby (client)");
-		CaptionText->GetText().SetFontStyle({ 1, FontPrintType::LetterBig, RenderConstants::LightBluePixelColorRGB });
+		CaptionText->GetText().SetFontStyle({ 1, FontPrintType::LetterBig, RenderConstants::LightOrangePixelColorRGB });
 
 		Tree.PlaceWidgetOn(CaptionText, MenuVerticalBox);
 	}

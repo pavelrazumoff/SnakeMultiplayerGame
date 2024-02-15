@@ -1,11 +1,20 @@
 #include "GameWidget.h"
 
+#include "../GameWidgetManager.h"
+
 GameWidget::GameWidget()
 {
 }
 
 GameWidget::~GameWidget()
 {
+}
+
+void GameWidget::Destroy()
+{
+	GameWidgetManager::GetInstance().DestroyGameWidget(this);
+
+	Inherited::Destroy();
 }
 
 void GameWidget::ReconstructWidget()

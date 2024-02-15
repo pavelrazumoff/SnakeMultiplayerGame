@@ -11,9 +11,10 @@ private:
 	EngineFactory() {}
 
 public:
-	~EngineFactory();
+	~EngineFactory() {}
 
 	static EngineFactory& GetInstance();
+	void Free();
 
 	void RegisterType(const std::string& type, EngineGenericType* prototype);
 	EngineGenericType* Create(const std::string& type);

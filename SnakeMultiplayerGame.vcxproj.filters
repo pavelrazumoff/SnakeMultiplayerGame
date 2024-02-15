@@ -351,6 +351,9 @@
     <ClCompile Include="SnakeWidgets\Menu\LobbyClientWidget.cpp">
       <Filter>Source Files\SnakeWidgets\Menu</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Network\NetworkEngineUtility.cpp">
+      <Filter>Source Files\Engine\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameEngine.h">

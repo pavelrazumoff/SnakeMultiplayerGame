@@ -1,6 +1,11 @@
 #pragma once
 
 #include "PlayerState.h"
+#include "Engine/GameObject/GameObjectPtr.h"
+
+#include "Engine/Events/EventDelegate.h"
+
+#include <vector>
 
 /*
 	TODO: The player manager class should represent some kind of game mode.
@@ -12,6 +17,8 @@
 	Here we will store the player states of every player connected to the server. The player state can change for 
 	players based on the actual level they are playing right now on.
 */
+
+DECLARE_EVENT_DELEGATE(PlayerListChangeDelegate);
 
 class PlayerManager
 {
@@ -26,11 +33,24 @@ public:
 	static PlayerManager& GetInstance();
 
 	void SetPlayerStateClass(const std::string& className);
-	PlayerState* GetPlayerState(uint16_t playerIndex = 0) const { return pPlayerState; }
+
+	PlayerState* MakeNewPlayer();
+	void DestroyPlayer(uint16_t playerIndex = 0);
+
+	void NotifyAboutPlayerListChange();
+
+	PlayerState* GetPlayerState(uint16_t playerIndex = 0);
+	uint32_t GetPlayerCount() const;
+
+	/** Events. */
+
+	PlayerListChangeDelegate& OnPlayerListChangeEvent() { return playerListChangeEvent; }
 
 protected:
-	// TODO: When the multiplayer is implemented, this should be a vector of player states.
-	PlayerState* pPlayerState = nullptr;
+	PlayerListChangeDelegate playerListChangeEvent;
+
+protected:
+	std::vector<TObjectPtr<PlayerState>> playerStates;
 
 private:
 	std::string PlayerStateClassName = "";

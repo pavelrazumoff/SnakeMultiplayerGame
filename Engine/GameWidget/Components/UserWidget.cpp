@@ -173,13 +173,14 @@ void UserWidget::GetCanvasDimensions(uint32_t& width, uint32_t& height) const
 	height = Canvas->GetHeight();
 }
 
-bool UserWidget::ForceReconstruct(GameWidget* Instigator)
+void UserWidget::ForceReconstruct()
 {
-	// TODO: Somehow optimize recostruction by using the Instigator object that actually requested this procedure.
-	if (!DoesBelongToWidgetTree(Instigator)) return false;
-
 	ReconstructWidgetTree();
-	return true;
+}
+
+bool UserWidget::RemoveWidgetFromUserWigdet(GameWidget* widget)
+{
+	return Tree.TryRemoveWidget(widget);
 }
 
 void UserWidget::SetWidgetModality(bool bModal)

@@ -11,8 +11,8 @@ class EngineGenericType
 public:
 	virtual ~EngineGenericType() {}
 
-	virtual [[nodiscard]] EngineGenericType* Clone() const = 0;
-	virtual std::string GetTypeName() const = 0;
+	virtual [[nodiscard]] EngineGenericType* CloneGeneric() const = 0;
+	virtual std::string GetGenericTypeName() const = 0;
 };
 
 /** Types specifically for objects placed on Game Levels. */

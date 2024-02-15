@@ -1,5 +1,7 @@
 #include "SnakePlayerState.h"
 
+#include "Engine/GameObject/GameObjectUtility.h"
+
 SnakePlayerState::SnakePlayerState()
 {
 }
@@ -8,12 +10,12 @@ SnakePlayerState::~SnakePlayerState()
 {
 }
 
-EngineGenericType* SnakePlayerState::Clone() const
+EngineGenericType* SnakePlayerState::CloneGeneric() const
 {
-	return new SnakePlayerState();
+	return CreateNewObject<SnakePlayerState>();
 }
 
-std::string SnakePlayerState::GetTypeName() const
+std::string SnakePlayerState::GetGenericTypeName() const
 {
 	return "SnakePlayerState";
 }

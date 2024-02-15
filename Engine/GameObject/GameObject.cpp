@@ -68,8 +68,27 @@ void GameObject::NotifyChildDestroy(GameObject* Child)
 
 void GameObject::Destroy()
 {
-	PostDestroy();
-	bWaitForDestroy = true;
+	if (!bWaitForDestroy)
+	{
+		PostDestroy();
+		bWaitForDestroy = true;
+	}
+}
+
+/*
+	EngineGenericType implementation.
+*/
+
+EngineGenericType* GameObject::CloneGeneric() const
+{
+	DebugEngineTrap();
+	return nullptr;
+	//return CreateNewObject<GameObject>();
+}
+
+std::string GameObject::GetGenericTypeName() const
+{
+	return "GameObject";
 }
 
 /*

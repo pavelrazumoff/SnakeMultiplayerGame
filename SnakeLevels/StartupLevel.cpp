@@ -8,6 +8,7 @@
 
 #include "Core/RenderConsoleLibrary.h"
 
+#include "Engine/Player/PlayerManager.h"
 #include "Engine/Network/NetworkManager.h"
 
 #include "PlayLevel.h"
@@ -63,7 +64,7 @@ void StartupLevel::HandleMainMenuResponse(uint8_t responseType)
 		/** Welcome page. */
 
 		case MainMenuResponse::StartGame:
-			StartPlay();
+			StartLocalPlay();
 			break;
 		case MainMenuResponse::Multiplayer:
 			OpenMultiplayerMenu();
@@ -101,8 +102,11 @@ void StartupLevel::HandleMainMenuResponse(uint8_t responseType)
 	}
 }
 
-void StartupLevel::StartPlay()
+void StartupLevel::StartLocalPlay()
 {
+	auto localPlayer = PlayerManager::GetInstance().MakeNewPlayer();
+	if (!localPlayer) { DebugEngineTrap(); return; }
+
 	PlayLevel* playLevel = CreateNewObject<PlayLevel>();
 	LevelManager::GetInstance().OpenLevel(playLevel);
 }

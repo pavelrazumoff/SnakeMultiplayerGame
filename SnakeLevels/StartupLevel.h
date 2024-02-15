@@ -21,7 +21,7 @@ public:
 protected:
 	void HandleMainMenuResponse(uint8_t responseType);
 
-	void StartPlay();
+	void StartLocalPlay();
 	void OpenMultiplayerMenu();
 
 	void OpenCreateServerMenu();

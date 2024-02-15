@@ -9,7 +9,7 @@ public:
 	{}
 	virtual ~SocketHandler() {}
 
-	int GetSocketAddress(const TCPSocket* Socket, SocketAddressPtr& outAddress);
+	static int GetSocketAddress(const TCPSocket* Socket, SocketAddressPtr& outAddress);
 
 protected:
 	TCPSocketPtr GetSocket() const { return socket; }

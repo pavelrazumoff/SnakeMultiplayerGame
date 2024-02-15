@@ -25,5 +25,17 @@ public:
 	virtual bool PassInput(const InputState& is);
 
 protected:
+	friend class GameWidget;
+
+	void ReconstructUserWidgets();
+	void DestroyGameWidget(GameWidget* widget);
+
+private:
+	void AddToReconstructionQueue(UserWidget* userWidget);
+
+protected:
 	std::vector<TObjectPtr<UserWidget>> UserWidgetList;
+
+private:
+	std::vector<TObjectPtr<UserWidget>> WaitingReconstructionQueue;
 };

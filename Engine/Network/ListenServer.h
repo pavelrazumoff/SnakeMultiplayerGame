@@ -5,18 +5,10 @@
 #include "Serialization/MemoryBitStream.h"
 
 #include <vector>
+#include <queue>
 #include <shared_mutex>
 
 #include "Engine/Events/EventDelegate.h"
-
-enum class ClientState
-{
-	Connected,
-	Disconnected,
-};
-
-DECLARE_EVENT_DELEGATE(ClientConnectionStateChangedDelegate, const ClientInfo*, ClientState);
-DECLARE_EVENT_DELEGATE(ClientErrorDelegate, const ClientInfo*, int);
 
 class ListenServer : public SocketHandler
 {
@@ -28,6 +20,8 @@ public:
 	void StartListen();
 	void StopListen();
 
+	ClientInfo* PopWaitingHandleClient();
+
 protected:
 	/** Threads. */
 
@@ -36,34 +30,23 @@ protected:
 	/** Handle clients. */
 
 	void ProcessNewClient(TCPSocketPtr newClientSocket, const SocketAddress& newClientAddress);
-	void ProcessClientDisconnected(TCPSocketPtr clientSocket);
+	void ProcessClientDisconnected(TCPSocketPtr clientSocket, int errCode = 0);
 	bool ProcessClientError(int errorCode, TCPSocketPtr clientSocket);
 
 	void SyncWithClient(TCPSocketPtr ClientSocket);
 
 	void UpdateWritableSocketsFromConnectedClients(std::vector<TCPSocketPtr>& outClientSockets);
 
-public:
-	/** Events. */
-
-	ClientConnectionStateChangedDelegate& OnClientStateChangedEvent() { return ClientStateChangedEvent; }
-	ClientErrorDelegate& OnClientErrorEvent() { return ClientErrorEvent; }
-
 protected:
-	std::vector<std::shared_ptr<ClientInfo>>::iterator FindClientInfoBySocket(TCPSocketPtr socket);
-	const std::vector<std::shared_ptr<ClientInfo>>::const_iterator FindClientInfoBySocket(TCPSocketPtr socket) const;
-
-protected:
-	ClientConnectionStateChangedDelegate ClientStateChangedEvent;
-	ClientErrorDelegate ClientErrorEvent;
-
-	std::vector<std::shared_ptr<ClientInfo>> connectedClients;
+	std::vector<TCPSocketPtr> connectedClients;
+	std::queue<ClientInfo*> waitingHandleClients;
 
 private:
 	std::atomic<bool> bIsServerRunning = false;
 
 	std::thread handleListenThread;
 	std::shared_mutex loopMutex;
+	std::shared_mutex dataAccessMutex;
 
 	InputMemoryBitStream* inputBitStream = nullptr;
 };

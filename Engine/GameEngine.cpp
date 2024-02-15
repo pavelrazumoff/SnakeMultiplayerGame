@@ -49,6 +49,7 @@ static void _Cleanup()
 	NetworkManager::GetInstance().Cleanup();
 	InputManager::GetInstance().Release();
 	GarbageCollector::GetInstance().Free();
+	EngineFactory::GetInstance().Free();
 	Logger::GetInstance().Release();
 }
 
@@ -149,6 +150,9 @@ void GameEngine::Run()
 
 		// Input state.
 		RefreshInputState();
+
+		// Networking.
+		NetworkManager::GetInstance().Update();
 
 		// Do the game logic here.
 		{

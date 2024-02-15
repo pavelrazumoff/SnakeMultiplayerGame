@@ -18,8 +18,8 @@ public:
 	SnakePlayerState();
 	virtual ~SnakePlayerState();
 
-	virtual [[nodiscard]] EngineGenericType* Clone() const override;
-	virtual std::string GetTypeName() const override;
+	virtual [[nodiscard]] EngineGenericType* CloneGeneric() const override;
+	virtual std::string GetGenericTypeName() const override;
 
 	void IncrementScore();
 	void ClearScore();

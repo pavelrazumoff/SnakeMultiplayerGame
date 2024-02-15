@@ -3,6 +3,9 @@
 #include "Engine/GameWidget/Components/VerticalBox.h"
 #include "Engine/GameWidget/Components/TextBlock.h"
 
+#include "Engine/Player/PlayerManager.h"
+#include "Engine/GameWidget/GameWidgetManager.h"
+
 LobbyServerWidget::LobbyServerWidget()
 {
 	VerticalBox* MenuVerticalBox = CreateNewObject<VerticalBox>(this);
@@ -26,8 +29,41 @@ LobbyServerWidget::LobbyServerWidget()
 	PlayerListVerticalBox = CreateNewObject<VerticalBox>(this);
 	if (PlayerListVerticalBox.Get())
 	{
-		PlayerListVerticalBox->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
+		PlayerListVerticalBox->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::NoAlignment;
 
 		Tree.PlaceWidgetOn(PlayerListVerticalBox.Get(), MenuVerticalBox);
 	}
+
+	PlayerManager::GetInstance().OnPlayerListChangeEvent().Subscribe(this, &LobbyServerWidget::HandlePlayerListChanged);
+}
+
+void LobbyServerWidget::HandlePlayerListChanged()
+{
+	if (!PlayerListVerticalBox.IsValid()) return;
+
+	PlayerListVerticalBox->ClearChildren();
+
+	const uint32_t numPlayers = PlayerManager::GetInstance().GetPlayerCount();
+	for (uint32_t i = 0; i < numPlayers; ++i)
+	{
+		const auto pPlayerState = PlayerManager::GetInstance().GetPlayerState(i);
+		if (!pPlayerState) { DebugEngineTrap(); continue; }
+
+		if (TextBlock* PlayerNameText = CreateNewObject<TextBlock>(this))
+		{
+			PlayerNameText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
+			PlayerNameText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Top;
+			PlayerNameText->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
+
+			PlayerNameText->GetAlignment().Padding = { 2, 0, 2, 1 };
+
+			PlayerNameText->GetText().SetText(pPlayerState->GetPlayerName());
+			PlayerNameText->GetText().SetFontStyle({ 1, FontPrintType::Simple, RenderConstants::LightBluePixelColorRGB });
+
+			Tree.PlaceWidgetOn(PlayerNameText, PlayerListVerticalBox.Get());
+		}
+	}
+
+	// TODO: Move it inside Tree.
+	GameWidgetManager::GetInstance().RequestWidgetReconstruction(this);
 }

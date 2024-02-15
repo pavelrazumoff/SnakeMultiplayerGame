@@ -17,6 +17,9 @@ public:
 
 	AlignmentSettings& GetAlignment() { return Alignment; }
 
+	// TODO: Make common interface for all containers.
+	void ClearChildren();
+
 protected:
 	AlignmentSettings Alignment;
 	WidgetContainerComponent ContainerComponent;

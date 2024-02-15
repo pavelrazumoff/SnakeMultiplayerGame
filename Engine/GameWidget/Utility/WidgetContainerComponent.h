@@ -13,6 +13,9 @@ class WidgetContainerComponent : public IWidgetComponent
 {
 public:
 	void PutWidgetInContainer(GameWidget* widget);
+	bool RemoveWidgetFromContainer(GameWidget* widget);
+	void ClearContainer();
+
 	uint32_t GetNumWidgetsInContainer() const;
 	TObjectPtr<GameWidget> GetWidgetFromContainer(int index);
 

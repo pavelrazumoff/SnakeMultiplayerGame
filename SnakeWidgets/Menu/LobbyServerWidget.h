@@ -13,5 +13,8 @@ public:
 	LobbyServerWidget();
 
 protected:
+	void HandlePlayerListChanged();
+
+protected:
 	TObjectPtr<VerticalBox> PlayerListVerticalBox; // TODO: Replace with scroll box.
 };

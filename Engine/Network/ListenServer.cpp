@@ -131,39 +131,40 @@ void ListenServer::ListenThread()
 
 void ListenServer::ProcessNewClient(TCPSocketPtr newClientSocket, const SocketAddress& newClientAddress)
 {
-	connectedClients.push_back(std::make_shared<ClientInfo>(newClientSocket));
+	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
 
-	ClientStateChangedEvent.Trigger(connectedClients.back().get(), ClientState::Connected);
+	connectedClients.push_back(newClientSocket);
+
+	SocketAddressPtr clientAddress = std::make_shared<SocketAddress>(newClientAddress.GetAsSockAddr());
+	waitingHandleClients.push(new ClientInfo(newClientSocket, clientAddress, ClientState::Connected));
 }
 
-void ListenServer::ProcessClientDisconnected(TCPSocketPtr clientSocket)
+void ListenServer::ProcessClientDisconnected(TCPSocketPtr clientSocket, int errCode)
 {
-	auto foundClient = FindClientInfoBySocket(clientSocket);
-	auto clientInfo = *foundClient;
+	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
 
-	if (foundClient != connectedClients.end())
-	{
-		connectedClients.erase(foundClient);
-	}
-	else
-		DebugEngineTrap();
-	
-	ClientStateChangedEvent.Trigger(clientInfo.get(), ClientState::Disconnected);
+	connectedClients.erase(
+		std::remove(connectedClients.begin(), connectedClients.end(), clientSocket), connectedClients.end());
+
+	SocketAddressPtr clientAddress;
+	GetSocketAddress(clientSocket.get(), clientAddress);
+
+	waitingHandleClients.push(new ClientInfo(nullptr, clientAddress, ClientState::Disconnected));
+	if (errCode > 0)
+		waitingHandleClients.back()->SetErrorCode(errCode);
 
 	clientSocket->Shutdown();
 }
 
 bool ListenServer::ProcessClientError(int errorCode, TCPSocketPtr clientSocket)
 {
-	ClientErrorEvent.Trigger(FindClientInfoBySocket(clientSocket)->get(), errorCode);
-
 	switch (errorCode)
 	{
 		case WSAECONNRESET:
 		case WSAENETRESET:
 		case WSAETIMEDOUT:
 		{
-			ProcessClientDisconnected(clientSocket);
+			ProcessClientDisconnected(clientSocket, errorCode);
 			return false;
 		}
 		default:
@@ -173,17 +174,20 @@ bool ListenServer::ProcessClientError(int errorCode, TCPSocketPtr clientSocket)
 	return true;
 }
 
+ClientInfo* ListenServer::PopWaitingHandleClient()
+{
+	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
+
+	if (waitingHandleClients.empty()) return nullptr;
+
+	ClientInfo* nextInfo = waitingHandleClients.front();
+	waitingHandleClients.pop();
+
+	return nextInfo;
+}
+
 void ListenServer::SyncWithClient(TCPSocketPtr ClientSocket)
 {
-	// Every client has its own data info on the server.
-	auto foundClient = FindClientInfoBySocket(ClientSocket);
-	if (foundClient == connectedClients.end())
-	{
-		DebugEngineTrap();
-		return;
-	}
-
-	// TODO: Sync player state first.
 }
 
 void ListenServer::UpdateWritableSocketsFromConnectedClients(std::vector<TCPSocketPtr>& outClientSockets)
@@ -192,23 +196,5 @@ void ListenServer::UpdateWritableSocketsFromConnectedClients(std::vector<TCPSock
 
 	outClientSockets.reserve(connectedClients.size());
 	for (const auto& client : connectedClients)
-		if (client) outClientSockets.push_back(client->clientSocket);
-}
-
-std::vector<std::shared_ptr<ClientInfo>>::iterator ListenServer::FindClientInfoBySocket(TCPSocketPtr socket)
-{
-	return std::find_if(connectedClients.begin(), connectedClients.end(),
-		[&socket](const auto& client)
-		{
-			return client->clientSocket == socket;
-		});
-}
-
-const std::vector<std::shared_ptr<ClientInfo>>::const_iterator ListenServer::FindClientInfoBySocket(TCPSocketPtr socket) const
-{
-	return std::find_if(connectedClients.cbegin(), connectedClients.cend(),
-		[&socket](const auto& client)
-		{
-			return client->clientSocket == socket;
-		});
+		if (client) outClientSockets.push_back(client);
 }

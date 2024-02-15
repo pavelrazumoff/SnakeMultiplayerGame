@@ -16,6 +16,8 @@ public:
 	static NetworkManager& GetInstance();
 
 	void Initialize();
+	void Update();
+
 	void Cleanup();
 
 	/** Listen Server. */
@@ -38,9 +40,16 @@ protected:
 
 	/** Listen Server Events. */
 
-	void PrepareListenServerEvents();
-	void HandleNewClientConnected(const ClientInfo* clientInfo, ClientState newState);
-	void HandleClientError(const ClientInfo* clientInfo, int errorCode);
+	void UpdateListenServerEvents();
+
+	/** Client. */
+
+	void UpdateClientEvents();
+
+protected:
+
+	void ProcessNewClient(const ClientInfo* clientInfo);
+	void ProcessClientDisconnected(const ClientInfo* clientInfo);
 
 private:
 	std::shared_ptr<ListenServer> listenServerObj;

@@ -7,9 +7,34 @@ void WidgetContainerComponent::PutWidgetInContainer(GameWidget* widget)
 	WidgetsInContainer.push_back(widget);
 }
 
+bool WidgetContainerComponent::RemoveWidgetFromContainer(GameWidget* widget)
+{
+	auto it = std::find_if(WidgetsInContainer.begin(), WidgetsInContainer.end(), [widget](const TObjectPtr<GameWidget>& other) -> bool {
+		return widget == other.Get();
+	});
+
+	if (it != WidgetsInContainer.end())
+	{
+		WidgetsInContainer.erase(it);
+		return true;
+	}
+
+	return false;
+}
+
+void WidgetContainerComponent::ClearContainer()
+{
+	for (auto widget : WidgetsInContainer)
+	{
+		widget->Destroy();
+	}
+
+	WidgetsInContainer.clear();
+}
+
 uint32_t WidgetContainerComponent::GetNumWidgetsInContainer() const
 {
-	return WidgetsInContainer.size();
+	return (uint32_t)WidgetsInContainer.size();
 }
 
 TObjectPtr<GameWidget> WidgetContainerComponent::GetWidgetFromContainer(int index)

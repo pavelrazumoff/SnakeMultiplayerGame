@@ -32,7 +32,10 @@ public:
 	void SetCanvasDimensions(uint32_t width, uint32_t height);
 	void GetCanvasDimensions(uint32_t& width, uint32_t& height) const;
 
-	bool ForceReconstruct(GameWidget* Instigator);
+	void ForceReconstruct();
+	bool RemoveWidgetFromUserWigdet(GameWidget* widget);
+
+	bool DoesBelongToWidgetTree(GameWidget* widget);
 
 	void SetWidgetModality(bool bModal);
 	bool IsWidgetModal() const { return bModalWidget; }
@@ -41,7 +44,6 @@ public:
 
 protected:
 	void ReconstructWidgetTree();
-	bool DoesBelongToWidgetTree(GameWidget* widget);
 
 private:
 	void CalculateDirtySizeWidgetsRecursive(TreeNode* node);

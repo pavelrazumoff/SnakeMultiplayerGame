@@ -6,6 +6,8 @@
 #include "Engine/Log/Logger.h"
 #include "Engine/EngineUtility.h"
 
+#include "Engine/Player/PlayerManager.h"
+
 NetworkManager::NetworkManager()
 {
 }
@@ -30,6 +32,12 @@ void NetworkManager::Initialize()
 		Logger::GetInstance().Write(errMsg.c_str());
 		return;
 	}
+}
+
+void NetworkManager::Update()
+{
+	UpdateListenServerEvents();
+	UpdateClientEvents();
 }
 
 void NetworkManager::Cleanup()
@@ -73,7 +81,6 @@ bool NetworkManager::MakeListenServer()
 	}
 
 	listenServerObj = std::make_shared<ListenServer>(listenSocket);
-	PrepareListenServerEvents();
 
 	return true;
 }
@@ -148,55 +155,74 @@ bool NetworkManager::IsClient() const
 	Listen Server Events.
 */
 
-void NetworkManager::PrepareListenServerEvents()
+void NetworkManager::UpdateListenServerEvents()
 {
 	if (!IsServer()) return;
 
-	listenServerObj->OnClientStateChangedEvent().Subscribe(this, &NetworkManager::HandleNewClientConnected);
-	listenServerObj->OnClientErrorEvent().Subscribe(this, &NetworkManager::HandleClientError);
-}
-
-void NetworkManager::HandleNewClientConnected(const ClientInfo* clientInfo, ClientState newState)
-{
-	if (!clientInfo) return;
-
-	SocketAddressPtr clientAddress;
-	if (0 != listenServerObj->GetSocketAddress(clientInfo->clientSocket.get(), clientAddress))
+	while (auto clientInfo = listenServerObj->PopWaitingHandleClient())
 	{
-		Logger::GetInstance().Write("Failed to get client address.");
-		return;
-	}
+		switch (clientInfo->GetState())
+		{
+			case ClientState::Connected:
+				{
+					std::string logMsg = "New client connected: " + clientInfo->GetAddress().ToString();
+					Logger::GetInstance().Write(logMsg.c_str());
 
-	switch (newState)
-	{
-		case ClientState::Connected:
-			{
-				std::string logMsg = "New client connected: " + clientAddress->ToString();
-				Logger::GetInstance().Write(logMsg.c_str());
-			}
-			break;
-		case ClientState::Disconnected:
-			{
-				std::string logMsg = "Client disconnected: " + clientAddress->ToString();
-				Logger::GetInstance().Write(logMsg.c_str());
-			}
-			break;
-		default:
-			break;
+					ProcessNewClient(clientInfo);
+				}
+				break;
+			case ClientState::Disconnected:
+				{
+					std::string logMsg = "Client disconnected: " + clientInfo->GetAddress().ToString();
+					if (clientInfo->GetErrorCode() > 0)
+						logMsg += " with error code " + std::to_string(clientInfo->GetErrorCode());
+
+					Logger::GetInstance().Write(logMsg.c_str());
+
+					ProcessClientDisconnected(clientInfo);
+				}
+				break;
+			default:
+				break;
+		}
 	}
 }
 
-void NetworkManager::HandleClientError(const ClientInfo* clientInfo, int errorCode)
-{
-	if (!clientInfo) return;
+/*
+	Client.
+*/
 
-	SocketAddressPtr clientAddress;
-	if (0 != listenServerObj->GetSocketAddress(clientInfo->clientSocket.get(), clientAddress))
+void NetworkManager::UpdateClientEvents()
+{
+}
+
+/*
+
+*/
+
+void NetworkManager::ProcessNewClient(const ClientInfo* clientInfo)
+{
+	auto newPlayerState = PlayerManager::GetInstance().MakeNewPlayer();
+	if (!newPlayerState) { DebugEngineTrap(); return; }
+
+	newPlayerState->SetNetPlayerInfo(clientInfo);
+	newPlayerState->SetPlayerName(clientInfo->GetAddress().ToString().c_str());
+
+	PlayerManager::GetInstance().NotifyAboutPlayerListChange();
+}
+
+void NetworkManager::ProcessClientDisconnected(const ClientInfo* clientInfo)
+{
+	uint32_t numPlayers = PlayerManager::GetInstance().GetPlayerCount();
+	for (uint32_t i = 0; i < numPlayers; ++i)
 	{
-		Logger::GetInstance().Write("Failed to get client address.");
-		return;
+		auto playerState = PlayerManager::GetInstance().GetPlayerState(i);
+		if (playerState->GetNetPlayerInfo()->GetAddress() == clientInfo->GetAddress())
+		{
+			PlayerManager::GetInstance().DestroyPlayer(i);
+			break;
+		}
 	}
 
-	std::string logMsg = "Client error: " + clientAddress->ToString() + " with error code " + std::to_string(errorCode);
-	Logger::GetInstance().Write(logMsg.c_str());
+	PlayerManager::GetInstance().NotifyAboutPlayerListChange();
 }

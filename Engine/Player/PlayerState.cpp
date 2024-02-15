@@ -1,11 +1,18 @@
 #include "PlayerState.h"
 
-EngineGenericType* PlayerState::Clone() const
+#include "Engine/GameObject/GameObjectUtility.h"
+
+void PlayerState::SetPlayerName(const char* player_name)
 {
-	return new PlayerState();
+	playerName = player_name;
 }
 
-std::string PlayerState::GetTypeName() const
+EngineGenericType* PlayerState::CloneGeneric() const
+{
+	return CreateNewObject<PlayerState>();
+}
+
+std::string PlayerState::GetGenericTypeName() const
 {
 	return "PlayerState";
 }

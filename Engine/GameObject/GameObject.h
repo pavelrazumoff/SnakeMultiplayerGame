@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/EngineTypes.h"
 #include "Engine/EngineUtility.h"
 #include "Replication/ReplicationObject.h"
 
@@ -22,7 +23,7 @@ public: \
 	virtual uint32_t GetClassId() const override { return kClassId; } \
 	static IReplicationObject* CreateReplicationInstance() { return CreateNewObject<inClassName>(); }
 
-class GameObject : public IReplicationObject
+class GameObject : public EngineGenericType, public IReplicationObject
 {
 	GAMEOBJECT_BODY(GameObject)
 
@@ -42,6 +43,11 @@ public:
 
 	uint32_t GetID() const { return ID; }
 	GameObject* GetOwner() const { return Owner; }
+
+	/** EngineGenericType implementation. */
+
+	virtual [[nodiscard]] EngineGenericType* CloneGeneric() const override;
+	virtual std::string GetGenericTypeName() const override;
 
 	/** IReplicationObject implementation. */
 

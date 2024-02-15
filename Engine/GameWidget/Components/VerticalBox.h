@@ -15,6 +15,9 @@ public:
 	virtual void ReconstructUnderlayWidgets(GameWidget** underlayWidgets, size_t underlayWidgetsCount) override;
 	virtual RC_SIZE CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeedToRecalc) override;
 
+	// TODO: Make common interface for all containers.
+	void ClearChildren();
+
 	AlignmentSettings& GetAlignment() { return Alignment; }
 
 protected:

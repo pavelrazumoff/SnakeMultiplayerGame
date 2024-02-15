@@ -1,13 +1,36 @@
 #pragma once
 
-#include "Engine/EngineTypes.h"
+#include "Engine/GameObject/GameObject.h"
 
-class PlayerState : public EngineGenericType
+struct ClientInfo;
+
+class PlayerState : public GameObject
 {
 public:
 	PlayerState() {}
 	virtual ~PlayerState() {}
 
-	virtual [[nodiscard]] EngineGenericType* Clone() const override;
-	virtual std::string GetTypeName() const override;
+	void SetPlayerName(const char* player_name);
+	const std::string& GetPlayerName() const { return playerName; }
+
+public:
+
+	/** override EngineGenericType. */
+
+	virtual [[nodiscard]] EngineGenericType* CloneGeneric() const override;
+	virtual std::string GetGenericTypeName() const override;
+
+protected:
+	/** Networking. */
+
+	friend class NetworkManager;
+
+	void SetNetPlayerInfo(const ClientInfo* info) { netPlayerInfo = info; }
+	const ClientInfo* GetNetPlayerInfo() const { return netPlayerInfo; }
+
+protected:
+	std::string playerName;
+
+private:
+	const ClientInfo* netPlayerInfo = nullptr;
 };

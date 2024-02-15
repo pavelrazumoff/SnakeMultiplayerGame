@@ -38,8 +38,12 @@ void GameWidgetManager::RequestWidgetReconstruction(GameWidget* Instigator)
 {
 	for (auto& userWidget : UserWidgetList)
 	{
-		if (userWidget.IsValid() && 
-			userWidget->ForceReconstruct(Instigator)) return;
+		if ((Instigator == userWidget.Get()) ||
+			userWidget->DoesBelongToWidgetTree(Instigator))
+		{
+			AddToReconstructionQueue(userWidget.Get());
+			return;
+		}
 	}
 }
 
@@ -53,6 +57,8 @@ bool GameWidgetManager::GetBottomPlacedUserWidget(TObjectPtr<UserWidget>& userWi
 
 void GameWidgetManager::Update(float DeltaTime)
 {
+	ReconstructUserWidgets();
+
 	for (auto& userWidget : UserWidgetList)
 	{
 		if (userWidget.IsValid())
@@ -74,4 +80,39 @@ bool GameWidgetManager::PassInput(const InputState& is)
 		}
 	}
 	return false;
+}
+
+void GameWidgetManager::ReconstructUserWidgets()
+{
+	while (!WaitingReconstructionQueue.empty())
+	{
+		auto userWidget = WaitingReconstructionQueue.front();
+		WaitingReconstructionQueue.erase(WaitingReconstructionQueue.begin());
+
+		if (userWidget.IsValid()) userWidget->ForceReconstruct();
+	}
+}
+
+void GameWidgetManager::DestroyGameWidget(GameWidget* widget)
+{
+	for (auto& userWidget : UserWidgetList)
+	{
+		if(userWidget.IsValid() &&
+			userWidget->RemoveWidgetFromUserWigdet(widget))
+		{
+			AddToReconstructionQueue(userWidget.Get());
+			return;
+		}
+	}
+}
+
+void GameWidgetManager::AddToReconstructionQueue(UserWidget* userWidget)
+{
+	auto it = std::find_if(WaitingReconstructionQueue.begin(), WaitingReconstructionQueue.end(),
+		[userWidget](TObjectPtr<UserWidget>& Other) -> bool {
+		return Other.Get() == userWidget;
+	});
+
+	if (it == WaitingReconstructionQueue.end())
+		WaitingReconstructionQueue.push_back(userWidget);
 }

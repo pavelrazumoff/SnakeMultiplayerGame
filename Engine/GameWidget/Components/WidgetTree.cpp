@@ -16,6 +16,7 @@ void WidgetTree::PlaceWidgetOn(GameWidget* widget, GameWidget* parentWidget)
 	{
 		TreeNode node;
 		node.Widget = widget;
+		node.Parent = parentNode;
 		parentNode->Children.push_back(node);
 
 		if (WidgetContainerComponent* parentContainerComponent =
@@ -28,6 +29,31 @@ void WidgetTree::PlaceWidgetOn(GameWidget* widget, GameWidget* parentWidget)
 	{
 		RootNode.Widget = widget;
 	}
+}
+
+bool WidgetTree::TryRemoveWidget(GameWidget* widget)
+{
+	TreeNode* node = FindNode(widget);
+	TreeNode* parentNode = node ? node->Parent : nullptr;
+
+	if (!parentNode) return false;
+	
+	for (int i = 0; i < parentNode->Children.size(); i++)
+	{
+		if (parentNode->Children[i].Widget.Get() == widget)
+		{
+			parentNode->Children.erase(parentNode->Children.begin() + i);
+			break;
+		}
+	}
+
+	if (WidgetContainerComponent* parentContainerComponent =
+		GameWidget::FindWidgetComponent<WidgetContainerComponent>(parentNode->GetWidget()))
+	{
+		parentContainerComponent->RemoveWidgetFromContainer(widget);
+	}
+
+	return true;
 }
 
 TreeNode* WidgetTree::FindNode(GameWidget* widget)

@@ -18,6 +18,8 @@ private:
 	friend class WidgetTree;
 
 	TObjectPtr<GameWidget> Widget;
+
+	TreeNode* Parent = nullptr;
 	std::vector<TreeNode> Children;
 };
 
@@ -28,6 +30,7 @@ public:
 	virtual ~WidgetTree();
 
 	void PlaceWidgetOn(GameWidget* widget, GameWidget* parentWidget);
+	bool TryRemoveWidget(GameWidget* widget);
 
 	TreeNode* GetRootNode() { return &RootNode; }
 

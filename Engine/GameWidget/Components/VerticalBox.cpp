@@ -101,3 +101,8 @@ RC_SIZE VerticalBox::CalcDirtySize(bool& _bSizeXNeedsToRecalc, bool& _bSizeYNeed
 
 	return dirtySize;
 }
+
+void VerticalBox::ClearChildren()
+{
+	ContainerComponent.ClearContainer();
+}
