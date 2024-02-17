@@ -14,12 +14,15 @@ enum class ClientState
 
 	Connected,
 	Disconnected,
+
+	DataReceived,
 };
 
 struct ClientInfo
 {
 public:
 	ClientInfo(TCPSocketPtr socket, SocketAddressPtr socketAddress, ClientState state);
+	virtual ~ClientInfo() {}
 
 	void SetErrorCode(int code) { errorCode = code; }
 
@@ -36,4 +39,19 @@ private:
 	ClientState clientState = ClientState::None;
 
 	int errorCode = 0;
+};
+
+class InputMemoryBitStream;
+
+struct ClientDataInfo : public ClientInfo
+{
+public:
+	ClientDataInfo(TCPSocketPtr socket, SocketAddressPtr socketAddress, ClientState state) :
+		ClientInfo(socket, socketAddress, state) {}
+	virtual ~ClientDataInfo();
+
+	void SetData(const char* inBuffer, uint32_t inBitCount);
+
+private:
+	InputMemoryBitStream* inputBitStream = nullptr;
 };

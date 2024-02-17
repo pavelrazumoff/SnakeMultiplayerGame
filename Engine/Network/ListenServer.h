@@ -16,6 +16,7 @@ class ListenServer : public SocketHandler
 
 public:
 	ListenServer(TCPSocketPtr _listenSocket);
+	virtual ~ListenServer();
 
 	void StartListen();
 	void StopListen();
@@ -33,6 +34,8 @@ protected:
 	void ProcessClientDisconnected(TCPSocketPtr clientSocket, int errCode = 0);
 	bool ProcessClientError(int errorCode, TCPSocketPtr clientSocket);
 
+	void ProcessClientDataReceived(TCPSocketPtr clientSocket, int32_t bytesReceived);
+
 	void SyncWithClient(TCPSocketPtr ClientSocket);
 
 	void UpdateWritableSocketsFromConnectedClients(std::vector<TCPSocketPtr>& outClientSockets);
@@ -48,5 +51,5 @@ private:
 	std::shared_mutex loopMutex;
 	std::shared_mutex dataAccessMutex;
 
-	InputMemoryBitStream* inputBitStream = nullptr;
+	std::unique_ptr<InputMemoryBitStream> inputBitStream;
 };

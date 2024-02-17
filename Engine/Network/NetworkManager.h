@@ -48,7 +48,7 @@ protected:
 
 protected:
 
-	void ProcessNewClient(const ClientInfo* clientInfo);
+	void ProcessNewClient(ClientInfo* clientInfo);
 	void ProcessClientDisconnected(const ClientInfo* clientInfo);
 
 private:

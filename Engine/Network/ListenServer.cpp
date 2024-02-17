@@ -9,6 +9,10 @@ ListenServer::ListenServer(TCPSocketPtr _listenSocket)
 {
 }
 
+ListenServer::~ListenServer()
+{
+}
+
 void ListenServer::StartListen()
 {
 	if (bIsServerRunning ||
@@ -93,7 +97,7 @@ void ListenServer::ListenThread()
 					int32_t bytesRead = socket->Receive(inputBitStream->GetBufferPtr(), inputBitStream->GetCapacity());
 					if (bytesRead > 0)
 					{
-						// TODO.
+						ProcessClientDataReceived(socket, bytesRead);
 					}
 					else if (bytesRead == 0)
 					{
@@ -172,6 +176,16 @@ bool ListenServer::ProcessClientError(int errorCode, TCPSocketPtr clientSocket)
 	}
 
 	return true;
+}
+
+void ListenServer::ProcessClientDataReceived(TCPSocketPtr clientSocket, int32_t bytesReceived)
+{
+	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
+
+	ClientDataInfo* clientDataInfo = new ClientDataInfo(clientSocket, nullptr, ClientState::DataReceived);
+	clientDataInfo->SetData(inputBitStream->GetBufferPtr(), bytesReceived << 3);
+
+	waitingHandleClients.push(clientDataInfo);
 }
 
 ClientInfo* ListenServer::PopWaitingHandleClient()

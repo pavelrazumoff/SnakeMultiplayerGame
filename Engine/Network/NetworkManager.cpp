@@ -159,8 +159,11 @@ void NetworkManager::UpdateListenServerEvents()
 {
 	if (!IsServer()) return;
 
-	while (auto clientInfo = listenServerObj->PopWaitingHandleClient())
+	while (true)
 	{
+		std::unique_ptr<ClientInfo> clientInfo(listenServerObj->PopWaitingHandleClient());
+		if (!clientInfo) break;
+
 		switch (clientInfo->GetState())
 		{
 			case ClientState::Connected:
@@ -168,7 +171,7 @@ void NetworkManager::UpdateListenServerEvents()
 					std::string logMsg = "New client connected: " + clientInfo->GetAddress().ToString();
 					Logger::GetInstance().Write(logMsg.c_str());
 
-					ProcessNewClient(clientInfo);
+					ProcessNewClient(clientInfo.release());
 				}
 				break;
 			case ClientState::Disconnected:
@@ -179,7 +182,12 @@ void NetworkManager::UpdateListenServerEvents()
 
 					Logger::GetInstance().Write(logMsg.c_str());
 
-					ProcessClientDisconnected(clientInfo);
+					ProcessClientDisconnected(clientInfo.get());
+				}
+				break;
+			case ClientState::DataReceived:
+				{
+					// TODO.
 				}
 				break;
 			default:
@@ -200,7 +208,7 @@ void NetworkManager::UpdateClientEvents()
 
 */
 
-void NetworkManager::ProcessNewClient(const ClientInfo* clientInfo)
+void NetworkManager::ProcessNewClient(ClientInfo* clientInfo)
 {
 	auto newPlayerState = PlayerManager::GetInstance().MakeNewPlayer();
 	if (!newPlayerState) { DebugEngineTrap(); return; }

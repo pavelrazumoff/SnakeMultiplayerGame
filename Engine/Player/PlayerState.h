@@ -8,7 +8,7 @@ class PlayerState : public GameObject
 {
 public:
 	PlayerState() {}
-	virtual ~PlayerState() {}
+	virtual ~PlayerState();
 
 	void SetPlayerName(const char* player_name);
 	const std::string& GetPlayerName() const { return playerName; }
@@ -25,12 +25,12 @@ protected:
 
 	friend class NetworkManager;
 
-	void SetNetPlayerInfo(const ClientInfo* info) { netPlayerInfo = info; }
+	void SetNetPlayerInfo(ClientInfo* info);
 	const ClientInfo* GetNetPlayerInfo() const { return netPlayerInfo; }
 
 protected:
 	std::string playerName;
 
 private:
-	const ClientInfo* netPlayerInfo = nullptr;
+	ClientInfo* netPlayerInfo = nullptr;
 };
