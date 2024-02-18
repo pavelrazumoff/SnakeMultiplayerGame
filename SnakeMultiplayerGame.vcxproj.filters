@@ -354,6 +354,9 @@
     <ClCompile Include="Engine\Network\NetworkEngineUtility.cpp">
       <Filter>Source Files\Engine\Network</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\GameWidget\Components\TextEditBox.cpp">
+      <Filter>Source Files\Engine\GameWidget\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameEngine.h">
@@ -589,6 +592,9 @@
     </ClInclude>
     <ClInclude Include="SnakeWidgets\Menu\LobbyClientWidget.h">
       <Filter>Header Files\SnakeWidgets\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\GameWidget\Components\TextEditBox.h">
+      <Filter>Header Files\Engine\GameWidget\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -161,6 +161,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\GameWidget\Components\PageContainer.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\PanelWidget.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\TextBlock.cpp" />
+    <ClCompile Include="Engine\GameWidget\Components\TextEditBox.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\UserWidget.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\VerticalBox.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\WidgetTree.cpp" />
@@ -228,6 +229,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\GameObject\GameObjectUtility.h" />
     <ClInclude Include="Engine\GameWidget\Components\Button.h" />
     <ClInclude Include="Engine\GameWidget\Components\CanvasWidget.h" />
+    <ClInclude Include="Engine\GameWidget\Components\TextEditBox.h" />
     <ClInclude Include="Engine\GameWidget\Components\GameWidget.h" />
     <ClInclude Include="Engine\GameWidget\Components\HorizontalBox.h" />
     <ClInclude Include="Engine\GameWidget\Components\PageContainer.h" />

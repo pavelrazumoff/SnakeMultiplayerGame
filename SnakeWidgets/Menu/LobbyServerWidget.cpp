@@ -6,6 +6,8 @@
 #include "Engine/Player/PlayerManager.h"
 #include "Engine/GameWidget/GameWidgetManager.h"
 
+#include "Engine/GameObject/GameObjectUtility.h"
+
 LobbyServerWidget::LobbyServerWidget()
 {
 	VerticalBox* MenuVerticalBox = CreateNewObject<VerticalBox>(this);
