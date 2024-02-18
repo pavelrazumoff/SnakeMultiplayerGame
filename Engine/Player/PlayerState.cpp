@@ -5,7 +5,7 @@
 
 PlayerState::~PlayerState()
 {
-	if (netPlayerInfo) delete netPlayerInfo;
+	if (netPlayerState) delete netPlayerState;
 }
 
 void PlayerState::SetPlayerName(const char* player_name)
@@ -23,9 +23,9 @@ std::string PlayerState::GetGenericTypeName() const
 	return "PlayerState";
 }
 
-void PlayerState::SetNetPlayerInfo(ClientInfo* info)
+void PlayerState::SetNetPlayerState(NetworkState::ClientNetStateWrapper* netState)
 {
-	if (netPlayerInfo) delete netPlayerInfo;
+	if (netPlayerState) delete netPlayerState;
 
-	netPlayerInfo = info;
+	netPlayerState = netState;
 }

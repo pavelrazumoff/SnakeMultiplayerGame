@@ -8,7 +8,11 @@ inline constexpr uint32_t MAX_PACKET_SIZE = 1470;
 
 } // namespace NetworkUtility
 
-enum class ClientState
+class InputMemoryBitStream;
+
+namespace NetworkState {
+
+enum class ERawClientState
 {
 	None,
 
@@ -18,17 +22,17 @@ enum class ClientState
 	DataReceived,
 };
 
-struct ClientInfo
+struct RawClientStateInfo
 {
 public:
-	ClientInfo(TCPSocketPtr socket, SocketAddressPtr socketAddress, ClientState state);
-	virtual ~ClientInfo() {}
+	RawClientStateInfo(TCPSocketPtr socket, SocketAddressPtr socketAddress, ERawClientState state);
+	virtual ~RawClientStateInfo() {}
 
 	void SetErrorCode(int code) { errorCode = code; }
 
 	const TCPSocketPtr& GetSocket() const { return clientSocket; }
-	const SocketAddress& GetAddress() const { return *clientAddress; }
-	ClientState GetState() const { return clientState; }
+	const SocketAddressPtr& GetAddress() const { return clientAddress; }
+	ERawClientState GetState() const { return clientState; }
 
 	int GetErrorCode() const { return errorCode; }
 
@@ -36,22 +40,38 @@ private:
 	TCPSocketPtr clientSocket;
 	SocketAddressPtr clientAddress;
 
-	ClientState clientState = ClientState::None;
+	ERawClientState clientState = ERawClientState::None;
 
 	int errorCode = 0;
 };
 
-class InputMemoryBitStream;
-
-struct ClientDataInfo : public ClientInfo
+struct RawClientPackageStateInfo : public RawClientStateInfo
 {
 public:
-	ClientDataInfo(TCPSocketPtr socket, SocketAddressPtr socketAddress, ClientState state) :
-		ClientInfo(socket, socketAddress, state) {}
-	virtual ~ClientDataInfo();
+	RawClientPackageStateInfo(TCPSocketPtr socket, SocketAddressPtr socketAddress, ERawClientState state) :
+		RawClientStateInfo(socket, socketAddress, state) {}
+	virtual ~RawClientPackageStateInfo();
 
 	void SetData(const char* inBuffer, uint32_t inBitCount);
 
 private:
 	InputMemoryBitStream* inputBitStream = nullptr;
 };
+
+struct ClientNetStateWrapper
+{
+	ClientNetStateWrapper(TCPSocketPtr socket, SocketAddressPtr socketAddress) :
+		clientSocket(socket),
+		clientAddress(socketAddress) {}
+
+	const TCPSocketPtr& GetSocket() const { return clientSocket; }
+	const SocketAddressPtr& GetAddress() const { return clientAddress; }
+
+private:
+	TCPSocketPtr clientSocket;
+	SocketAddressPtr clientAddress;
+};
+
+// ------------------------------------------------------------------
+
+} // namespace NetworkState

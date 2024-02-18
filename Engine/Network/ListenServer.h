@@ -21,7 +21,7 @@ public:
 	void StartListen();
 	void StopListen();
 
-	ClientInfo* PopWaitingHandleClient();
+	NetworkState::RawClientStateInfo* PopWaitingHandleClient();
 
 protected:
 	/** Threads. */
@@ -42,7 +42,7 @@ protected:
 
 protected:
 	std::vector<TCPSocketPtr> connectedClients;
-	std::queue<ClientInfo*> waitingHandleClients;
+	std::queue<NetworkState::RawClientStateInfo*> waitingHandleClients;
 
 private:
 	std::atomic<bool> bIsServerRunning = false;

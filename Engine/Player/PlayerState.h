@@ -2,7 +2,11 @@
 
 #include "Engine/GameObject/GameObject.h"
 
-struct ClientInfo;
+namespace NetworkState {
+
+struct ClientNetStateWrapper;
+
+} // namespace NetworkState
 
 class PlayerState : public GameObject
 {
@@ -25,12 +29,12 @@ protected:
 
 	friend class NetworkManager;
 
-	void SetNetPlayerInfo(ClientInfo* info);
-	const ClientInfo* GetNetPlayerInfo() const { return netPlayerInfo; }
+	void SetNetPlayerState(NetworkState::ClientNetStateWrapper* netState);
+	const NetworkState::ClientNetStateWrapper* GetNetPlayerInfo() const { return netPlayerState; }
 
 protected:
 	std::string playerName;
 
 private:
-	ClientInfo* netPlayerInfo = nullptr;
+	NetworkState::ClientNetStateWrapper* netPlayerState = nullptr;
 };

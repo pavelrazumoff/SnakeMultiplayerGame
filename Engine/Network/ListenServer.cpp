@@ -137,15 +137,19 @@ void ListenServer::ProcessNewClient(TCPSocketPtr newClientSocket, const SocketAd
 {
 	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
 
+	using namespace NetworkState;
+
 	connectedClients.push_back(newClientSocket);
 
 	SocketAddressPtr clientAddress = std::make_shared<SocketAddress>(newClientAddress.GetAsSockAddr());
-	waitingHandleClients.push(new ClientInfo(newClientSocket, clientAddress, ClientState::Connected));
+	waitingHandleClients.push(new RawClientStateInfo(newClientSocket, clientAddress, ERawClientState::Connected));
 }
 
 void ListenServer::ProcessClientDisconnected(TCPSocketPtr clientSocket, int errCode)
 {
 	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
+
+	using namespace NetworkState;
 
 	connectedClients.erase(
 		std::remove(connectedClients.begin(), connectedClients.end(), clientSocket), connectedClients.end());
@@ -153,7 +157,7 @@ void ListenServer::ProcessClientDisconnected(TCPSocketPtr clientSocket, int errC
 	SocketAddressPtr clientAddress;
 	GetSocketAddress(clientSocket.get(), clientAddress);
 
-	waitingHandleClients.push(new ClientInfo(nullptr, clientAddress, ClientState::Disconnected));
+	waitingHandleClients.push(new RawClientStateInfo(nullptr, clientAddress, ERawClientState::Disconnected));
 	if (errCode > 0)
 		waitingHandleClients.back()->SetErrorCode(errCode);
 
@@ -182,19 +186,23 @@ void ListenServer::ProcessClientDataReceived(TCPSocketPtr clientSocket, int32_t 
 {
 	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
 
-	ClientDataInfo* clientDataInfo = new ClientDataInfo(clientSocket, nullptr, ClientState::DataReceived);
+	using namespace NetworkState;
+
+	RawClientPackageStateInfo* clientDataInfo = new RawClientPackageStateInfo(clientSocket, nullptr, ERawClientState::DataReceived);
 	clientDataInfo->SetData(inputBitStream->GetBufferPtr(), bytesReceived << 3);
 
 	waitingHandleClients.push(clientDataInfo);
 }
 
-ClientInfo* ListenServer::PopWaitingHandleClient()
+NetworkState::RawClientStateInfo* ListenServer::PopWaitingHandleClient()
 {
 	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
 
+	using namespace NetworkState;
+
 	if (waitingHandleClients.empty()) return nullptr;
 
-	ClientInfo* nextInfo = waitingHandleClients.front();
+	RawClientStateInfo* nextInfo = waitingHandleClients.front();
 	waitingHandleClients.pop();
 
 	return nextInfo;

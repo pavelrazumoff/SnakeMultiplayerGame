@@ -48,8 +48,8 @@ protected:
 
 protected:
 
-	void ProcessNewClient(ClientInfo* clientInfo);
-	void ProcessClientDisconnected(const ClientInfo* clientInfo);
+	void ProcessNewClient(const NetworkState::RawClientStateInfo& clientInfo);
+	void ProcessClientDisconnected(const NetworkState::RawClientStateInfo& clientInfo);
 
 private:
 	std::shared_ptr<ListenServer> listenServerObj;

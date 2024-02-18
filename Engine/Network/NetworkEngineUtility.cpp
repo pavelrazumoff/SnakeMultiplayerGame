@@ -4,19 +4,21 @@
 
 #include "Engine/EngineUtility.h"
 
-ClientInfo::ClientInfo(TCPSocketPtr socket, SocketAddressPtr socketAddress, ClientState state)
+namespace NetworkState {
+
+RawClientStateInfo::RawClientStateInfo(TCPSocketPtr socket, SocketAddressPtr socketAddress, ERawClientState state)
 {
 	clientSocket = socket;
 	clientAddress = socketAddress;
 	clientState = state;
 }
 
-ClientDataInfo::~ClientDataInfo()
+RawClientPackageStateInfo::~RawClientPackageStateInfo()
 {
 	if (inputBitStream) delete inputBitStream;
 }
 
-void ClientDataInfo::SetData(const char* inBuffer, uint32_t inBitCount)
+void RawClientPackageStateInfo::SetData(const char* inBuffer, uint32_t inBitCount)
 {
 	char* buffer = (char*)std::malloc(inBitCount);
 	if (!buffer) { DebugEngineTrap(); return; }
@@ -26,3 +28,5 @@ void ClientDataInfo::SetData(const char* inBuffer, uint32_t inBitCount)
 	if (inputBitStream) delete inputBitStream;
 	inputBitStream = new InputMemoryBitStream(buffer, inBitCount);
 }
+
+} // namespace NetworkState

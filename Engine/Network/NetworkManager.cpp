@@ -159,33 +159,35 @@ void NetworkManager::UpdateListenServerEvents()
 {
 	if (!IsServer()) return;
 
+	using namespace NetworkState;
+
 	while (true)
 	{
-		std::unique_ptr<ClientInfo> clientInfo(listenServerObj->PopWaitingHandleClient());
+		std::unique_ptr<RawClientStateInfo> clientInfo(listenServerObj->PopWaitingHandleClient());
 		if (!clientInfo) break;
 
 		switch (clientInfo->GetState())
 		{
-			case ClientState::Connected:
+			case ERawClientState::Connected:
 				{
-					std::string logMsg = "New client connected: " + clientInfo->GetAddress().ToString();
+					std::string logMsg = "New client connected: " + clientInfo->GetAddress()->ToString();
 					Logger::GetInstance().Write(logMsg.c_str());
 
-					ProcessNewClient(clientInfo.release());
+					ProcessNewClient(*clientInfo);
 				}
 				break;
-			case ClientState::Disconnected:
+			case ERawClientState::Disconnected:
 				{
-					std::string logMsg = "Client disconnected: " + clientInfo->GetAddress().ToString();
+					std::string logMsg = "Client disconnected: " + clientInfo->GetAddress()->ToString();
 					if (clientInfo->GetErrorCode() > 0)
 						logMsg += " with error code " + std::to_string(clientInfo->GetErrorCode());
 
 					Logger::GetInstance().Write(logMsg.c_str());
 
-					ProcessClientDisconnected(clientInfo.get());
+					ProcessClientDisconnected(*clientInfo);
 				}
 				break;
-			case ClientState::DataReceived:
+			case ERawClientState::DataReceived:
 				{
 					// TODO.
 				}
@@ -208,27 +210,34 @@ void NetworkManager::UpdateClientEvents()
 
 */
 
-void NetworkManager::ProcessNewClient(ClientInfo* clientInfo)
+void NetworkManager::ProcessNewClient(const NetworkState::RawClientStateInfo& clientInfo)
 {
 	auto newPlayerState = PlayerManager::GetInstance().MakeNewPlayer();
 	if (!newPlayerState) { DebugEngineTrap(); return; }
 
-	newPlayerState->SetNetPlayerInfo(clientInfo);
-	newPlayerState->SetPlayerName(clientInfo->GetAddress().ToString().c_str());
+	using namespace NetworkState;
+	ClientNetStateWrapper* clientNetState = new ClientNetStateWrapper(clientInfo.GetSocket(), clientInfo.GetAddress());
+
+	newPlayerState->SetNetPlayerState(clientNetState);
+	if (auto addr = clientNetState->GetAddress())
+		newPlayerState->SetPlayerName(addr->ToString().c_str());
 
 	PlayerManager::GetInstance().NotifyAboutPlayerListChange();
 }
 
-void NetworkManager::ProcessClientDisconnected(const ClientInfo* clientInfo)
+void NetworkManager::ProcessClientDisconnected(const NetworkState::RawClientStateInfo& clientInfo)
 {
 	uint32_t numPlayers = PlayerManager::GetInstance().GetPlayerCount();
 	for (uint32_t i = 0; i < numPlayers; ++i)
 	{
 		auto playerState = PlayerManager::GetInstance().GetPlayerState(i);
-		if (playerState->GetNetPlayerInfo()->GetAddress() == clientInfo->GetAddress())
+		if (const auto netInfo = playerState ? playerState->GetNetPlayerInfo() : nullptr)
 		{
-			PlayerManager::GetInstance().DestroyPlayer(i);
-			break;
+			if (*netInfo->GetAddress() == *clientInfo.GetAddress())
+			{
+				PlayerManager::GetInstance().DestroyPlayer(i);
+				break;
+			}
 		}
 	}
 
