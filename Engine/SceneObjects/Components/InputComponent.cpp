@@ -5,6 +5,7 @@ bool InputComponent::PassInput(const InputState& is)
 	//bool bFoundAnyAction = false;
 
 	// TODO: Handle input release actions.
+	// TODO: Handle input toggle actions.
 
 	for (const auto& key : is.KeyPressedQueue)
 	{

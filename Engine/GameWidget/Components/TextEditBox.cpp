@@ -44,6 +44,8 @@ bool TextEditBox::PassInput(const InputState& is)
 	// Keyboard events.
 	if (bInFocus)
 	{
+		ProcessToggledKeys(is);
+
 		for (auto it = waitKeys2Release.begin(); it != waitKeys2Release.end();)
 		{
 			if (std::find(is.KeyPressedQueue.begin(), is.KeyPressedQueue.end(), *it) == is.KeyPressedQueue.end())
@@ -88,9 +90,6 @@ void TextEditBox::ProcessKeyPressed(uint_least16_t keyCode)
 			textBuffer.pop_back();
 	}
 
-	// TODO: Won't work if the CapsLock was already pressed before the game started.
-	if (keyCode == VK_CAPITAL)
-		bCapsLock = !bCapsLock;
 	if (keyCode == VK_SHIFT)
 		bShiftPressed = true;
 }
@@ -99,6 +98,17 @@ void TextEditBox::ProcessKeyReleased(uint_least16_t keyCode)
 {
 	if (keyCode == VK_SHIFT)
 		bShiftPressed = false;
+}
+
+void TextEditBox::ProcessToggledKeys(const InputState& is)
+{
+	// TODO: Optimize this. Don't iterate each frame.
+	bCapsLock = false;
+	for (auto& keyCode : is.KeyToggledQueue)
+	{
+		if (keyCode == VK_CAPITAL)
+			bCapsLock = true;
+	}
 }
 
 void TextEditBox::DropWaitKeys()

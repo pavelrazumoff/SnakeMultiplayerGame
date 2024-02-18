@@ -105,6 +105,7 @@ void GameEngine::Initialize(GameLevel* StartupLevel)
 	{
 		InputManager::GetInstance().OnKeyPressEvent().Subscribe(this, &GameEngine::HandleKeyPressEvent);
 		InputManager::GetInstance().OnKeyReleaseEvent().Subscribe(this, &GameEngine::HandleKeyReleaseEvent);
+		InputManager::GetInstance().OnKeyToggleEvent().Subscribe(this, &GameEngine::HandleKeyToggleEvent);
 
 		InputManager::GetInstance().OnMouseBtnPressEvent().Subscribe(this, &GameEngine::HandleMouseButtonPressEvent);
 		InputManager::GetInstance().OnMouseBtnReleaseEvent().Subscribe(this, &GameEngine::HandleMouseButtonReleaseEvent);
@@ -272,6 +273,18 @@ void GameEngine::HandleKeyReleaseEvent(WORD keyCode)
 		ProfilerManager::GetInstance().EnableEngineFeature(pickedFeature,
 			!ProfilerManager::GetInstance().IsEngineFeatureEnabled(pickedFeature));
 	}
+}
+
+void GameEngine::HandleKeyToggleEvent(WORD keyCode)
+{
+	std::lock_guard<std::mutex> lock(InputStateMutex);
+
+	auto& keyQueue = ActualInputState.KeyToggledQueue;
+	auto it = std::find(keyQueue.begin(), keyQueue.end(), keyCode);
+	if (it == keyQueue.end())
+		keyQueue.push_back(keyCode);
+	else
+		keyQueue.erase(it);
 }
 
 void GameEngine::HandleMouseButtonPressEvent(const MOUSE_EVENT_RECORD& mer, uint64_t imbMask)

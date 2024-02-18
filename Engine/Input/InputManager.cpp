@@ -31,6 +31,8 @@ void InputManager::Release()
 
 void InputManager::ReadInput()
 {
+	_CheckForKeysBeforeAppStart();
+
 	HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
 
 	DWORD numEvents;
@@ -81,6 +83,13 @@ void InputManager::ReadInput()
 
 void InputManager::_OnKeyEvent(const KEY_EVENT_RECORD& ker)
 {
+	if (ker.wVirtualKeyCode == VK_CAPITAL)
+	{
+		if (ker.bKeyDown == 1)
+			KeyToggleEvent.Trigger(ker.wVirtualKeyCode);
+		return;
+	}
+
 	if (ker.bKeyDown == 1)
 		KeyPressEvent.Trigger(ker.wVirtualKeyCode);
 	else
@@ -161,4 +170,16 @@ bool InputManager::_CheckIfAlreadyHandled(const INPUT_RECORD* irs, int indexToCh
 	}
 
 	return false;
+}
+
+void InputManager::_CheckForKeysBeforeAppStart()
+{
+	static bool bWasChecked = false;
+	if (bWasChecked) return;
+
+	bWasChecked = true;
+	if (0 != (GetKeyState(VK_CAPITAL) & 0x0001)) // Check if CapsLock is toggled by looking for the low-order bit set.
+	{
+		KeyToggleEvent.Trigger(VK_CAPITAL);
+	}
 }

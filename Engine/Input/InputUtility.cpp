@@ -15,6 +15,7 @@ InputState& InputState::operator=(const InputState& other)
 
 	// Keyboard Input.
 	KeyPressedQueue = other.KeyPressedQueue;
+	KeyToggledQueue = other.KeyToggledQueue;
 
 	// Consumption.
 	bConsumed = other.bConsumed;
@@ -44,4 +45,5 @@ void InputState::ResetAll()
 
 	// Keyboard Input.
 	KeyPressedQueue.clear();
+	KeyToggledQueue.clear();
 }

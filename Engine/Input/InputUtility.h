@@ -44,6 +44,7 @@ public:
 	/** Keyboard Input. */
 
 	std::vector<uint_least16_t> KeyPressedQueue;
+	std::vector<uint_least16_t> KeyToggledQueue;
 
 private:
 	bool bConsumed = false;

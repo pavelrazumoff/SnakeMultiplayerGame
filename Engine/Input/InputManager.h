@@ -44,6 +44,8 @@ public:
 	KeyDelegate& OnKeyPressEvent() { return KeyPressEvent; }
 	KeyDelegate& OnKeyReleaseEvent() { return KeyReleaseEvent; }
 
+	KeyDelegate& OnKeyToggleEvent() { return KeyToggleEvent; }
+
 	MousePressDelegate& OnMouseBtnPressEvent() { return MouseBtnPressEvent; }
 	MousePressDelegate& OnMouseBtnReleaseEvent() { return MouseBtnReleaseEvent; }
 
@@ -62,9 +64,14 @@ private:
 
 	bool _CheckIfAlreadyHandled(const INPUT_RECORD* irs, int indexToCheck) const;
 
+private:
+	void _CheckForKeysBeforeAppStart();
+
 protected:
 	KeyDelegate KeyPressEvent;
 	KeyDelegate KeyReleaseEvent;
+
+	KeyDelegate KeyToggleEvent;
 
 	MouseDoubleClickDelegate MouseDoubleClickEvent;
 

@@ -46,6 +46,8 @@ protected:
 	void HandleKeyPressEvent(WORD keyCode);
 	void HandleKeyReleaseEvent(WORD keyCode);
 
+	void HandleKeyToggleEvent(WORD keyCode);
+
 	void HandleMouseButtonPressEvent(const MOUSE_EVENT_RECORD& mer, uint64_t imbMask);
 	void HandleMouseButtonReleaseEvent(const MOUSE_EVENT_RECORD& mer, uint64_t imbReleaseMask);
 	

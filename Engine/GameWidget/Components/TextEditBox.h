@@ -18,6 +18,8 @@ public:
 private:
 	void ProcessKeyPressed(uint_least16_t keyCode);
 	void ProcessKeyReleased(uint_least16_t keyCode);
+	void ProcessToggledKeys(const InputState& is);
+
 	void DropWaitKeys();
 
 	bool ShouldDrawUpperCase() const;
