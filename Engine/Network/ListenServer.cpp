@@ -2,6 +2,7 @@
 
 #include "Socket/SocketUtil.h"
 #include "Engine/EngineUtility.h"
+#include "Engine/Log/Logger.h"
 
 ListenServer::ListenServer(TCPSocketPtr _listenSocket)
 	: Inherited(_listenSocket)
@@ -11,6 +12,7 @@ ListenServer::ListenServer(TCPSocketPtr _listenSocket)
 
 ListenServer::~ListenServer()
 {
+	ClearMessages();
 }
 
 void ListenServer::StartListen()
@@ -94,13 +96,19 @@ void ListenServer::ListenThread()
 				{
 					inputBitStream->Reset();
 
-					int32_t bytesRead = socket->Receive(inputBitStream->GetBufferPtr(), inputBitStream->GetCapacity());
-					if (bytesRead > 0)
+					int32_t bytesReceived = socket->Receive(inputBitStream->GetBufferPtr(), inputBitStream->GetCapacity());
+					if (bytesReceived > 0)
 					{
-						ProcessClientDataReceived(socket, bytesRead);
+						ProcessClientDataReceived(socket, bytesReceived);
 					}
-					else if (bytesRead == 0)
+					else if (bytesReceived == 0)
 					{
+						SocketAddressPtr clientAddress;
+						GetSocketAddress(socket.get(), clientAddress);
+
+						std::string logMsg = "Received 0 bytes from client (" + clientAddress->ToString() + "). Disconnecting...";
+						Logger::GetInstance().Write(logMsg.c_str());
+
 						ProcessClientDisconnected(socket);
 						UpdateWritableSocketsFromConnectedClients(writeBlockSockets);
 
@@ -109,7 +117,7 @@ void ListenServer::ListenThread()
 					}
 					else
 					{
-						int errorCode = -bytesRead;
+						int errorCode = -bytesReceived;
 						if (!ProcessClientError(errorCode, socket))
 						{
 							UpdateWritableSocketsFromConnectedClients(writeBlockSockets);
@@ -123,7 +131,7 @@ void ListenServer::ListenThread()
 
 			for (const auto& socket : writableSockets)
 			{
-				SyncWithClient(socket);
+				ProcessSendPackageToClient(socket);
 			}
 		}
 	}
@@ -142,7 +150,7 @@ void ListenServer::ProcessNewClient(TCPSocketPtr newClientSocket, const SocketAd
 	connectedClients.push_back(newClientSocket);
 
 	SocketAddressPtr clientAddress = std::make_shared<SocketAddress>(newClientAddress.GetAsSockAddr());
-	waitingHandleClients.push(new RawClientStateInfo(newClientSocket, clientAddress, ERawClientState::Connected));
+	waitingReadMessages.push(new RawClientStateInfo(newClientSocket, clientAddress, ERawClientState::Connected));
 }
 
 void ListenServer::ProcessClientDisconnected(TCPSocketPtr clientSocket, int errCode)
@@ -157,9 +165,9 @@ void ListenServer::ProcessClientDisconnected(TCPSocketPtr clientSocket, int errC
 	SocketAddressPtr clientAddress;
 	GetSocketAddress(clientSocket.get(), clientAddress);
 
-	waitingHandleClients.push(new RawClientStateInfo(nullptr, clientAddress, ERawClientState::Disconnected));
+	waitingReadMessages.push(new RawClientStateInfo(nullptr, clientAddress, ERawClientState::Disconnected));
 	if (errCode > 0)
-		waitingHandleClients.back()->SetErrorCode(errCode);
+		waitingReadMessages.back()->SetErrorCode(errCode);
 
 	clientSocket->Shutdown();
 }
@@ -184,32 +192,69 @@ bool ListenServer::ProcessClientError(int errorCode, TCPSocketPtr clientSocket)
 
 void ListenServer::ProcessClientDataReceived(TCPSocketPtr clientSocket, int32_t bytesReceived)
 {
+	std::string logMsg = "Received a message from a client. Bytes received: " + std::to_string(bytesReceived) + ".";
+	Logger::GetInstance().Write(logMsg.c_str());
+
 	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
 
 	using namespace NetworkState;
 
 	RawClientPackageStateInfo* clientDataInfo = new RawClientPackageStateInfo(clientSocket, nullptr, ERawClientState::DataReceived);
-	clientDataInfo->SetData(inputBitStream->GetBufferPtr(), bytesReceived << 3);
+	clientDataInfo->SetData(inputBitStream->GetBufferPtr(), bytesReceived);
 
-	waitingHandleClients.push(clientDataInfo);
+	waitingReadMessages.push(clientDataInfo);
 }
 
-NetworkState::RawClientStateInfo* ListenServer::PopWaitingHandleClient()
+void ListenServer::ProcessSendPackageToClient(TCPSocketPtr clientSocket)
 {
 	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
 
 	using namespace NetworkState;
 
-	if (waitingHandleClients.empty()) return nullptr;
+	if (waitingSendMessages.empty()) return;
 
-	RawClientStateInfo* nextInfo = waitingHandleClients.front();
-	waitingHandleClients.pop();
+	auto range = waitingSendMessages.equal_range(clientSocket);
+	if (range.first == waitingSendMessages.end()) return; // Nothing to send.
+
+	for (auto it = range.first; it != range.second; ++it)
+	{
+		Server2ClientPackage* nextPackage = it->second;
+		if (!nextPackage) { DebugEngineTrap(); continue; }
+
+		std::string logMsg;
+		int retResult = clientSocket->Send(
+			reinterpret_cast<const void*>(nextPackage->GetPackageData()), nextPackage->GetPackageByteCount());
+		if (retResult < 0)
+			logMsg = "Failed to send a message to a client. Error code: " + std::to_string(-retResult) + ".";
+		else
+			logMsg = "Sent a message to a client. Bytes sent: " + std::to_string(retResult) + ".";
+
+		Logger::GetInstance().Write(logMsg.c_str());
+		delete it->second;
+	}
+
+	waitingSendMessages.erase(range.first, range.second);
+}
+
+NetworkState::RawClientStateInfo* ListenServer::PopWaitingClientMessage()
+{
+	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
+
+	using namespace NetworkState;
+
+	if (waitingReadMessages.empty()) return nullptr;
+
+	RawClientStateInfo* nextInfo = waitingReadMessages.front();
+	waitingReadMessages.pop();
 
 	return nextInfo;
 }
 
-void ListenServer::SyncWithClient(TCPSocketPtr ClientSocket)
+void ListenServer::PushSendMessageToClient(NetworkState::Server2ClientPackage* package)
 {
+	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
+
+	waitingSendMessages.insert(std::make_pair(package->GetClientSocket(), package));
 }
 
 void ListenServer::UpdateWritableSocketsFromConnectedClients(std::vector<TCPSocketPtr>& outClientSockets)
@@ -219,4 +264,24 @@ void ListenServer::UpdateWritableSocketsFromConnectedClients(std::vector<TCPSock
 	outClientSockets.reserve(connectedClients.size());
 	for (const auto& client : connectedClients)
 		if (client) outClientSockets.push_back(client);
+}
+
+/*
+	Other.
+*/
+
+void ListenServer::ClearMessages()
+{
+	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
+
+	while (!waitingReadMessages.empty())
+	{
+		delete waitingReadMessages.front();
+		waitingReadMessages.pop();
+	}
+
+	for (auto& pair : waitingSendMessages)
+		delete pair.second;
+
+	waitingSendMessages.clear();
 }

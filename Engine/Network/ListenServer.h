@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <queue>
+#include <map>
 #include <shared_mutex>
 
 #include "Engine/Events/EventDelegate.h"
@@ -21,7 +22,8 @@ public:
 	void StartListen();
 	void StopListen();
 
-	NetworkState::RawClientStateInfo* PopWaitingHandleClient();
+	NetworkState::RawClientStateInfo* PopWaitingClientMessage();
+	void PushSendMessageToClient(NetworkState::Server2ClientPackage* package);
 
 protected:
 	/** Threads. */
@@ -35,14 +37,18 @@ protected:
 	bool ProcessClientError(int errorCode, TCPSocketPtr clientSocket);
 
 	void ProcessClientDataReceived(TCPSocketPtr clientSocket, int32_t bytesReceived);
-
-	void SyncWithClient(TCPSocketPtr ClientSocket);
+	void ProcessSendPackageToClient(TCPSocketPtr clientSocket);
 
 	void UpdateWritableSocketsFromConnectedClients(std::vector<TCPSocketPtr>& outClientSockets);
 
+	/** Other. */
+
+	void ClearMessages();
+
 protected:
 	std::vector<TCPSocketPtr> connectedClients;
-	std::queue<NetworkState::RawClientStateInfo*> waitingHandleClients;
+	std::queue<NetworkState::RawClientStateInfo*> waitingReadMessages;
+	std::multimap<TCPSocketPtr, NetworkState::Server2ClientPackage*> waitingSendMessages;
 
 private:
 	std::atomic<bool> bIsServerRunning = false;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fstream>
+#include <shared_mutex>
 
 class Logger
 {
@@ -19,4 +20,5 @@ public:
 
 private:
 	std::ofstream logFile;
+	std::shared_mutex logMutex;
 };

@@ -7,6 +7,7 @@
 #include "Engine/EngineUtility.h"
 
 #include "Engine/Player/PlayerManager.h"
+#include "Replication/ReplicationManager.h"
 
 NetworkManager::NetworkManager()
 {
@@ -36,8 +37,10 @@ void NetworkManager::Initialize()
 
 void NetworkManager::Update()
 {
-	UpdateListenServerEvents();
-	UpdateClientEvents();
+	ReadServerMessages();
+	ReadClientMessages();
+
+	DoReplication();
 }
 
 void NetworkManager::Cleanup()
@@ -155,7 +158,7 @@ bool NetworkManager::IsClient() const
 	Listen Server Events.
 */
 
-void NetworkManager::UpdateListenServerEvents()
+void NetworkManager::ReadServerMessages()
 {
 	if (!IsServer()) return;
 
@@ -163,7 +166,7 @@ void NetworkManager::UpdateListenServerEvents()
 
 	while (true)
 	{
-		std::unique_ptr<RawClientStateInfo> clientInfo(listenServerObj->PopWaitingHandleClient());
+		std::unique_ptr<RawClientStateInfo> clientInfo(listenServerObj->PopWaitingClientMessage());
 		if (!clientInfo) break;
 
 		switch (clientInfo->GetState())
@@ -198,18 +201,6 @@ void NetworkManager::UpdateListenServerEvents()
 	}
 }
 
-/*
-	Client.
-*/
-
-void NetworkManager::UpdateClientEvents()
-{
-}
-
-/*
-
-*/
-
 void NetworkManager::ProcessNewClient(const NetworkState::RawClientStateInfo& clientInfo)
 {
 	auto newPlayerState = PlayerManager::GetInstance().MakeNewPlayer();
@@ -221,6 +212,8 @@ void NetworkManager::ProcessNewClient(const NetworkState::RawClientStateInfo& cl
 	newPlayerState->SetNetPlayerState(clientNetState);
 	if (auto addr = clientNetState->GetAddress())
 		newPlayerState->SetPlayerName(addr->ToString().c_str());
+
+	DoSayHello(newPlayerState->GetNetPlayerInfo());
 
 	PlayerManager::GetInstance().NotifyAboutPlayerListChange();
 }
@@ -242,4 +235,74 @@ void NetworkManager::ProcessClientDisconnected(const NetworkState::RawClientStat
 	}
 
 	PlayerManager::GetInstance().NotifyAboutPlayerListChange();
+}
+
+void NetworkManager::DoSayHello(const NetworkState::ClientNetStateWrapper* client)
+{
+	OutputMemoryBitStream outStream;
+
+	PacketType type = PacketType::PT_Hello;
+	outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
+
+	using namespace NetworkState;
+	Server2ClientPackage* package = new Server2ClientPackage(client->GetSocket(), outStream.GetBufferPtr(), outStream.GetByteLength());
+
+	listenServerObj->PushSendMessageToClient(package);
+}
+
+void NetworkManager::DoSayGoodbye(const NetworkState::ClientNetStateWrapper* client)
+{
+	// TODO: If we want to force the client to disconnect.
+}
+
+void NetworkManager::DoReplication()
+{
+	// Here we should sync the game state with the clients.
+	// TODO: Check if there is something to send to the clients.
+
+	//OutputMemoryBitStream outStream;
+
+}
+
+/*
+	Client.
+*/
+
+void NetworkManager::ReadClientMessages()
+{
+	if (!IsClient()) return;
+
+	using namespace NetworkState;
+
+	while (true)
+	{
+		std::unique_ptr<RawServerPackageStateInfo> serverPackageInfo(netClientObj->PopWaitingServerMessage());
+		if (!serverPackageInfo) break;
+
+		ProcessServerPackage(*serverPackageInfo);
+	}
+}
+
+void NetworkManager::ProcessServerPackage(NetworkState::RawServerPackageStateInfo& serverPackageInfo)
+{
+	InputMemoryBitStream* inStream = serverPackageInfo.GetStream();
+	if (!inStream) { DebugEngineTrap(); return; }
+
+	PacketType type = PacketType::PT_MAX;
+	inStream->Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
+
+	switch (type)
+	{
+		case PT_Hello:
+			// TODO: Do some initialization.
+			DebugEngineTrap();
+			break;
+		case PT_ReplicationData:
+			break;
+		case PT_Disconnect:
+			break;
+		default:
+			DebugEngineTrap();
+			break;
+	}
 }

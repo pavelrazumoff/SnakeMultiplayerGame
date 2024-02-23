@@ -30,6 +30,8 @@ void Logger::Release()
 
 void Logger::Write(const char* message)
 {
+	std::unique_lock<std::shared_mutex> lock(logMutex);
+
 	if (!logFile) return;
 
 	std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());

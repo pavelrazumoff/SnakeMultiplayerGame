@@ -5,6 +5,15 @@
 #include "ListenServer.h"
 #include "NetClient.h"
 
+enum PacketType
+{
+	PT_Hello,
+	PT_ReplicationData,
+	PT_Disconnect,
+
+	PT_MAX,
+};
+
 class NetworkManager
 {
 private:
@@ -38,18 +47,28 @@ public:
 
 protected:
 
-	/** Listen Server Events. */
+	/** Listen Server. */
 
-	void UpdateListenServerEvents();
+	void ReadServerMessages();
+
+	void DoSayHello(const NetworkState::ClientNetStateWrapper* client);
+	void DoSayGoodbye(const NetworkState::ClientNetStateWrapper* client);
+	void DoReplication();
 
 	/** Client. */
 
-	void UpdateClientEvents();
+	void ReadClientMessages();
 
 protected:
 
+	/** Listen Server. */
+
 	void ProcessNewClient(const NetworkState::RawClientStateInfo& clientInfo);
 	void ProcessClientDisconnected(const NetworkState::RawClientStateInfo& clientInfo);
+
+	/** Client. */
+
+	void ProcessServerPackage(NetworkState::RawServerPackageStateInfo& serverPackageInfo);
 
 private:
 	std::shared_ptr<ListenServer> listenServerObj;

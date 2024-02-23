@@ -12,6 +12,10 @@ class InputMemoryBitStream;
 
 namespace NetworkState {
 
+/*
+	Receive data from client.
+*/
+
 enum class ERawClientState
 {
 	None,
@@ -52,11 +56,36 @@ public:
 		RawClientStateInfo(socket, socketAddress, state) {}
 	virtual ~RawClientPackageStateInfo();
 
-	void SetData(const char* inBuffer, uint32_t inBitCount);
+	void SetData(const char* inBuffer, uint32_t inByteCount);
 
 private:
 	InputMemoryBitStream* inputBitStream = nullptr;
 };
+
+/*
+	Send data to client.
+*/
+
+struct Server2ClientPackage
+{
+public:
+	Server2ClientPackage(TCPSocketPtr _clientSocket, const char* _packageData, uint32_t _packageByteCount);
+	~Server2ClientPackage();
+
+	TCPSocketPtr GetClientSocket() const { return clientSocket; }
+	const char* GetPackageData() const { return packageData; }
+	uint32_t GetPackageByteCount() const { return packageByteCount; }
+
+private:
+	TCPSocketPtr clientSocket;
+
+	char* packageData = nullptr;
+	uint32_t packageByteCount = 0;
+};
+
+/*
+	Wrapper for connected client's socket and address.
+*/
 
 struct ClientNetStateWrapper
 {
@@ -70,6 +99,22 @@ struct ClientNetStateWrapper
 private:
 	TCPSocketPtr clientSocket;
 	SocketAddressPtr clientAddress;
+};
+
+/*
+	Receive data from server.
+*/
+
+struct RawServerPackageStateInfo
+{
+public:
+	RawServerPackageStateInfo(const char* inBuffer, uint32_t inByteCount);
+	~RawServerPackageStateInfo();
+
+	InputMemoryBitStream* GetStream();
+
+private:
+	InputMemoryBitStream* inputBitStream = nullptr;
 };
 
 // ------------------------------------------------------------------

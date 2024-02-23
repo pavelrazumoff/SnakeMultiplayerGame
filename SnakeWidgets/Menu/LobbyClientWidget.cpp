@@ -6,7 +6,10 @@
 #include "Engine/GameWidget/Components/TextBlock.h"
 #include "Engine/GameWidget/Components/TextEditBox.h"
 
+#include "Engine/GameWidget/Components/Button.h"
+
 #include "Engine/GameObject/GameObjectUtility.h"
+#include "Engine/Player/PlayerManager.h"
 
 LobbyClientWidget::LobbyClientWidget()
 {
@@ -33,7 +36,7 @@ LobbyClientWidget::LobbyClientWidget()
 	{
 		PlayerNameBox->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
 		PlayerNameBox->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Top;
-		PlayerNameBox->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
+		PlayerNameBox->GetAlignment().Stretch = AlignmentSettings::StretchMode::NoStretch;
 
 		PlayerNameBox->GetAlignment().Padding = { 0, 2, 0, 0 };
 
@@ -54,7 +57,8 @@ LobbyClientWidget::LobbyClientWidget()
 		Tree.PlaceWidgetOn(PlayerNameCaption, PlayerNameBox);
 	}
 
-	if (TextEditBox* EditNameBox = CreateNewObject<TextEditBox>(this))
+	EditNameBox = CreateNewObject<TextEditBox>(this);
+	if (EditNameBox.Get())
 	{
 		EditNameBox->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Left;
 		EditNameBox->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::NoAlignment;
@@ -65,6 +69,47 @@ LobbyClientWidget::LobbyClientWidget()
 		EditNameBox->GetText().SetText("default name");
 		EditNameBox->GetText().SetFontStyle({ 1, FontPrintType::Simple, RenderConstants::LightGreenPixelColorRGB });
 
-		Tree.PlaceWidgetOn(EditNameBox, PlayerNameBox);
+		Tree.PlaceWidgetOn(EditNameBox.Get(), PlayerNameBox);
 	}
+
+	Button* ReadyButton = CreateNewObject<Button>(this);
+	if (ReadyButton)
+	{
+		ReadyButton->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
+		ReadyButton->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Top;
+		ReadyButton->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
+
+		ReadyButton->GetAlignment().Padding = { 0, 1, 0, 0 };
+
+		ReadyButton->GetLayout().DimensionsOverride.cx = 18;
+		ReadyButton->GetLayout().DimensionsOverride.cy = 3;
+
+		Tree.PlaceWidgetOn(ReadyButton, MenuVerticalBox);
+
+		ReadyButton->OnClickEvent().Subscribe(this, &LobbyClientWidget::HandleReady2PlayButtonClick);
+	}
+
+	if (TextBlock* ReadyButtonText = CreateNewObject<TextBlock>(this))
+	{
+		ReadyButtonText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::NoAlignment;
+		ReadyButtonText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::NoAlignment;
+		ReadyButtonText->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
+
+		ReadyButtonText->GetText().SetText("Ready to play");
+		ReadyButtonText->GetText().SetFontStyle({ 1, FontPrintType::Simple, RenderConstants::LightGrayPixelColorRGB });
+
+		Tree.PlaceWidgetOn(ReadyButtonText, ReadyButton);
+	}
+}
+
+void LobbyClientWidget::HandleReady2PlayButtonClick(Button* instigator)
+{
+	if (!EditNameBox.IsValid()) return;
+
+	auto& playerName = EditNameBox->GetText().GetText();
+
+	if (auto playerState = PlayerManager::GetInstance().GetPlayerState())
+		playerState->SetPlayerName(playerName.c_str());
+	
+	// TODO: Mark this player as ready. Block all input for this client until the game starts.
 }
