@@ -3,6 +3,7 @@
 #include "Engine/EngineTypes.h"
 #include "Engine/EngineUtility.h"
 #include "Replication/ReplicationObject.h"
+#include "Replication/ObjectCreationRegistry.h"
 
 #include <vector>
 
@@ -17,12 +18,25 @@ void DestroyRootObject();
 template<typename T>
 T* CreateNewObject(GameObject* Owner = GetRootObject());
 
+#define REGISTER_CLASS(inClassName) \
+class inClassName; \
+class inClassName##_register \
+{ \
+public: \
+	inClassName##_register() \
+	{ \
+		ObjectCreationRegistry::GetInstance().RegisterCreationFunction<inClassName>(); \
+	} \
+}; \
+inline inClassName##_register inClassName##_instance; \
+
 #define GAMEOBJECT_BODY(inClassName) \
 public: \
 	enum { kClassId = EngineUtilityLibrary::StringToUint32(#inClassName) }; \
 	virtual uint32_t GetClassId() const override { return kClassId; } \
 	static IReplicationObject* CreateReplicationInstance() { return CreateNewObject<inClassName>(); }
 
+REGISTER_CLASS(GameObject)
 class GameObject : public EngineGenericType, public IReplicationObject
 {
 	GAMEOBJECT_BODY(GameObject)

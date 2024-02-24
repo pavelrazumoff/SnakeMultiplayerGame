@@ -11,11 +11,12 @@
 #include <vector>
 #include <queue>
 
-class GameLevel;
-
+REGISTER_CLASS(GameLevel)
 class GameLevel : public GameObject, public IInputHandler
 {
 	typedef GameObject Inherited;
+
+	GAMEOBJECT_BODY(GameLevel)
 
 public:
 	GameLevel();

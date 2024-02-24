@@ -4,6 +4,7 @@
 #include "../Components/InputComponent.h"
 #include "../Components/MovementComponent.h"
 
+REGISTER_CLASS(GamePawn)
 class GamePawn : public SceneObject
 {
 	typedef SceneObject Inherited;

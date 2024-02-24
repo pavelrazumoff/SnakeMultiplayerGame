@@ -7,7 +7,11 @@
 #include "Engine/EngineUtility.h"
 
 #include "Engine/Player/PlayerManager.h"
+#include "Engine/Level/LevelManager.h"
+
 #include "Replication/ReplicationManager.h"
+#include "Replication/RPCManager.h"
+#include "Replication/ReplicationHeader.h"
 
 NetworkManager::NetworkManager()
 {
@@ -33,6 +37,8 @@ void NetworkManager::Initialize()
 		Logger::GetInstance().Write(errMsg.c_str());
 		return;
 	}
+
+	RegisterRPCs();
 }
 
 void NetworkManager::Update()
@@ -49,6 +55,45 @@ void NetworkManager::Cleanup()
 	StopClientLoop();
 
 	WSACleanup();
+}
+
+
+/*
+	RPC.
+*/
+
+static void Unwrap_OpenHostLevel(InputMemoryBitStream& inStream)
+{
+	uint32_t levelId = 0;
+	inStream.Serialize(levelId);
+	
+	GameLevel* level = dynamic_cast<GameLevel*>(
+		ReplicationManager::GetInstance().GetObjectFromNetworkId(levelId));
+
+	if (level != nullptr)
+		LevelManager::GetInstance().OpenLevel(level);
+	else
+	{
+		Logger::GetInstance().Write("Failed to open the level. Level not found.");
+		DebugEngineTrap();
+	}
+}
+
+static void RPC_OpenHostLevel(OutputMemoryBitStream& outStream, GameLevel* level)
+{
+	ReplicationHeader rh(ReplicationAction::RA_RPC);
+	rh.Write(outStream);
+
+	uint32_t rpcId = GET_RPC_FUNC_ID(Unwrap_OpenHostLevel);
+	uint32_t levelId = ReplicationManager::GetInstance().GetNetworkIdForObject(level);
+
+	outStream.Serialize(rpcId);
+	outStream.Serialize(levelId);
+}
+
+void NetworkManager::RegisterRPCs()
+{
+	REGISTER_RPC_FUNC(Unwrap_OpenHostLevel);
 }
 
 /*
@@ -85,6 +130,7 @@ bool NetworkManager::MakeListenServer()
 
 	listenServerObj = std::make_shared<ListenServer>(listenSocket);
 
+	StartListenServer();
 	return true;
 }
 
@@ -111,7 +157,7 @@ bool NetworkManager::IsServer() const
 	Client.
 */
 
-bool NetworkManager::ConnectClient(std::string server_addr)
+bool NetworkManager::JoinServer(std::string server_addr)
 {
 	if (IsClient() || IsServer())
 	{
@@ -132,6 +178,8 @@ bool NetworkManager::ConnectClient(std::string server_addr)
 	}
 
 	netClientObj = std::make_shared<NetClient>(clientSocket);
+
+	StartClientLoop();
 	return true;
 }
 
@@ -215,6 +263,7 @@ void NetworkManager::ProcessNewClient(const NetworkState::RawClientStateInfo& cl
 
 	DoSayHello(newPlayerState->GetNetPlayerInfo());
 
+	// TODO: Replace with auto update.
 	PlayerManager::GetInstance().NotifyAboutPlayerListChange();
 }
 
@@ -244,6 +293,12 @@ void NetworkManager::DoSayHello(const NetworkState::ClientNetStateWrapper* clien
 	PacketType type = PacketType::PT_Hello;
 	outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
 
+	// Replicate the current open level to connected client.
+	GameLevel* currentLevel = LevelManager::GetInstance().GetCurrentLevel();
+
+	ReplicationManager::GetInstance().ReplicateCreate(outStream, currentLevel);
+	RPC_OpenHostLevel(outStream, currentLevel);
+
 	using namespace NetworkState;
 	Server2ClientPackage* package = new Server2ClientPackage(client->GetSocket(), outStream.GetBufferPtr(), outStream.GetByteLength());
 
@@ -265,7 +320,7 @@ void NetworkManager::DoReplication()
 }
 
 /*
-	Client.
+	Client Events.
 */
 
 void NetworkManager::ReadClientMessages()
@@ -294,15 +349,44 @@ void NetworkManager::ProcessServerPackage(NetworkState::RawServerPackageStateInf
 	switch (type)
 	{
 		case PT_Hello:
-			// TODO: Do some initialization.
+			// TODO: Fix this mess.
+			if (inStream->GetByteCapacityLeft() > 0)
+			{
+				// Create the level.
+				ReplicationManager::GetInstance().ProcessReplicationAction(&ObjectCreationRegistry::GetInstance(), *inStream);
+				if (inStream->GetByteCapacityLeft() > 0)
+				{
+					// Call the RPC to open the level.
+					ReplicationManager::GetInstance().ProcessReplicationAction(&ObjectCreationRegistry::GetInstance(), *inStream);
+
+					JoinServerSuccessEvent.Trigger();
+					break;
+				}
+			}
+			
+			// Should have received the level data.
 			DebugEngineTrap();
+			JoinServerFailureEvent.Trigger();
+			break;
+		case PT_Denied:
+			JoinServerFailureEvent.Trigger();
 			break;
 		case PT_ReplicationData:
 			break;
 		case PT_Disconnect:
 			break;
 		default:
-			DebugEngineTrap();
+			JoinServerFailureEvent.Trigger();
 			break;
 	}
+}
+
+ServerResponseDelegate& NetworkManager::OnJoinServerSuccess()
+{
+	return JoinServerSuccessEvent;
+}
+
+ServerResponseDelegate& NetworkManager::OnJoinServerFailure()
+{
+	return JoinServerFailureEvent;
 }

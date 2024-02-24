@@ -10,6 +10,7 @@
 
 #include "Engine/Player/PlayerManager.h"
 #include "Engine/Network/NetworkManager.h"
+#include "Engine/Log/Logger.h"
 
 #include "PlayLevel.h"
 #include "LobbyLevel.h"
@@ -129,8 +130,6 @@ void StartupLevel::MakeLocalServer()
 		return;
 	}
 
-	NetworkManager::GetInstance().StartListenServer();
-
 	OpenLobbyLevel();
 }
 
@@ -141,15 +140,14 @@ void StartupLevel::OpenJoinServerMenu()
 
 void StartupLevel::JoinLocalHost()
 {
-	if (!NetworkManager::GetInstance().ConnectClient("127.0.0.1:48000"))
+	if (!NetworkManager::GetInstance().JoinServer("127.0.0.1:48000"))
 	{
 		// TODO: Print some error message.
 		return;
 	}
 
-	NetworkManager::GetInstance().StartClientLoop();
-
-	OpenLobbyLevel();
+	NetworkManager::GetInstance().OnJoinServerSuccess().Subscribe(this, &StartupLevel::HandleJoinServerSuccess);
+	NetworkManager::GetInstance().OnJoinServerFailure().Subscribe(this, &StartupLevel::HandleJoinServerFailure);
 }
 
 void StartupLevel::OpenLobbyLevel()
@@ -161,4 +159,14 @@ void StartupLevel::OpenLobbyLevel()
 void StartupLevel::ReturnToMainMenu()
 {
 	StartupMenuWidget->OpenPage(ContentPageType::Welcome);
+}
+
+void StartupLevel::HandleJoinServerSuccess()
+{
+	Logger::GetInstance().Write("Join server success.");
+}
+
+void StartupLevel::HandleJoinServerFailure()
+{
+	Logger::GetInstance().Write("Join server failure.");
 }

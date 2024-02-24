@@ -5,9 +5,14 @@
 #include "ListenServer.h"
 #include "NetClient.h"
 
+#include "Engine/Events/EventDelegate.h"
+
+DECLARE_EVENT_DELEGATE(ServerResponseDelegate);
+
 enum PacketType
 {
 	PT_Hello,
+	PT_Denied,
 	PT_ReplicationData,
 	PT_Disconnect,
 
@@ -32,22 +37,28 @@ public:
 	/** Listen Server. */
 
 	bool MakeListenServer();
-	void StartListenServer();
-	void StopListenServer();
 
 	bool IsServer() const;
 
 	/** Client. */
 
-	bool ConnectClient(std::string server_addr);
-	void StartClientLoop();
-	void StopClientLoop();
+	bool JoinServer(std::string server_addr);
 
 	bool IsClient() const;
 
+	ServerResponseDelegate& OnJoinServerSuccess();
+	ServerResponseDelegate& OnJoinServerFailure();
+
 protected:
 
+	/** RPC. */
+
+	void RegisterRPCs();
+
 	/** Listen Server. */
+
+	void StartListenServer();
+	void StopListenServer();
 
 	void ReadServerMessages();
 
@@ -56,6 +67,9 @@ protected:
 	void DoReplication();
 
 	/** Client. */
+
+	void StartClientLoop();
+	void StopClientLoop();
 
 	void ReadClientMessages();
 
@@ -69,6 +83,10 @@ protected:
 	/** Client. */
 
 	void ProcessServerPackage(NetworkState::RawServerPackageStateInfo& serverPackageInfo);
+
+protected:
+	ServerResponseDelegate JoinServerSuccessEvent;
+	ServerResponseDelegate JoinServerFailureEvent;
 
 private:
 	std::shared_ptr<ListenServer> listenServerObj;

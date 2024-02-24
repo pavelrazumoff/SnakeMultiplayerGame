@@ -5,9 +5,12 @@
 class MainMenuWidget;
 class MultiplayerMenuWidget;
 
+REGISTER_CLASS(StartupLevel)
 class StartupLevel : public GameLevel
 {
 	typedef GameLevel Inherited;
+
+	GAMEOBJECT_BODY(StartupLevel)
 
 public:
 	StartupLevel();
@@ -33,6 +36,13 @@ protected:
 	void OpenLobbyLevel();
 
 	void ReturnToMainMenu();
+
+protected:
+
+	/** Client Events. */
+
+	void HandleJoinServerSuccess();
+	void HandleJoinServerFailure();
 
 protected:
 	TObjectPtr<MainMenuWidget> StartupMenuWidget;

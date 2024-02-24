@@ -4,9 +4,12 @@
 
 class UserWidget;
 
+REGISTER_CLASS(LobbyLevel)
 class LobbyLevel : public GameLevel
 {
 	typedef GameLevel Inherited;
+
+	GAMEOBJECT_BODY(LobbyLevel)
 
 public:
 	virtual void OpenLevel() override;

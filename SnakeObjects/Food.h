@@ -5,6 +5,7 @@
 class ImageComponent;
 class BoxComponent;
 
+REGISTER_CLASS(FoodObject)
 class FoodObject : public SceneObject
 {
 	typedef SceneObject Inherited;

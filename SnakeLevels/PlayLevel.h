@@ -13,9 +13,12 @@ class TimerHandler;
 
 enum class ProfilerEngineFeature;
 
+REGISTER_CLASS(PlayLevel)
 class PlayLevel : public GameLevel
 {
 	typedef GameLevel Inherited;
+
+	GAMEOBJECT_BODY(PlayLevel)
 
 public:
 	PlayLevel();
