@@ -63,8 +63,11 @@ protected:
 	void ReadServerMessages();
 
 	void DoSayHello(const NetworkState::ClientNetStateWrapper* client);
+	void DoTeleportToHostLevel(const NetworkState::ClientNetStateWrapper* client);
 	void DoSayGoodbye(const NetworkState::ClientNetStateWrapper* client);
 	void DoReplication();
+
+	void MakeAndPushServerPackage(const NetworkState::ClientNetStateWrapper* client, const OutputMemoryBitStream& outStream);
 
 	/** Client. */
 

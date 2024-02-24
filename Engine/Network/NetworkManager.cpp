@@ -262,6 +262,7 @@ void NetworkManager::ProcessNewClient(const NetworkState::RawClientStateInfo& cl
 		newPlayerState->SetPlayerName(addr->ToString().c_str());
 
 	DoSayHello(newPlayerState->GetNetPlayerInfo());
+	DoTeleportToHostLevel(newPlayerState->GetNetPlayerInfo());
 
 	// TODO: Replace with auto update.
 	PlayerManager::GetInstance().NotifyAboutPlayerListChange();
@@ -293,16 +294,25 @@ void NetworkManager::DoSayHello(const NetworkState::ClientNetStateWrapper* clien
 	PacketType type = PacketType::PT_Hello;
 	outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
 
+	MakeAndPushServerPackage(client, outStream);
+}
+
+void NetworkManager::DoTeleportToHostLevel(const NetworkState::ClientNetStateWrapper* client)
+{
+	OutputMemoryBitStream outStream;
+
+	PacketType type = PacketType::PT_ReplicationData;
+	outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
+
 	// Replicate the current open level to connected client.
 	GameLevel* currentLevel = LevelManager::GetInstance().GetCurrentLevel();
 
 	ReplicationManager::GetInstance().ReplicateCreate(outStream, currentLevel);
 	RPC_OpenHostLevel(outStream, currentLevel);
 
-	using namespace NetworkState;
-	Server2ClientPackage* package = new Server2ClientPackage(client->GetSocket(), outStream.GetBufferPtr(), outStream.GetByteLength());
+	ReplicationManager::GetInstance().CloseReplicationPackage(outStream);
 
-	listenServerObj->PushSendMessageToClient(package);
+	MakeAndPushServerPackage(client, outStream);
 }
 
 void NetworkManager::DoSayGoodbye(const NetworkState::ClientNetStateWrapper* client)
@@ -317,6 +327,14 @@ void NetworkManager::DoReplication()
 
 	//OutputMemoryBitStream outStream;
 
+}
+
+void NetworkManager::MakeAndPushServerPackage(const NetworkState::ClientNetStateWrapper* client, const OutputMemoryBitStream& outStream)
+{
+	using namespace NetworkState;
+	Server2ClientPackage* package = new Server2ClientPackage(client->GetSocket(), outStream.GetBufferPtr(), outStream.GetByteLength());
+
+	listenServerObj->PushSendMessageToClient(package);
 }
 
 /*
@@ -349,29 +367,16 @@ void NetworkManager::ProcessServerPackage(NetworkState::RawServerPackageStateInf
 	switch (type)
 	{
 		case PT_Hello:
-			// TODO: Fix this mess.
-			if (inStream->GetByteCapacityLeft() > 0)
-			{
-				// Create the level.
-				ReplicationManager::GetInstance().ProcessReplicationAction(&ObjectCreationRegistry::GetInstance(), *inStream);
-				if (inStream->GetByteCapacityLeft() > 0)
-				{
-					// Call the RPC to open the level.
-					ReplicationManager::GetInstance().ProcessReplicationAction(&ObjectCreationRegistry::GetInstance(), *inStream);
-
-					JoinServerSuccessEvent.Trigger();
-					break;
-				}
-			}
-			
-			// Should have received the level data.
-			DebugEngineTrap();
-			JoinServerFailureEvent.Trigger();
+			JoinServerSuccessEvent.Trigger();
 			break;
 		case PT_Denied:
 			JoinServerFailureEvent.Trigger();
 			break;
 		case PT_ReplicationData:
+			while (inStream->GetBitCapacityLeft() > 0)
+			{
+				ReplicationManager::GetInstance().ProcessReplicationAction(&ObjectCreationRegistry::GetInstance(), *inStream);
+			}
 			break;
 		case PT_Disconnect:
 			break;
