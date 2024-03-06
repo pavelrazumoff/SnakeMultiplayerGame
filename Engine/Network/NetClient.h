@@ -19,6 +19,7 @@ public:
 	void StopClientLoop();
 
 	NetworkState::RawServerPackageStateInfo* PopWaitingServerMessage();
+	void SendMessageToServer(const char* msgData, uint32_t msgByteCount);
 
 protected:
 	/** Threads. */

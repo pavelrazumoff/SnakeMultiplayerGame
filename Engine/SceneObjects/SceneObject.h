@@ -14,9 +14,7 @@
 REGISTER_CLASS(SceneObject)
 class SceneObject : public GameObject, public IInputHandler, public IRenderable
 {
-	typedef GameObject Inherited;
-
-	GAMEOBJECT_BODY(SceneObject)
+	GAMEOBJECT_BODY(SceneObject, GameObject)
 
 public:
 	SceneObject();

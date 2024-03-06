@@ -135,6 +135,21 @@ NetworkState::RawServerPackageStateInfo* NetClient::PopWaitingServerMessage()
 	return nextInfo;
 }
 
+void NetClient::SendMessageToServer(const char* msgData, uint32_t msgByteCount)
+{
+	std::unique_lock<std::shared_mutex> lock(loopMutex);
+
+	TCPSocketPtr clientSocket = GetSocket();
+
+	int bytesSent = clientSocket->Send(msgData, msgByteCount);
+	if (bytesSent < 0)
+	{
+		int errorCode = -bytesSent;
+		std::string message = "Failed to send a message to the server. Error code: " + std::to_string(errorCode) + ".";
+		Logger::GetInstance().Write(message.c_str());
+	}
+}
+
 /*
 	Other.
 */

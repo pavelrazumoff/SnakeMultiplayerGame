@@ -8,9 +8,7 @@ class MultiplayerMenuWidget;
 REGISTER_CLASS(StartupLevel)
 class StartupLevel : public GameLevel
 {
-	typedef GameLevel Inherited;
-
-	GAMEOBJECT_BODY(StartupLevel)
+	GAMEOBJECT_BODY(StartupLevel, GameLevel)
 
 public:
 	StartupLevel();

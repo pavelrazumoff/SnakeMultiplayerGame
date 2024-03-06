@@ -35,6 +35,9 @@ public:
 	void SetPlayerStateClass(const std::string& className);
 
 	PlayerState* MakeNewPlayer();
+	PlayerState* MakeNewPlayer(NetworkState::ClientNetStateWrapper*& netState);
+	void RegisterServerPlayerState(PlayerState* playerState);
+
 	void DestroyPlayer(uint16_t playerIndex = 0);
 
 	void NotifyAboutPlayerListChange();
@@ -42,9 +45,20 @@ public:
 	PlayerState* GetPlayerState(uint16_t playerIndex = 0);
 	uint32_t GetPlayerCount() const;
 
+	/** Networking. */
+
+	uint32_t GetLocalPlayerId() const { return localPlayerId; }
+
 	/** Events. */
 
 	PlayerListChangeDelegate& OnPlayerListChangeEvent() { return playerListChangeEvent; }
+
+protected:
+	/** Networking. */
+	friend class NetworkManager;
+
+	void SetLocalPlayerId(uint32_t id);
+	uint32_t GetNextPlayerId();
 
 protected:
 	PlayerListChangeDelegate playerListChangeEvent;
@@ -54,4 +68,6 @@ protected:
 
 private:
 	std::string PlayerStateClassName = "";
+
+	uint32_t localPlayerId = 0;
 };

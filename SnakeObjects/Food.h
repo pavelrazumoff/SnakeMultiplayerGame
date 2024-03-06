@@ -8,9 +8,7 @@ class BoxComponent;
 REGISTER_CLASS(FoodObject)
 class FoodObject : public SceneObject
 {
-	typedef SceneObject Inherited;
-
-	GAMEOBJECT_BODY(FoodObject)
+	GAMEOBJECT_BODY(FoodObject, SceneObject)
 
 public:
 	FoodObject();

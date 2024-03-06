@@ -6,6 +6,9 @@ namespace NetworkUtility {
 
 inline constexpr uint32_t MAX_PACKET_SIZE = 1470;
 
+bool IsServer();
+bool IsClient();
+
 } // namespace NetworkUtility
 
 class InputMemoryBitStream;
@@ -57,6 +60,8 @@ public:
 	virtual ~RawClientPackageStateInfo();
 
 	void SetData(const char* inBuffer, uint32_t inByteCount);
+
+	InputMemoryBitStream* GetStream();
 
 private:
 	InputMemoryBitStream* inputBitStream = nullptr;

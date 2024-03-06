@@ -261,6 +261,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\Network\NetClient.h" />
     <ClInclude Include="Engine\Network\NetworkManager.h" />
     <ClInclude Include="Engine\Network\NetworkEngineUtility.h" />
+    <ClInclude Include="Engine\Network\ReplicationUtility.h" />
     <ClInclude Include="Engine\Network\SocketHandler.h" />
     <ClInclude Include="Engine\Other\ProfilerManager.h" />
     <ClInclude Include="Engine\Other\TimeManager.h" />

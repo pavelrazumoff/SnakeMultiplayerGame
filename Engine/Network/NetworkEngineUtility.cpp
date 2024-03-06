@@ -3,6 +3,21 @@
 #include "Serialization/MemoryBitStream.h"
 
 #include "Engine/EngineUtility.h"
+#include "Engine/Network/NetworkManager.h"
+
+namespace NetworkUtility {
+
+bool IsServer()
+{
+	return NetworkManager::GetInstance().IsServer();
+}
+
+bool IsClient()
+{
+	return NetworkManager::GetInstance().IsClient();
+}
+
+} // namespace NetworkUtility
 
 namespace NetworkState {
 
@@ -31,6 +46,11 @@ void RawClientPackageStateInfo::SetData(const char* inBuffer, uint32_t inByteCou
 
 	if (inputBitStream) delete inputBitStream;
 	inputBitStream = new InputMemoryBitStream(buffer, inByteCount << 3);
+}
+
+InputMemoryBitStream* RawClientPackageStateInfo::GetStream()
+{
+	return inputBitStream;
 }
 
 /*

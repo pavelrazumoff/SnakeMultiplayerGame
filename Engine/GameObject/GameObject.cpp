@@ -1,5 +1,9 @@
 #include "GameObject.h"
+
 #include "Engine/MemoryReflectionSystem.h"
+#include "Engine/Network/NetworkEngineUtility.h"
+
+#include "Serialization/MemoryBitStream.h"
 
 static GameObject* g_RootObject = nullptr;
 
@@ -91,21 +95,25 @@ std::string GameObject::GetGenericTypeName() const
 	return "GameObject";
 }
 
+void GameObject::SafeDestroy()
+{
+	Destroy();
+}
+
 /*
 	IReplicationObject implementation.
 */
 
 void GameObject::Write(OutputMemoryBitStream& outStream)
 {
+	if (NetworkUtility::IsServer())
+		Serialize(outStream);
 }
 
 void GameObject::Read(InputMemoryBitStream& inStream)
 {
-}
-
-void GameObject::SafeDestroy()
-{
-	Destroy();
+	if (NetworkUtility::IsClient())
+		Serialize(inStream);
 }
 
 /*
@@ -129,4 +137,41 @@ void DestroyRootObject()
 {
 	delete g_RootObject;
 	g_RootObject = nullptr;
+}
+
+void SerializeData(MemoryBitStream& stream, const DataType* inDataType,
+	uint8_t* inData, uint64_t inProperties)
+{
+	stream.Serialize(inProperties);
+
+	const auto& mvs = inDataType->GetMemberVariables();
+	for (size_t mvIndex = 0, c = mvs.size(); mvIndex < c; ++mvIndex)
+	{
+		if ((((uint64_t)1 << mvIndex) & inProperties) != 0)
+		{
+			const auto& mv = mvs[mvIndex];
+			void* mvData = inData + mv.GetOffset();
+
+			switch (mv.GetPrimitiveType())
+			{
+				case EPrimitiveType::EPT_Int:
+					stream.Serialize(*reinterpret_cast<int*>(mvData));
+					break;
+				case EPrimitiveType::EPT_Float:
+					stream.Serialize(*reinterpret_cast<float*>(mvData));
+					break;
+				case EPrimitiveType::EPT_Bool:
+					stream.Serialize(*reinterpret_cast<bool*>(mvData));
+					break;
+				case EPrimitiveType::EPT_String:
+					stream.Serialize(*reinterpret_cast<std::string*>(mvData));
+					break;
+				default:
+					break;
+			}
+
+			if (NetworkUtility::IsClient())
+				mv.DoReplicatedCallback(reinterpret_cast<IReplicationObject*>(inData));
+		}
+	}
 }

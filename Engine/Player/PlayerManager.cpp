@@ -1,6 +1,7 @@
 #include "PlayerManager.h"
 
 #include "Engine/EngineFactory.h"
+#include "Engine/Network/NetworkEngineUtility.h"
 
 PlayerManager::~PlayerManager()
 {
@@ -38,6 +39,34 @@ PlayerState* PlayerManager::MakeNewPlayer()
 	return nullptr;
 }
 
+PlayerState* PlayerManager::MakeNewPlayer(NetworkState::ClientNetStateWrapper*& netState)
+{
+	PlayerState* _newPlayerState = MakeNewPlayer();
+	if (!_newPlayerState)
+	{
+		delete netState; netState = nullptr;
+		return nullptr;
+	}
+
+	if (netState)
+	{
+		_newPlayerState->SetPlayerId(GetNextPlayerId());
+
+		_newPlayerState->SetNetPlayerState(netState);
+		netState = nullptr;
+		//if (auto addr = _newPlayerState->GetNetPlayerInfo()->GetAddress())
+		//	_newPlayerState->SetPlayerName(addr->ToString().c_str());
+	}
+
+	return _newPlayerState;
+}
+
+void PlayerManager::RegisterServerPlayerState(PlayerState* playerState)
+{
+	// TODO: Add checks for existing player id.
+	playerStates.push_back(playerState);
+}
+
 void PlayerManager::DestroyPlayer(uint16_t playerIndex)
 {
 	if (auto playerState = GetPlayerState(playerIndex))
@@ -60,4 +89,15 @@ PlayerState* PlayerManager::GetPlayerState(uint16_t playerIndex)
 uint32_t PlayerManager::GetPlayerCount() const
 {
 	return (uint32_t)playerStates.size();
+}
+
+void PlayerManager::SetLocalPlayerId(uint32_t id)
+{
+	localPlayerId = id;
+}
+
+uint32_t PlayerManager::GetNextPlayerId()
+{
+	static uint32_t nextPlayerId = 1;
+	return nextPlayerId++;
 }

@@ -596,5 +596,8 @@
     <ClInclude Include="Engine\GameWidget\Components\TextEditBox.h">
       <Filter>Header Files\Engine\GameWidget\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Network\ReplicationUtility.h">
+      <Filter>Header Files\Engine\Network</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -7,9 +7,7 @@
 REGISTER_CLASS(GamePawn)
 class GamePawn : public SceneObject
 {
-	typedef SceneObject Inherited;
-
-	GAMEOBJECT_BODY(GamePawn)
+	GAMEOBJECT_BODY(GamePawn, SceneObject)
 
 public:
 	GamePawn();

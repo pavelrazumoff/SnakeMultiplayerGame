@@ -19,6 +19,8 @@ enum PacketType
 	PT_MAX,
 };
 
+class PlayerState;
+
 class NetworkManager
 {
 private:
@@ -43,6 +45,7 @@ public:
 	/** Client. */
 
 	bool JoinServer(std::string server_addr);
+	void SendPackageToServer(const OutputMemoryBitStream& outStream);
 
 	bool IsClient() const;
 
@@ -62,7 +65,7 @@ protected:
 
 	void ReadServerMessages();
 
-	void DoSayHello(const NetworkState::ClientNetStateWrapper* client);
+	void DoSayHello(PlayerState* clientState);
 	void DoTeleportToHostLevel(const NetworkState::ClientNetStateWrapper* client);
 	void DoSayGoodbye(const NetworkState::ClientNetStateWrapper* client);
 	void DoReplication();
@@ -82,10 +85,12 @@ protected:
 
 	void ProcessNewClient(const NetworkState::RawClientStateInfo& clientInfo);
 	void ProcessClientDisconnected(const NetworkState::RawClientStateInfo& clientInfo);
+	void ProcessClientPackage(NetworkState::RawClientPackageStateInfo& clientPackageInfo);
 
 	/** Client. */
 
 	void ProcessServerPackage(NetworkState::RawServerPackageStateInfo& serverPackageInfo);
+	void DoAcceptServerHelloMessage(InputMemoryBitStream* inStream);
 
 protected:
 	ServerResponseDelegate JoinServerSuccessEvent;

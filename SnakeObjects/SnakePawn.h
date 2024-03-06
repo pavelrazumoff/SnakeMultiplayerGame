@@ -13,9 +13,7 @@ class ICollider;
 REGISTER_CLASS(SnakePawn)
 class SnakePawn : public GamePawn
 {
-	typedef GamePawn Inherited;
-
-	GAMEOBJECT_BODY(SnakePawn)
+	GAMEOBJECT_BODY(SnakePawn, GamePawn)
 
 public:
 	SnakePawn();
