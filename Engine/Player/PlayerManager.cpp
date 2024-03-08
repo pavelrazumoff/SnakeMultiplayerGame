@@ -61,7 +61,7 @@ PlayerState* PlayerManager::MakeNewPlayer(NetworkState::ClientNetStateWrapper*& 
 	return _newPlayerState;
 }
 
-void PlayerManager::RegisterServerPlayerState(PlayerState* playerState)
+void PlayerManager::RegisterRemotePlayerState(PlayerState* playerState)
 {
 	// TODO: Add checks for existing player id.
 	playerStates.push_back(playerState);

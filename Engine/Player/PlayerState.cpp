@@ -4,6 +4,8 @@
 #include "Engine/Network/NetworkEngineUtility.h"
 #include "Engine/Network/ReplicationUtility.h"
 
+#include "Engine/Player/PlayerManager.h"
+
 #include "Engine/Log/Logger.h"
 
 void PlayerState::RegisterReplicationMembers()
@@ -21,6 +23,20 @@ PlayerState::~PlayerState()
 {
 	if (netPlayerState) delete netPlayerState;
 }
+
+/*
+	IReplicationObject implementation.
+*/
+
+void PlayerState::PostReplCreate()
+{
+	Inherited::PostReplCreate();
+
+	PlayerManager::GetInstance().RegisterRemotePlayerState(this);
+}
+
+/*
+*/
 
 void PlayerState::SetPlayerName(const char* player_name)
 {
@@ -69,5 +85,6 @@ void PlayerState::OnReplicate_PlayerName()
 
 void PlayerState::Server_SetPlayerName(std::string player_name)
 {
+	// TODO: Add validation.
 	DebugEngineTrap();
 }

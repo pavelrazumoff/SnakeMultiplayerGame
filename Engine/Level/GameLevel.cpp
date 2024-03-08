@@ -3,6 +3,8 @@
 #include "Engine/Render/RenderManager.h"
 #include "Engine/CollisionDetection/CollisionManager.h"
 
+#include "Engine/Level/LevelManager.h"
+
 GameLevel::GameLevel()
 {
 }
@@ -88,4 +90,11 @@ void GameLevel::NotifyChildDestroy(GameObject* Child)
 
 	if (it != ObjectsOnLevel.end())
 		ObjectsOnLevel.erase(it);
+}
+
+void GameLevel::PostReplCreate()
+{
+	Inherited::PostReplCreate();
+
+	LevelManager::GetInstance().OpenLevel(this);
 }

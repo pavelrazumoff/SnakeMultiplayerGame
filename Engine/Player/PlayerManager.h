@@ -36,7 +36,7 @@ public:
 
 	PlayerState* MakeNewPlayer();
 	PlayerState* MakeNewPlayer(NetworkState::ClientNetStateWrapper*& netState);
-	void RegisterServerPlayerState(PlayerState* playerState);
+	void RegisterRemotePlayerState(PlayerState* playerState);
 
 	void DestroyPlayer(uint16_t playerIndex = 0);
 

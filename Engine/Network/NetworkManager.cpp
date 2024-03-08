@@ -62,19 +62,7 @@ void NetworkManager::Cleanup()
 	RPC.
 */
 
-// TODO: Get rid of it and somehow call these procedures when creating the object itself.
-static void RPC_RegisterPlayerState(OutputMemoryBitStream& outStream, PlayerState* clientState)
-{
-	ReplicationHeader rh(ReplicationAction::RA_RPC);
-	rh.Write(outStream);
-
-	uint32_t rpcId = GET_RPC_FUNC_ID(Unwrap_RegisterPlayerState);
-	uint32_t playerObjId = ReplicationManager::GetInstance().GetNetworkIdForObject(clientState);
-
-	outStream.Serialize(rpcId);
-	outStream.Serialize(playerObjId);
-}
-
+/*
 static void RPC_OpenHostLevel(OutputMemoryBitStream& outStream, GameLevel* level)
 {
 	ReplicationHeader rh(ReplicationAction::RA_RPC);
@@ -85,25 +73,6 @@ static void RPC_OpenHostLevel(OutputMemoryBitStream& outStream, GameLevel* level
 
 	outStream.Serialize(rpcId);
 	outStream.Serialize(levelId);
-}
-
-static void Unwrap_RegisterPlayerState(InputMemoryBitStream& inStream)
-{
-	uint32_t playerObjId = 0;
-	inStream.Serialize(playerObjId);
-
-	PlayerState* playerState = dynamic_cast<PlayerState*>(
-		ReplicationManager::GetInstance().GetObjectFromNetworkId(playerObjId));
-
-	if (playerState != nullptr)
-	{
-		PlayerManager::GetInstance().RegisterServerPlayerState(playerState);
-	}
-	else
-	{
-		Logger::GetInstance().Write("Failed to register the player state. Player state not found.");
-		DebugEngineTrap();
-	}
 }
 
 static void Unwrap_OpenHostLevel(InputMemoryBitStream& inStream)
@@ -122,11 +91,11 @@ static void Unwrap_OpenHostLevel(InputMemoryBitStream& inStream)
 		DebugEngineTrap();
 	}
 }
+*/
 
 void NetworkManager::RegisterRPCs()
 {
-	REGISTER_RPC_FUNC(Unwrap_RegisterPlayerState);
-	REGISTER_RPC_FUNC(Unwrap_OpenHostLevel);
+	//REGISTER_RPC_FUNC(Unwrap_OpenHostLevel);
 }
 
 /*
@@ -358,7 +327,6 @@ void NetworkManager::DoSayHello(PlayerState* clientState)
 	outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
 
 	ReplicationManager::GetInstance().ReplicateCreate(outStream, clientState);
-	RPC_RegisterPlayerState(outStream, clientState);
 
 	ReplicationManager::GetInstance().CloseReplicationPackage(outStream);
 
@@ -376,7 +344,7 @@ void NetworkManager::DoTeleportToHostLevel(const NetworkState::ClientNetStateWra
 	GameLevel* currentLevel = LevelManager::GetInstance().GetCurrentLevel();
 
 	ReplicationManager::GetInstance().ReplicateCreate(outStream, currentLevel);
-	RPC_OpenHostLevel(outStream, currentLevel);
+	//RPC_OpenHostLevel(outStream, currentLevel);
 
 	ReplicationManager::GetInstance().CloseReplicationPackage(outStream);
 

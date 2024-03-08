@@ -21,6 +21,12 @@ public:
 	void SetPlayerName(const char* player_name);
 	const std::string& GetPlayerName() const { return playerName; }
 
+protected:
+
+	/** IReplicationObject implementation. */
+
+	virtual void PostReplCreate() override;
+
 public:
 
 	/** override EngineGenericType. */

@@ -34,6 +34,11 @@ public:
 
 	virtual void NotifyChildDestroy(GameObject* Child) override;
 
+protected:
+	/** IReplicationObject implementation. */
+
+	virtual void PostReplCreate() override;
+
 private:
 	std::vector<TObjectPtr<GameObject>> ObjectsOnLevel;
 	std::queue<TObjectPtr<SceneObject>> ObjectBeginPlayQueue;
