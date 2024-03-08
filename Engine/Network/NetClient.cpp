@@ -1,6 +1,7 @@
 #include "NetClient.h"
 
 #include "Engine/Log/Logger.h"
+#include "Engine/EngineUtility.h"
 
 NetClient::NetClient(TCPSocketPtr _clientSocket)
 	: Inherited(_clientSocket)
@@ -58,16 +59,24 @@ void NetClient::ProcessServerResponseThread()
 	{
 		std::unique_lock<std::shared_mutex> lock(loopMutex);
 
-		inputBitStream->Reset();
+		short packageSize = 0;
+		int bytesReceived = clientSocket->Receive(&packageSize, sizeof(packageSize));
+		if (bytesReceived > 0)
+		{
+			inputBitStream->Reset(packageSize);
 
-		int bytesReceived = clientSocket->Receive(inputBitStream->GetBufferPtr(), inputBitStream->GetCapacity());
-		if (bytesReceived > 0) // Received some data.
-		{
-			ProcessServerDataReceived(bytesReceived);
+			// TODO: If there will be an issue with the Receive func returns less read bytes count than a packageSize, then we need to read it in a loop.
+			bytesReceived = clientSocket->Receive(inputBitStream->GetBufferPtr(), inputBitStream->GetCapacity());
+			if (bytesReceived > 0) // Received some data.
+			{
+				ProcessServerDataReceived(bytesReceived);
+				continue;
+			}
 		}
-		else if (bytesReceived == 0) // Server sent a FIN flag. So the connection is closed.
+		
+		if (bytesReceived == 0) // Server sent a FIN flag. So the connection is closed.
 		{
-			Logger::GetInstance().Write("Server sent a FIN flag. The connection is closed.");
+			Logger::WriteThreadSafe("Server sent a FIN flag. The connection is closed.");
 
 			// TODO: Do a callback to close the socket outside.
 			bIsClientConnected = false;
@@ -98,7 +107,7 @@ void NetClient::ProcessServerResponseThread()
 bool NetClient::ProcessServerError(int errorCode)
 {
 	std::string message = "Received an error from the server. Error code: " + std::to_string(errorCode) + ".";
-	Logger::GetInstance().Write(message.c_str());
+	Logger::WriteThreadSafe(message.c_str());
 
 	if (errorCode == WSAECONNRESET)
 	{
@@ -111,7 +120,7 @@ bool NetClient::ProcessServerError(int errorCode)
 void NetClient::ProcessServerDataReceived(int32_t bytesReceived)
 {
 	std::string message = "Received " + std::to_string(bytesReceived) + " bytes from the server.";
-	Logger::GetInstance().Write(message.c_str());
+	Logger::WriteThreadSafe(message.c_str());
 
 	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
 
@@ -141,12 +150,23 @@ void NetClient::SendMessageToServer(const char* msgData, uint32_t msgByteCount)
 
 	TCPSocketPtr clientSocket = GetSocket();
 
-	int bytesSent = clientSocket->Send(msgData, msgByteCount);
+	short packageSize = msgByteCount;
+	if (packageSize <= 0) { DebugEngineTrap(); return; }
+
+	int retResult = clientSocket->Send(&packageSize, sizeof(packageSize));
+	if (retResult < 0)
+	{
+		std::string logMsg = "Failed to send a size of a message to a server. Error code: " + std::to_string(-retResult) + ".";
+		Logger::WriteThreadSafe(logMsg.c_str());
+		return;
+	}
+
+	int bytesSent = clientSocket->Send(msgData, packageSize);
 	if (bytesSent < 0)
 	{
 		int errorCode = -bytesSent;
 		std::string message = "Failed to send a message to the server. Error code: " + std::to_string(errorCode) + ".";
-		Logger::GetInstance().Write(message.c_str());
+		Logger::WriteThreadSafe(message.c_str());
 	}
 }
 

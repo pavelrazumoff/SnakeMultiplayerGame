@@ -163,10 +163,10 @@ void StartupLevel::ReturnToMainMenu()
 
 void StartupLevel::HandleJoinServerSuccess()
 {
-	Logger::GetInstance().Write("Join server success.");
+	Logger::WriteThreadSafe("Join server success.");
 }
 
 void StartupLevel::HandleJoinServerFailure()
 {
-	Logger::GetInstance().Write("Join server failure.");
+	Logger::WriteThreadSafe("Join server failure.");
 }

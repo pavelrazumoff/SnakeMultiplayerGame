@@ -65,7 +65,7 @@ void RenderManager::Render()
 	SwapRenderBuffers();
 
 	//std::string logMessage = "RenderManager::Render() - render time: " + std::to_string(TimePassed) + " seconds.";
-	//Logger::GetInstance().Write(logMessage.c_str());
+	//Logger::WriteThreadSafe(logMessage.c_str());
 }
 
 void RenderManager::DrawRenderBuffer()
@@ -136,7 +136,7 @@ bool RenderManager::PushToRenderQueue(IRenderable* renderable)
 	//float TimePassed = duration_cast<duration<float>>(PushEnd - PushStart).count();
 	//
 	//std::string logMessage = "RenderManager::PushToRenderQueue() - Pushed renderable to render queue in " + std::to_string(TimePassed) + " seconds.";
-	//Logger::GetInstance().Write(logMessage.c_str());
+	//Logger::WriteThreadSafe(logMessage.c_str());
 	return true;
 }
 

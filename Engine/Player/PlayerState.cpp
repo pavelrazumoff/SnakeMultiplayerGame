@@ -80,7 +80,7 @@ void PlayerState::SetPlayerId(uint32_t id)
 
 void PlayerState::OnReplicate_PlayerName()
 {
-	Logger::GetInstance().Write("PlayerState::OnReplicate_PlayerName");
+	Logger::WriteThreadSafe("PlayerState::OnReplicate_PlayerName");
 }
 
 void PlayerState::Server_SetPlayerName(std::string player_name)

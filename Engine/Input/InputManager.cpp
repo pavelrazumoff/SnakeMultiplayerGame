@@ -60,7 +60,7 @@ void InputManager::ReadInput()
 			_CheckIfAlreadyHandled(irInBuf, i))
 		{
 			//std::string msg = "already handled eventType = " + std::to_string(eventType);
-			//Logger::GetInstance().Write(msg.c_str());
+			//Logger::WriteThreadSafe(msg.c_str());
 			continue;
 		}
 

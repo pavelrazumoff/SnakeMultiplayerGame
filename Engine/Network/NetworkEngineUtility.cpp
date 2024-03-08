@@ -57,15 +57,15 @@ InputMemoryBitStream* RawClientPackageStateInfo::GetStream()
 	Send data to client.
 */
 
-Server2ClientPackage::Server2ClientPackage(TCPSocketPtr _clientSocket, const char* _packageData, uint32_t _packageByteCount)
+Server2ClientPackage::Server2ClientPackage(TCPSocketPtr _clientSocket, const char* _packageData, uint32_t _packageByteSize)
 {
 	clientSocket = _clientSocket;
 	
-	packageData = (char*)std::malloc(_packageByteCount);
+	packageData = (char*)std::malloc(_packageByteSize);
 	if (!packageData) { DebugEngineTrap(); return; }
 
-	std::memcpy(packageData, _packageData, _packageByteCount);
-	packageByteCount = _packageByteCount;
+	std::memcpy(packageData, _packageData, _packageByteSize);
+	packageByteSize = _packageByteSize;
 }
 
 Server2ClientPackage::~Server2ClientPackage()

@@ -68,7 +68,6 @@ protected:
 	void DoSayHello(PlayerState* clientState);
 	void DoTeleportToHostLevel(const NetworkState::ClientNetStateWrapper* client);
 	void DoSayGoodbye(const NetworkState::ClientNetStateWrapper* client);
-	void DoReplication();
 
 	void MakeAndPushServerPackage(const NetworkState::ClientNetStateWrapper* client, const OutputMemoryBitStream& outStream);
 

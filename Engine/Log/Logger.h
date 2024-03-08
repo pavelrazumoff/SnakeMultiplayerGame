@@ -12,6 +12,7 @@ public:
 	~Logger();
 
 	static Logger& GetInstance();
+	static void WriteThreadSafe(const char* message);
 
 	void Initialize(const char* filename);
 	void Release();
@@ -20,5 +21,4 @@ public:
 
 private:
 	std::ofstream logFile;
-	std::shared_mutex logMutex;
 };

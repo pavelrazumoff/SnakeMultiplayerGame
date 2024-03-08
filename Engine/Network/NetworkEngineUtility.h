@@ -74,18 +74,18 @@ private:
 struct Server2ClientPackage
 {
 public:
-	Server2ClientPackage(TCPSocketPtr _clientSocket, const char* _packageData, uint32_t _packageByteCount);
+	Server2ClientPackage(TCPSocketPtr _clientSocket, const char* _packageData, uint32_t _packageByteSize);
 	~Server2ClientPackage();
 
 	TCPSocketPtr GetClientSocket() const { return clientSocket; }
 	const char* GetPackageData() const { return packageData; }
-	uint32_t GetPackageByteCount() const { return packageByteCount; }
+	uint32_t GetPackageByteSize() const { return packageByteSize; }
 
 private:
 	TCPSocketPtr clientSocket;
 
 	char* packageData = nullptr;
-	uint32_t packageByteCount = 0;
+	uint32_t packageByteSize = 0;
 };
 
 /*

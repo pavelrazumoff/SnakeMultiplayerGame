@@ -34,7 +34,7 @@ void NetworkManager::Initialize()
 	if (err)
 	{
 		std::string errMsg = "WSAStartup failed with error code " + std::to_string(err);
-		Logger::GetInstance().Write(errMsg.c_str());
+		Logger::WriteThreadSafe(errMsg.c_str());
 		return;
 	}
 
@@ -45,8 +45,6 @@ void NetworkManager::Update()
 {
 	ReadServerMessages();
 	ReadClientMessages();
-
-	DoReplication();
 }
 
 void NetworkManager::Cleanup()
@@ -87,7 +85,7 @@ static void Unwrap_OpenHostLevel(InputMemoryBitStream& inStream)
 		LevelManager::GetInstance().OpenLevel(level);
 	else
 	{
-		Logger::GetInstance().Write("Failed to open the level. Level not found.");
+		Logger::WriteThreadSafe("Failed to open the level. Level not found.");
 		DebugEngineTrap();
 	}
 }
@@ -107,7 +105,7 @@ bool NetworkManager::MakeListenServer()
 	if (IsClient() || IsServer())
 	{
 		DebugEngineTrap();
-		Logger::GetInstance().Write("Socket already exists.");
+		Logger::WriteThreadSafe("Socket already exists.");
 		return false;
 	}
 
@@ -118,7 +116,7 @@ bool NetworkManager::MakeListenServer()
 	if (NO_ERROR != errCode)
 	{
 		std::string errMsg = "Bind failed with error code " + std::to_string(errCode);
-		Logger::GetInstance().Write(errMsg.c_str());
+		Logger::WriteThreadSafe(errMsg.c_str());
 		return false;
 	}
 
@@ -126,7 +124,7 @@ bool NetworkManager::MakeListenServer()
 	if (NO_ERROR != errCode)
 	{
 		std::string errMsg = "Listen failed with error code " + std::to_string(errCode);
-		Logger::GetInstance().Write(errMsg.c_str());
+		Logger::WriteThreadSafe(errMsg.c_str());
 		return false;
 	}
 
@@ -164,7 +162,7 @@ bool NetworkManager::JoinServer(std::string server_addr)
 	if (IsClient() || IsServer())
 	{
 		DebugEngineTrap();
-		Logger::GetInstance().Write("Socket already exists.");
+		Logger::WriteThreadSafe("Socket already exists.");
 		return false;
 	}
 
@@ -175,7 +173,7 @@ bool NetworkManager::JoinServer(std::string server_addr)
 	if (NO_ERROR != errCode)
 	{
 		std::string errMsg = "Connect failed with error code " + std::to_string(errCode);
-		Logger::GetInstance().Write(errMsg.c_str());
+		Logger::WriteThreadSafe(errMsg.c_str());
 		return false;
 	}
 
@@ -231,7 +229,7 @@ void NetworkManager::ReadServerMessages()
 			case ERawClientState::Connected:
 				{
 					std::string logMsg = "New client connected: " + clientInfo->GetAddress()->ToString();
-					Logger::GetInstance().Write(logMsg.c_str());
+					Logger::WriteThreadSafe(logMsg.c_str());
 
 					ProcessNewClient(*clientInfo);
 				}
@@ -242,7 +240,7 @@ void NetworkManager::ReadServerMessages()
 					if (clientInfo->GetErrorCode() > 0)
 						logMsg += " with error code " + std::to_string(clientInfo->GetErrorCode());
 
-					Logger::GetInstance().Write(logMsg.c_str());
+					Logger::WriteThreadSafe(logMsg.c_str());
 
 					ProcessClientDisconnected(*clientInfo);
 				}
@@ -268,7 +266,6 @@ void NetworkManager::ProcessNewClient(const NetworkState::RawClientStateInfo& cl
 	if (!newPlayerState) { DebugEngineTrap(); return; }
 
 	DoSayHello(newPlayerState);
-	Sleep(500); // TODO: Figure out why it can't send two packages in a row, or client fails to receive the second package without a delay here.
 	DoTeleportToHostLevel(newPlayerState->GetNetPlayerInfo());
 
 	// TODO: Replicate all player states to connected clients.
@@ -354,15 +351,6 @@ void NetworkManager::DoTeleportToHostLevel(const NetworkState::ClientNetStateWra
 void NetworkManager::DoSayGoodbye(const NetworkState::ClientNetStateWrapper* client)
 {
 	// TODO: If we want to force the client to disconnect.
-}
-
-void NetworkManager::DoReplication()
-{
-	// Here we should sync the game state with the clients.
-	// TODO: Check if there is something to send to the clients.
-
-	//OutputMemoryBitStream outStream;
-
 }
 
 void NetworkManager::MakeAndPushServerPackage(const NetworkState::ClientNetStateWrapper* client, const OutputMemoryBitStream& outStream)

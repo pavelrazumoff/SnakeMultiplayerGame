@@ -94,20 +94,27 @@ void ListenServer::ListenThread()
 				}
 				else // Client socket sent a message.
 				{
-					inputBitStream->Reset();
-
-					int32_t bytesReceived = socket->Receive(inputBitStream->GetBufferPtr(), inputBitStream->GetCapacity());
+					short packageSize = 0;
+					int bytesReceived = socket->Receive(&packageSize, sizeof(packageSize));
 					if (bytesReceived > 0)
 					{
-						ProcessClientDataReceived(socket, bytesReceived);
+						inputBitStream->Reset(packageSize);
+
+						int32_t bytesReceived = socket->Receive(inputBitStream->GetBufferPtr(), inputBitStream->GetCapacity());
+						if (bytesReceived > 0)
+						{
+							ProcessClientDataReceived(socket, bytesReceived);
+							continue;
+						}
 					}
-					else if (bytesReceived == 0)
+					
+					if (bytesReceived == 0)
 					{
 						SocketAddressPtr clientAddress;
 						GetSocketAddress(socket.get(), clientAddress);
 
 						std::string logMsg = "Received 0 bytes from client (" + clientAddress->ToString() + "). Disconnecting...";
-						Logger::GetInstance().Write(logMsg.c_str());
+						Logger::WriteThreadSafe(logMsg.c_str());
 
 						ProcessClientDisconnected(socket);
 						UpdateWritableSocketsFromConnectedClients(writeBlockSockets);
@@ -193,7 +200,7 @@ bool ListenServer::ProcessClientError(int errorCode, TCPSocketPtr clientSocket)
 void ListenServer::ProcessClientDataReceived(TCPSocketPtr clientSocket, int32_t bytesReceived)
 {
 	std::string logMsg = "Received a message from a client. Bytes received: " + std::to_string(bytesReceived) + ".";
-	Logger::GetInstance().Write(logMsg.c_str());
+	Logger::WriteThreadSafe(logMsg.c_str());
 
 	std::unique_lock<std::shared_mutex> lock(dataAccessMutex);
 
@@ -221,15 +228,26 @@ void ListenServer::ProcessSendPackageToClient(TCPSocketPtr clientSocket)
 		Server2ClientPackage* nextPackage = it->second;
 		if (!nextPackage) { DebugEngineTrap(); continue; }
 
+		short packageSize = nextPackage->GetPackageByteSize();
+		if (packageSize <= 0) { DebugEngineTrap(); continue; }
+
+		int retResult = clientSocket->Send(&packageSize, sizeof(packageSize));
+		if (retResult < 0)
+		{
+			std::string logMsg = "Failed to send a size of a message to a client. Error code: " + std::to_string(-retResult) + ".";
+			Logger::WriteThreadSafe(logMsg.c_str());
+			continue;
+		}
+
 		std::string logMsg;
-		int retResult = clientSocket->Send(
-			reinterpret_cast<const void*>(nextPackage->GetPackageData()), nextPackage->GetPackageByteCount());
+		retResult = clientSocket->Send(
+			reinterpret_cast<const void*>(nextPackage->GetPackageData()), packageSize);
 		if (retResult < 0)
 			logMsg = "Failed to send a message to a client. Error code: " + std::to_string(-retResult) + ".";
 		else
 			logMsg = "Sent a message to a client. Bytes sent: " + std::to_string(retResult) + ".";
 
-		Logger::GetInstance().Write(logMsg.c_str());
+		Logger::WriteThreadSafe(logMsg.c_str());
 		delete it->second;
 	}
 
