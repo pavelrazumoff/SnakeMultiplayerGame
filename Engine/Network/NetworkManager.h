@@ -20,6 +20,7 @@ enum PacketType
 };
 
 class PlayerState;
+class ServerReplicationValidation;
 
 class NetworkManager
 {
@@ -98,4 +99,6 @@ protected:
 private:
 	std::shared_ptr<ListenServer> listenServerObj;
 	std::shared_ptr<NetClient> netClientObj;
+
+	std::unique_ptr<ServerReplicationValidation> serverValidation;
 };

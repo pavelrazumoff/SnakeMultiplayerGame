@@ -183,6 +183,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\Network\NetClient.cpp" />
     <ClCompile Include="Engine\Network\NetworkEngineUtility.cpp" />
     <ClCompile Include="Engine\Network\NetworkManager.cpp" />
+    <ClCompile Include="Engine\Network\NetworkValidation.cpp" />
     <ClCompile Include="Engine\Network\SocketHandler.cpp" />
     <ClCompile Include="Engine\Other\ProfilerManager.cpp" />
     <ClCompile Include="Engine\Other\TimeManager.cpp" />
@@ -203,6 +204,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="SnakeObjects\Components\BodyCollisionComponent.cpp" />
     <ClCompile Include="SnakeObjects\Food.cpp" />
     <ClCompile Include="SnakeObjects\SnakePawn.cpp" />
+    <ClCompile Include="SnakePlayer\LobbyPlayerState.cpp" />
     <ClCompile Include="SnakePlayer\SnakePlayerState.cpp" />
     <ClCompile Include="SnakeWidgets\HUD\PlayerHUDWidget.cpp" />
     <ClCompile Include="SnakeWidgets\Menu\GameMenuWidget.cpp" />
@@ -261,6 +263,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\Network\NetClient.h" />
     <ClInclude Include="Engine\Network\NetworkManager.h" />
     <ClInclude Include="Engine\Network\NetworkEngineUtility.h" />
+    <ClInclude Include="Engine\Network\NetworkValidation.h" />
     <ClInclude Include="Engine\Network\ReplicationUtility.h" />
     <ClInclude Include="Engine\Network\SocketHandler.h" />
     <ClInclude Include="Engine\Other\ProfilerManager.h" />
@@ -285,6 +288,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="SnakeObjects\Components\BodyCollisionComponent.h" />
     <ClInclude Include="SnakeObjects\Food.h" />
     <ClInclude Include="SnakeObjects\SnakePawn.h" />
+    <ClInclude Include="SnakePlayer\LobbyPlayerState.h" />
     <ClInclude Include="SnakePlayer\SnakePlayerState.h" />
     <ClInclude Include="SnakeUtility.h" />
     <ClInclude Include="SnakeWidgets\HUD\PlayerHUDWidget.h" />

@@ -357,6 +357,12 @@
     <ClCompile Include="Engine\GameWidget\Components\TextEditBox.cpp">
       <Filter>Source Files\Engine\GameWidget\Components</Filter>
     </ClCompile>
+    <ClCompile Include="SnakePlayer\LobbyPlayerState.cpp">
+      <Filter>Source Files\SnakePlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Network\NetworkValidation.cpp">
+      <Filter>Source Files\Engine\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameEngine.h">
@@ -597,6 +603,12 @@
       <Filter>Header Files\Engine\GameWidget\Components</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Network\ReplicationUtility.h">
+      <Filter>Header Files\Engine\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakePlayer\LobbyPlayerState.h">
+      <Filter>Header Files\SnakePlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Network\NetworkValidation.h">
       <Filter>Header Files\Engine\Network</Filter>
     </ClInclude>
   </ItemGroup>

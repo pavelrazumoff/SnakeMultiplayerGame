@@ -17,6 +17,7 @@
 
 StartupLevel::StartupLevel()
 {
+	PlayerManager::GetInstance().SetPlayerStateClass("SnakePlayerState");
 }
 
 StartupLevel::~StartupLevel()

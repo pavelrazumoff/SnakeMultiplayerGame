@@ -17,6 +17,11 @@
 		REGISTER_RMI_FUNC(inUnwrapMethod); \
 	}*/
 
+inline void _DoSerializeArgs(MemoryBitStream& /*stream*/)
+{
+	// Do nothing.
+}
+
 template<typename T>
 void _DoSerializeArgs(MemoryBitStream & stream, T && arg)
 {

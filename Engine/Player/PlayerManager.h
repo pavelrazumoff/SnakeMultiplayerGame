@@ -42,6 +42,9 @@ public:
 
 	void NotifyAboutPlayerListChange();
 
+	/**
+	 *  playerIndex == 0 should mean the local player.
+	 */
 	PlayerState* GetPlayerState(uint16_t playerIndex = 0);
 	uint32_t GetPlayerCount() const;
 

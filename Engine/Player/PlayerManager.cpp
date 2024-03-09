@@ -54,8 +54,6 @@ PlayerState* PlayerManager::MakeNewPlayer(NetworkState::ClientNetStateWrapper*& 
 
 		_newPlayerState->SetNetPlayerState(netState);
 		netState = nullptr;
-		//if (auto addr = _newPlayerState->GetNetPlayerInfo()->GetAddress())
-		//	_newPlayerState->SetPlayerName(addr->ToString().c_str());
 	}
 
 	return _newPlayerState;

@@ -8,6 +8,14 @@
 
 #include "Core/RenderConsoleLibrary.h"
 
+#include "Engine/Player/PlayerManager.h"
+#include "SnakePlayer/LobbyPlayerState.h"
+
+LobbyLevel::LobbyLevel()
+{
+	PlayerManager::GetInstance().SetPlayerStateClass("LobbyPlayerState");
+}
+
 void LobbyLevel::OpenLevel()
 {
 	Inherited::OpenLevel();
@@ -17,7 +25,12 @@ void LobbyLevel::OpenLevel()
 		if (NetworkManager::GetInstance().IsServer())
 			pLobbyWidget = CreateNewObject<LobbyServerWidget>(this);
 		else
-			pLobbyWidget = CreateNewObject<LobbyClientWidget>(this);
+		{
+			LobbyClientWidget* lobbyClientWidget = CreateNewObject<LobbyClientWidget>(this);
+			pLobbyWidget = lobbyClientWidget;
+
+			lobbyClientWidget->OnReady2PlayClickEvent().Subscribe(this, &LobbyLevel::HandleReadyToPlayBtnClicked);
+		}
 
 		GameWidgetManager::GetInstance().PlaceUserWidgetOnScreen(pLobbyWidget.Get());
 	}
@@ -39,4 +52,13 @@ void LobbyLevel::ReconstructLevel()
 
 	RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
 	pLobbyWidget->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
+}
+
+void LobbyLevel::HandleReadyToPlayBtnClicked(const char* playerName)
+{
+	if (LobbyPlayerState* playerState = dynamic_cast<LobbyPlayerState*>(PlayerManager::GetInstance().GetPlayerState()))
+	{
+		playerState->SetPlayerName(playerName);
+		playerState->SetPlayerReady();
+	}
 }

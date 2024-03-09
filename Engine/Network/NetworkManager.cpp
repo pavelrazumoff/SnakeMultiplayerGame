@@ -13,6 +13,8 @@
 #include "Replication/RPCManager.h"
 #include "Replication/ReplicationHeader.h"
 
+#include "NetworkValidation.h"
+
 NetworkManager::NetworkManager()
 {
 }
@@ -129,6 +131,8 @@ bool NetworkManager::MakeListenServer()
 	}
 
 	listenServerObj = std::make_shared<ListenServer>(listenSocket);
+
+	serverValidation = std::make_unique<ServerReplicationValidation>();
 
 	StartListenServer();
 	return true;
@@ -301,22 +305,30 @@ void NetworkManager::ProcessClientPackage(NetworkState::RawClientPackageStateInf
 	PacketType type = PacketType::PT_MAX;
 	inStream->Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
 
+	serverValidation->StartValidationForClient(clientPackageInfo.GetSocket());
 	switch (type)
 	{
 		case PT_ReplicationData:
 			while (inStream->GetBitCapacityLeft() > 0)
 			{
-				ReplicationManager::GetInstance().ProcessReplicationAction(&ObjectCreationRegistry::GetInstance(), *inStream);
+				ReplicationManager::GetInstance().ProcessReplicationAction(&ObjectCreationRegistry::GetInstance(), *inStream,
+					serverValidation.get());
 			}
 			break;
 		default:
 			break;
 	}
+
+	serverValidation->FinishValidation();
 }
 
 void NetworkManager::DoSayHello(PlayerState* clientState)
 {
-	if (!clientState) { DebugEngineTrap(); return; }
+	if (!clientState ||
+		!clientState->GetNetPlayerInfo()) 
+	{
+		DebugEngineTrap(); return;
+	}
 
 	OutputMemoryBitStream outStream;
 
@@ -324,6 +336,9 @@ void NetworkManager::DoSayHello(PlayerState* clientState)
 	outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
 
 	ReplicationManager::GetInstance().ReplicateCreate(outStream, clientState);
+
+	serverValidation->RegisterObjectOwnershipForClient(
+		ReplicationManager::GetInstance().GetNetworkIdForObject(clientState), clientState->GetNetPlayerInfo()->GetSocket());
 
 	ReplicationManager::GetInstance().CloseReplicationPackage(outStream);
 

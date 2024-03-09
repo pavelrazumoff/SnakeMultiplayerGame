@@ -86,5 +86,5 @@ void PlayerState::OnReplicate_PlayerName()
 void PlayerState::Server_SetPlayerName(std::string player_name)
 {
 	// TODO: Add validation.
-	DebugEngineTrap();
+	playerName = player_name;
 }

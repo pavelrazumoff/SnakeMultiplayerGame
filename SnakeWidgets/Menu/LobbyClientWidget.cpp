@@ -9,7 +9,6 @@
 #include "Engine/GameWidget/Components/Button.h"
 
 #include "Engine/GameObject/GameObjectUtility.h"
-#include "Engine/Player/PlayerManager.h"
 
 LobbyClientWidget::LobbyClientWidget()
 {
@@ -107,9 +106,5 @@ void LobbyClientWidget::HandleReady2PlayButtonClick(Button* instigator)
 	if (!EditNameBox.IsValid()) return;
 
 	auto& playerName = EditNameBox->GetText().GetText();
-
-	if (auto playerState = PlayerManager::GetInstance().GetPlayerState())
-		playerState->SetPlayerName(playerName.c_str());
-	
-	// TODO: Mark this player as ready. Block all input for this client until the game starts.
+	Ready2PlayClickEvent.Trigger(playerName.c_str());
 }
