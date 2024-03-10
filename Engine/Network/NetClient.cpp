@@ -54,21 +54,30 @@ void NetClient::StopClientLoop()
 void NetClient::ProcessServerResponseThread()
 {
 	TCPSocketPtr clientSocket = GetSocket();
+	bool bWaitingForPackage = false;
 
 	while (bIsClientConnected)
 	{
 		std::unique_lock<std::shared_mutex> lock(loopMutex);
 
 		short packageSize = 0;
-		int bytesReceived = clientSocket->Receive(&packageSize, sizeof(packageSize));
-		if (bytesReceived > 0)
+		int bytesReceived = 0;
+
+		if (!bWaitingForPackage)
+			bytesReceived = clientSocket->Receive(&packageSize, sizeof(packageSize));
+		if (bytesReceived > 0 || bWaitingForPackage)
 		{
-			inputBitStream->Reset(packageSize);
+			if (!bWaitingForPackage)
+			{
+				bWaitingForPackage = true;
+				inputBitStream->Reset(packageSize);
+			}
 
 			// TODO: If there will be an issue with the Receive func returns less read bytes count than a packageSize, then we need to read it in a loop.
 			bytesReceived = clientSocket->Receive(inputBitStream->GetBufferPtr(), inputBitStream->GetCapacity());
 			if (bytesReceived > 0) // Received some data.
 			{
+				bWaitingForPackage = false;
 				ProcessServerDataReceived(bytesReceived);
 				continue;
 			}

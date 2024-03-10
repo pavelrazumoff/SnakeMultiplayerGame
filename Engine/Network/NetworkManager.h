@@ -40,6 +40,7 @@ public:
 	/** Listen Server. */
 
 	bool MakeListenServer();
+	void SendPackageToObjOwnerClient(uint32_t objNetworkId, const OutputMemoryBitStream& outStream);
 
 	bool IsServer() const;
 
@@ -70,7 +71,7 @@ protected:
 	void DoTeleportToHostLevel(const NetworkState::ClientNetStateWrapper* client);
 	void DoSayGoodbye(const NetworkState::ClientNetStateWrapper* client);
 
-	void MakeAndPushServerPackage(const NetworkState::ClientNetStateWrapper* client, const OutputMemoryBitStream& outStream);
+	void MakeAndPushServerPackage(TCPSocketPtr clientSocket, const OutputMemoryBitStream& outStream);
 
 	/** Client. */
 

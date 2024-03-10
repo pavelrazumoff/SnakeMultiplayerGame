@@ -26,6 +26,17 @@ void ServerReplicationValidation::FinishValidation()
 	_currentCheckingClient = nullptr;
 }
 
+TCPSocketPtr ServerReplicationValidation::FindClientForOwnedObject(uint32_t networkId) const
+{
+	auto it = std::find_if(clientOwnedObjectsMap.begin(), clientOwnedObjectsMap.end(), [networkId](const auto& pair) -> bool {
+		return pair.second == networkId;
+	});
+
+	if (it == clientOwnedObjectsMap.end()) return nullptr;
+
+	return it->first;
+}
+
 bool ServerReplicationValidation::FindNetworkIdForClient(uint32_t networkId, TCPSocketPtr clientSocket) const
 {
 	auto range = clientOwnedObjectsMap.equal_range(clientSocket);

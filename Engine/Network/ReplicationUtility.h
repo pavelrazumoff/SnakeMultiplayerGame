@@ -10,7 +10,7 @@
 	Remote method invocation.
 */
 
-#define ADD_REMOTE_INVOCATION_ON_SERVER(inUnwrapMethod) \
+#define REGISTER_REMOTE_INVOCATION(inUnwrapMethod) \
 	REGISTER_RMI_FUNC(inUnwrapMethod);
 /*
 	if (NetworkUtility::IsServer()) { \
@@ -35,30 +35,36 @@ void _DoSerializeArgs(MemoryBitStream& stream, T&& arg, Args&&... args)
 	_DoSerializeArgs(stream, std::forward<Args>(args)...);
 }
 
-template<typename T, typename... Args>
-void _CallRemoteInvocationOnServer(T* obj, const char* inUnwrapMethod, Args&&... args)
+template<typename... Args>
+void _MakeRMIPackage(OutputMemoryBitStream& outStream, IReplicationObject* obj, const char* inUnwrapMethod, Args&&... args)
 {
-	if (NetworkUtility::IsClient()) 
-	{
-		OutputMemoryBitStream outStream;
+	PacketType type = PacketType::PT_ReplicationData;
+	outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
 
-		PacketType type = PacketType::PT_ReplicationData;
-		outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
+	const uint32_t callerNetworkId = ReplicationManager::GetInstance().GetNetworkIdForObject(obj);
 
-		const uint32_t callerNetworkId = ReplicationManager::GetInstance().GetNetworkIdForObject(obj);
+	ReplicationHeader rh(ReplicationAction::RA_RMI, callerNetworkId);
+	rh.Write(outStream);
 
-		ReplicationHeader rh(ReplicationAction::RA_RMI, callerNetworkId);
-		rh.Write(outStream);
+	uint32_t rmiId = NetworkUtilityLibrary::StringToUint32(inUnwrapMethod);//GET_RMI_FUNC_ID(inUnwrapMethod);
+	outStream.Serialize(rmiId);
 
-		uint32_t rmiId = NetworkUtilityLibrary::StringToUint32(inUnwrapMethod);//GET_RMI_FUNC_ID(inUnwrapMethod);
-		outStream.Serialize(rmiId);
+	_DoSerializeArgs(outStream, std::forward<Args>(args)...);
 
-		_DoSerializeArgs(outStream, std::forward<Args>(args)...);
-
-		ReplicationManager::GetInstance().CloseReplicationPackage(outStream);
-		NetworkManager::GetInstance().SendPackageToServer(outStream);
-	}
+	ReplicationManager::GetInstance().CloseReplicationPackage(outStream);
 }
 
 #define CALL_REMOTE_INVOCATION_ON_SERVER(inUnwrapMethod, ...) \
-	_CallRemoteInvocationOnServer(this, #inUnwrapMethod, __VA_ARGS__);
+	if (NetworkUtility::IsClient()) { \
+		OutputMemoryBitStream _outStream; \
+		_MakeRMIPackage(_outStream, this, #inUnwrapMethod, __VA_ARGS__); \
+		NetworkManager::GetInstance().SendPackageToServer(_outStream); \
+	}
+
+#define CALL_REMOTE_INVOCATION_ON_OWNING_CLIENT(inUnwrapMethod, ...) \
+	if (NetworkUtility::IsServer()) { \
+		OutputMemoryBitStream _outStream; \
+		_MakeRMIPackage(_outStream, this, #inUnwrapMethod, __VA_ARGS__); \
+		const uint32_t objNetworkId = ReplicationManager::GetInstance().GetNetworkIdForObject(this); \
+		NetworkManager::GetInstance().SendPackageToObjOwnerClient(objNetworkId, _outStream); \
+	}

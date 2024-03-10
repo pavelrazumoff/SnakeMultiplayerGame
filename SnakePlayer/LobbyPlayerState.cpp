@@ -11,7 +11,9 @@ void LobbyPlayerState::RegisterReplicationMembers()
 {
 	Inherited::RegisterReplicationMembers();
 
-	ADD_REMOTE_INVOCATION_ON_SERVER(LobbyPlayerState::Server_SetPlayerReady);
+	REGISTER_REMOTE_INVOCATION(LobbyPlayerState::Server_SetPlayerReady);
+	REGISTER_REMOTE_INVOCATION(LobbyPlayerState::Client_SetPlayerWaitForGameStart);
+	REGISTER_REMOTE_INVOCATION(LobbyPlayerState::Client_PlayerEnterWrongName);
 }
 
 LobbyPlayerState::~LobbyPlayerState()
@@ -48,7 +50,20 @@ void LobbyPlayerState::Server_SetPlayerReady()
 	{
 		// TODO: Player still needs to enter his name.
 		DebugEngineTrap();
+		CALL_REMOTE_INVOCATION_ON_OWNING_CLIENT(LobbyPlayerState::Client_PlayerEnterWrongName);
 	}
 
+	CALL_REMOTE_INVOCATION_ON_OWNING_CLIENT(LobbyPlayerState::Client_SetPlayerWaitForGameStart);
+}
 
+void LobbyPlayerState::Client_SetPlayerWaitForGameStart()
+{
+	// TODO.
+	//DebugEngineTrap();
+}
+
+void LobbyPlayerState::Client_PlayerEnterWrongName()
+{
+	// TODO.
+	//DebugEngineTrap();
 }

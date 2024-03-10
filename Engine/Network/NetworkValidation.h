@@ -15,6 +15,8 @@ public:
 	void StartValidationForClient(TCPSocketPtr clientSocket);
 	void FinishValidation();
 
+	TCPSocketPtr FindClientForOwnedObject(uint32_t networkId) const;
+
 protected:
 	bool FindNetworkIdForClient(uint32_t networkId, TCPSocketPtr clientSocket) const;
 

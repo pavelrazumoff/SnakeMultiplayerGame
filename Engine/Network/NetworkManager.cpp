@@ -138,6 +138,16 @@ bool NetworkManager::MakeListenServer()
 	return true;
 }
 
+void NetworkManager::SendPackageToObjOwnerClient(uint32_t objNetworkId, const OutputMemoryBitStream& outStream)
+{
+	if (!IsServer()) return;
+
+	TCPSocketPtr clientSocket = serverValidation->FindClientForOwnedObject(objNetworkId);
+	if (!clientSocket) return;
+
+	MakeAndPushServerPackage(clientSocket, outStream);
+}
+
 void NetworkManager::StartListenServer()
 {
 	if (!IsServer()) return;
@@ -324,8 +334,8 @@ void NetworkManager::ProcessClientPackage(NetworkState::RawClientPackageStateInf
 
 void NetworkManager::DoSayHello(PlayerState* clientState)
 {
-	if (!clientState ||
-		!clientState->GetNetPlayerInfo()) 
+	auto netPlayerInfo = clientState ? clientState->GetNetPlayerInfo() : nullptr;
+	if (!netPlayerInfo)
 	{
 		DebugEngineTrap(); return;
 	}
@@ -338,11 +348,11 @@ void NetworkManager::DoSayHello(PlayerState* clientState)
 	ReplicationManager::GetInstance().ReplicateCreate(outStream, clientState);
 
 	serverValidation->RegisterObjectOwnershipForClient(
-		ReplicationManager::GetInstance().GetNetworkIdForObject(clientState), clientState->GetNetPlayerInfo()->GetSocket());
+		ReplicationManager::GetInstance().GetNetworkIdForObject(clientState), netPlayerInfo->GetSocket());
 
 	ReplicationManager::GetInstance().CloseReplicationPackage(outStream);
 
-	MakeAndPushServerPackage(clientState->GetNetPlayerInfo(), outStream);
+	MakeAndPushServerPackage(netPlayerInfo->GetSocket(), outStream);
 }
 
 void NetworkManager::DoTeleportToHostLevel(const NetworkState::ClientNetStateWrapper* client)
@@ -360,7 +370,7 @@ void NetworkManager::DoTeleportToHostLevel(const NetworkState::ClientNetStateWra
 
 	ReplicationManager::GetInstance().CloseReplicationPackage(outStream);
 
-	MakeAndPushServerPackage(client, outStream);
+	MakeAndPushServerPackage(client->GetSocket(), outStream);
 }
 
 void NetworkManager::DoSayGoodbye(const NetworkState::ClientNetStateWrapper* client)
@@ -368,10 +378,10 @@ void NetworkManager::DoSayGoodbye(const NetworkState::ClientNetStateWrapper* cli
 	// TODO: If we want to force the client to disconnect.
 }
 
-void NetworkManager::MakeAndPushServerPackage(const NetworkState::ClientNetStateWrapper* client, const OutputMemoryBitStream& outStream)
+void NetworkManager::MakeAndPushServerPackage(TCPSocketPtr clientSocket, const OutputMemoryBitStream& outStream)
 {
 	using namespace NetworkState;
-	Server2ClientPackage* package = new Server2ClientPackage(client->GetSocket(), outStream.GetBufferPtr(), outStream.GetByteLength());
+	Server2ClientPackage* package = new Server2ClientPackage(clientSocket, outStream.GetBufferPtr(), outStream.GetByteLength());
 
 	listenServerObj->PushSendMessageToClient(package);
 }

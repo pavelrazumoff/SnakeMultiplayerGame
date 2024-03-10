@@ -16,7 +16,7 @@ void PlayerState::RegisterReplicationMembers()
 	MAKE_REPLICATED(PlayerState, playerName, EPrimitiveType::EPT_String, &PlayerState::OnReplicate_PlayerName);
 	//ASSIGN_REPLICATION_CALLBACK(PlayerState, playerName, &PlayerState::OnReplicate_PlayerName);
 
-	ADD_REMOTE_INVOCATION_ON_SERVER(PlayerState::Server_SetPlayerName);
+	REGISTER_REMOTE_INVOCATION(PlayerState::Server_SetPlayerName);
 }
 
 PlayerState::~PlayerState()

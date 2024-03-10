@@ -24,4 +24,6 @@ protected:
 	/** Replication. */
 
 	void Server_SetPlayerReady();
+	void Client_SetPlayerWaitForGameStart();
+	void Client_PlayerEnterWrongName();
 };
