@@ -20,6 +20,8 @@ public:
 	GameLevel();
 	virtual ~GameLevel();
 
+	virtual bool DoesSupportDestroyReplication() override { return false; }
+
 	virtual void OpenLevel();
 	virtual void CloseLevel();
 

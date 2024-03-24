@@ -2,12 +2,10 @@
 
 #include "Socket/SocketUtil.h"
 #include "Socket/SocketFactory.h"
+#include "Replication/ObjectCreationRegistry.h"
 
 #include "Engine/Log/Logger.h"
 #include "Engine/EngineUtility.h"
-
-#include "Engine/Player/PlayerManager.h"
-#include "Engine/Level/LevelManager.h"
 
 #include "Replication/ReplicationManager.h"
 #include "Replication/RPCManager.h"
@@ -60,6 +58,8 @@ void NetworkManager::Cleanup()
 
 /*
 	RPC.
+
+	Left it here for reference.
 */
 
 /*
@@ -148,6 +148,37 @@ void NetworkManager::SendPackageToObjOwnerClient(uint32_t objNetworkId, const Ou
 	MakeAndPushServerPackage(clientSocket, outStream);
 }
 
+void NetworkManager::ReplicateCreateObjectListPacket(PacketType type,
+	std::vector<IReplicationObject*> objList, const NetworkState::ClientNetStateWrapper* netOwner)
+{
+	if (!IsServer()) return;
+
+	OutputMemoryBitStream outStream;
+	outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
+
+	for (auto obj : objList)
+	{
+		ReplicationManager::GetInstance().ReplicateCreate(outStream, obj);
+
+		if (netOwner)
+		{
+			serverValidation->RegisterObjectOwnershipForClient(
+				ReplicationManager::GetInstance().GetNetworkIdForObject(obj), netOwner->GetSocket());
+		}
+	}
+
+	ReplicationManager::GetInstance().CloseReplicationPackage(outStream);
+	MakeAndPushServerPackage(netOwner->GetSocket(), outStream);
+}
+
+void NetworkManager::MakeAndPushServerPackage(TCPSocketPtr clientSocket, const OutputMemoryBitStream& outStream)
+{
+	using namespace NetworkState;
+	Server2ClientPackage* package = new Server2ClientPackage(clientSocket, outStream.GetBufferPtr(), outStream.GetByteLength());
+
+	listenServerObj->PushSendMessageToClient(package);
+}
+
 void NetworkManager::StartListenServer()
 {
 	if (!IsServer()) return;
@@ -165,6 +196,16 @@ void NetworkManager::StopListenServer()
 bool NetworkManager::IsServer() const
 {
 	return listenServerObj.get() != nullptr;
+}
+
+NewClientDelegate& NetworkManager::OnNewClientConnected()
+{
+	return NewClientConnectedEvent;
+}
+
+ClientDisconnectedDelegate& NetworkManager::OnClientDisconnected()
+{
+	return ClientDisconnectedEvent;
 }
 
 /*
@@ -276,35 +317,12 @@ void NetworkManager::ProcessNewClient(const NetworkState::RawClientStateInfo& cl
 	using namespace NetworkState;
 	ClientNetStateWrapper* clientNetState = new ClientNetStateWrapper(clientInfo.GetSocket(), clientInfo.GetAddress());
 
-	auto newPlayerState = PlayerManager::GetInstance().MakeNewPlayer(clientNetState);
-	if (!newPlayerState) { DebugEngineTrap(); return; }
-
-	DoSayHello(newPlayerState);
-	DoTeleportToHostLevel(newPlayerState->GetNetPlayerInfo());
-
-	// TODO: Replicate all player states to connected clients.
-
-	// TODO: Replace with auto update.
-	PlayerManager::GetInstance().NotifyAboutPlayerListChange();
+	NewClientConnectedEvent.Trigger(clientNetState);
 }
 
 void NetworkManager::ProcessClientDisconnected(const NetworkState::RawClientStateInfo& clientInfo)
 {
-	uint32_t numPlayers = PlayerManager::GetInstance().GetPlayerCount();
-	for (uint32_t i = 0; i < numPlayers; ++i)
-	{
-		auto playerState = PlayerManager::GetInstance().GetPlayerState(i);
-		if (const auto netInfo = playerState ? playerState->GetNetPlayerInfo() : nullptr)
-		{
-			if (*netInfo->GetAddress() == *clientInfo.GetAddress())
-			{
-				PlayerManager::GetInstance().DestroyPlayer(i);
-				break;
-			}
-		}
-	}
-
-	PlayerManager::GetInstance().NotifyAboutPlayerListChange();
+	ClientDisconnectedEvent.Trigger(clientInfo);
 }
 
 void NetworkManager::ProcessClientPackage(NetworkState::RawClientPackageStateInfo& clientPackageInfo)
@@ -330,60 +348,6 @@ void NetworkManager::ProcessClientPackage(NetworkState::RawClientPackageStateInf
 	}
 
 	serverValidation->FinishValidation();
-}
-
-void NetworkManager::DoSayHello(PlayerState* clientState)
-{
-	auto netPlayerInfo = clientState ? clientState->GetNetPlayerInfo() : nullptr;
-	if (!netPlayerInfo)
-	{
-		DebugEngineTrap(); return;
-	}
-
-	OutputMemoryBitStream outStream;
-
-	PacketType type = PacketType::PT_Hello;
-	outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
-
-	ReplicationManager::GetInstance().ReplicateCreate(outStream, clientState);
-
-	serverValidation->RegisterObjectOwnershipForClient(
-		ReplicationManager::GetInstance().GetNetworkIdForObject(clientState), netPlayerInfo->GetSocket());
-
-	ReplicationManager::GetInstance().CloseReplicationPackage(outStream);
-
-	MakeAndPushServerPackage(netPlayerInfo->GetSocket(), outStream);
-}
-
-void NetworkManager::DoTeleportToHostLevel(const NetworkState::ClientNetStateWrapper* client)
-{
-	OutputMemoryBitStream outStream;
-
-	PacketType type = PacketType::PT_ReplicationData;
-	outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
-
-	// Replicate the current open level to connected client.
-	GameLevel* currentLevel = LevelManager::GetInstance().GetCurrentLevel();
-
-	ReplicationManager::GetInstance().ReplicateCreate(outStream, currentLevel);
-	//RPC_OpenHostLevel(outStream, currentLevel);
-
-	ReplicationManager::GetInstance().CloseReplicationPackage(outStream);
-
-	MakeAndPushServerPackage(client->GetSocket(), outStream);
-}
-
-void NetworkManager::DoSayGoodbye(const NetworkState::ClientNetStateWrapper* client)
-{
-	// TODO: If we want to force the client to disconnect.
-}
-
-void NetworkManager::MakeAndPushServerPackage(TCPSocketPtr clientSocket, const OutputMemoryBitStream& outStream)
-{
-	using namespace NetworkState;
-	Server2ClientPackage* package = new Server2ClientPackage(clientSocket, outStream.GetBufferPtr(), outStream.GetByteLength());
-
-	listenServerObj->PushSendMessageToClient(package);
 }
 
 /*
@@ -428,6 +392,7 @@ void NetworkManager::ProcessServerPackage(NetworkState::RawServerPackageStateInf
 			}
 			break;
 		case PacketType::PT_Disconnect:
+			// TODO.
 			break;
 		default:
 			JoinServerFailureEvent.Trigger();
@@ -440,11 +405,6 @@ void NetworkManager::DoAcceptServerHelloMessage(InputMemoryBitStream* inStream)
 	while (inStream->GetBitCapacityLeft() > 0)
 	{
 		ReplicationManager::GetInstance().ProcessReplicationAction(&ObjectCreationRegistry::GetInstance(), *inStream);
-	}
-
-	if (auto firstPlayerState = PlayerManager::GetInstance().GetPlayerState(0))
-	{
-		PlayerManager::GetInstance().SetLocalPlayerId(firstPlayerState->GetPlayerId());
 	}
 
 	JoinServerSuccessEvent.Trigger();

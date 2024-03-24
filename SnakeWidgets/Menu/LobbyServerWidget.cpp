@@ -2,6 +2,7 @@
 
 #include "Engine/GameWidget/Components/VerticalBox.h"
 #include "Engine/GameWidget/Components/TextBlock.h"
+#include "Engine/GameWidget/Components/Button.h"
 
 #include "Engine/Player/PlayerManager.h"
 #include "Engine/GameWidget/GameWidgetManager.h"
@@ -28,15 +29,54 @@ LobbyServerWidget::LobbyServerWidget()
 		Tree.PlaceWidgetOn(CaptionText, MenuVerticalBox);
 	}
 
+	Button* StartGameButton = CreateNewObject<Button>(this);
+	if (StartGameButton)
+	{
+		StartGameButton->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
+		StartGameButton->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Top;
+		StartGameButton->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
+
+		StartGameButton->GetAlignment().Padding = { 0, 1, 0, 0 };
+
+		StartGameButton->GetLayout().DimensionsOverride.cx = 18;
+		StartGameButton->GetLayout().DimensionsOverride.cy = 3;
+
+		Tree.PlaceWidgetOn(StartGameButton, MenuVerticalBox);
+
+		StartGameButton->OnClickEvent().Subscribe(this, &LobbyServerWidget::HandleStartGameButtonClick);
+	}
+
+	if (TextBlock* StartButtonText = CreateNewObject<TextBlock>(this))
+	{
+		StartButtonText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::NoAlignment;
+		StartButtonText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::NoAlignment;
+		StartButtonText->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
+
+		StartButtonText->GetText().SetText("Start Game");
+		StartButtonText->GetText().SetFontStyle({ 1, FontPrintType::Simple, RenderConstants::LightGrayPixelColorRGB });
+
+		Tree.PlaceWidgetOn(StartButtonText, StartGameButton);
+	}
+
 	PlayerListVerticalBox = CreateNewObject<VerticalBox>(this);
 	if (PlayerListVerticalBox.Get())
 	{
 		PlayerListVerticalBox->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::NoAlignment;
+		PlayerListVerticalBox->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::NoAlignment;
+		PlayerListVerticalBox->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
 
 		Tree.PlaceWidgetOn(PlayerListVerticalBox.Get(), MenuVerticalBox);
 	}
 
 	PlayerManager::GetInstance().OnPlayerListChangeEvent().Subscribe(this, &LobbyServerWidget::HandlePlayerListChanged);
+}
+
+void LobbyServerWidget::Destroy()
+{
+	// TODO: Do it under the hood.
+	PlayerManager::GetInstance().OnPlayerListChangeEvent().Unsubscribe(this);
+
+	Inherited::Destroy();
 }
 
 void LobbyServerWidget::HandlePlayerListChanged()
@@ -68,4 +108,9 @@ void LobbyServerWidget::HandlePlayerListChanged()
 
 	// TODO: Move it inside Tree.
 	GameWidgetManager::GetInstance().RequestWidgetReconstruction(this);
+}
+
+void LobbyServerWidget::HandleStartGameButtonClick(Button* instigator)
+{
+	StartGameClickEvent.Trigger();
 }

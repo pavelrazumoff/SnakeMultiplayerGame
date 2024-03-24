@@ -363,6 +363,15 @@
     <ClCompile Include="Engine\Network\NetworkValidation.cpp">
       <Filter>Source Files\Engine\Network</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Player\PlayerController.cpp">
+      <Filter>Source Files\Engine\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="SnakePlayer\LobbyPlayerController.cpp">
+      <Filter>Source Files\SnakePlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Network\ReplicationUtility.cpp">
+      <Filter>Source Files\Engine\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameEngine.h">
@@ -610,6 +619,12 @@
     </ClInclude>
     <ClInclude Include="Engine\Network\NetworkValidation.h">
       <Filter>Header Files\Engine\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Player\PlayerController.h">
+      <Filter>Header Files\Engine\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="SnakePlayer\LobbyPlayerController.h">
+      <Filter>Header Files\SnakePlayer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

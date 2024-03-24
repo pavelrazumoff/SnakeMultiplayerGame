@@ -184,9 +184,11 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\Network\NetworkEngineUtility.cpp" />
     <ClCompile Include="Engine\Network\NetworkManager.cpp" />
     <ClCompile Include="Engine\Network\NetworkValidation.cpp" />
+    <ClCompile Include="Engine\Network\ReplicationUtility.cpp" />
     <ClCompile Include="Engine\Network\SocketHandler.cpp" />
     <ClCompile Include="Engine\Other\ProfilerManager.cpp" />
     <ClCompile Include="Engine\Other\TimeManager.cpp" />
+    <ClCompile Include="Engine\Player\PlayerController.cpp" />
     <ClCompile Include="Engine\Player\PlayerManager.cpp" />
     <ClCompile Include="Engine\Player\PlayerState.cpp" />
     <ClCompile Include="Engine\Render\RenderManager.cpp" />
@@ -204,6 +206,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="SnakeObjects\Components\BodyCollisionComponent.cpp" />
     <ClCompile Include="SnakeObjects\Food.cpp" />
     <ClCompile Include="SnakeObjects\SnakePawn.cpp" />
+    <ClCompile Include="SnakePlayer\LobbyPlayerController.cpp" />
     <ClCompile Include="SnakePlayer\LobbyPlayerState.cpp" />
     <ClCompile Include="SnakePlayer\SnakePlayerState.cpp" />
     <ClCompile Include="SnakeWidgets\HUD\PlayerHUDWidget.cpp" />
@@ -268,6 +271,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\Network\SocketHandler.h" />
     <ClInclude Include="Engine\Other\ProfilerManager.h" />
     <ClInclude Include="Engine\Other\TimeManager.h" />
+    <ClInclude Include="Engine\Player\PlayerController.h" />
     <ClInclude Include="Engine\Player\PlayerManager.h" />
     <ClInclude Include="Engine\Player\PlayerState.h" />
     <ClInclude Include="Engine\Render\Renderable.h" />
@@ -288,6 +292,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="SnakeObjects\Components\BodyCollisionComponent.h" />
     <ClInclude Include="SnakeObjects\Food.h" />
     <ClInclude Include="SnakeObjects\SnakePawn.h" />
+    <ClInclude Include="SnakePlayer\LobbyPlayerController.h" />
     <ClInclude Include="SnakePlayer\LobbyPlayerState.h" />
     <ClInclude Include="SnakePlayer\SnakePlayerState.h" />
     <ClInclude Include="SnakeUtility.h" />

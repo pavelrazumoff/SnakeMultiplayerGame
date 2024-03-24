@@ -10,7 +10,7 @@
 
 void PlayerState::RegisterReplicationMembers()
 {
-	Inherited::RegisterReplicationMembers();
+	//Inherited::RegisterReplicationMembers();
 
 	MAKE_REPLICATED(PlayerState, playerId, EPrimitiveType::EPT_Int, nullptr);
 	MAKE_REPLICATED(PlayerState, playerName, EPrimitiveType::EPT_String, &PlayerState::OnReplicate_PlayerName);
@@ -33,6 +33,18 @@ void PlayerState::PostReplCreate()
 	Inherited::PostReplCreate();
 
 	PlayerManager::GetInstance().RegisterRemotePlayerState(this);
+}
+
+void PlayerState::CopyProperties(PlayerState* targetPlayerState)
+{
+	if (!targetPlayerState) { DebugEngineTrap(); return; }
+
+	targetPlayerState->playerId = playerId;
+	targetPlayerState->playerName = playerName;
+
+	// TODO: It would be better to do it outside of this class.
+	targetPlayerState->netPlayerState = netPlayerState;
+	netPlayerState = nullptr;
 }
 
 /*

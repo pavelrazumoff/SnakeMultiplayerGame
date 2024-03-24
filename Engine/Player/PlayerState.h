@@ -27,6 +27,8 @@ protected:
 
 	virtual void PostReplCreate() override;
 
+	virtual void CopyProperties(PlayerState* targetPlayerState);
+
 public:
 
 	/** override EngineGenericType. */

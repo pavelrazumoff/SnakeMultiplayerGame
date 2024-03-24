@@ -2,6 +2,8 @@
 
 #include "Engine/GameWidget/GameWidgetManager.h"
 
+#include "Engine/Player/PlayerManager.h"
+
 #include "Engine/Other/TimeManager.h"
 #include "Engine/Other/ProfilerManager.h"
 
@@ -29,6 +31,9 @@ void LevelManager::OpenLevel(GameLevel* level)
 	{
 		CurrentLevel->OpenLevel();
 	}
+
+	// Move all connected clients from one level to another.
+	PlayerManager::GetInstance().TransferPlayersBetweenLevels();
 
 	LevelOpenEvent.Trigger(level);
 }

@@ -7,6 +7,7 @@ DECLARE_EVENT_DELEGATE(Ready2PlayDelegate, const char*);
 
 class Button;
 class TextEditBox;
+class PageContainerWidget;
 
 class LobbyClientWidget : public UserWidget
 {
@@ -14,6 +15,8 @@ class LobbyClientWidget : public UserWidget
 
 public:
 	LobbyClientWidget();
+
+	void SetWaitForGameStartMode();
 
 	Ready2PlayDelegate& OnReady2PlayClickEvent() { return Ready2PlayClickEvent; }
 
@@ -24,5 +27,7 @@ protected:
 	Ready2PlayDelegate Ready2PlayClickEvent;
 
 protected:
+	TObjectPtr<PageContainerWidget> LobbyPageContent;
+
 	TObjectPtr<TextEditBox> EditNameBox;
 };

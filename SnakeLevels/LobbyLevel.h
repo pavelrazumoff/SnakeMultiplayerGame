@@ -18,7 +18,9 @@ public:
 	virtual void ReconstructLevel() override;
 
 protected:
+	void HandleStartGameBtnClicked();
 	void HandleReadyToPlayBtnClicked(const char* playerName);
+	void HandlePlayerWaitGameEvent();
 
 protected:
 	TObjectPtr<UserWidget> pLobbyWidget;

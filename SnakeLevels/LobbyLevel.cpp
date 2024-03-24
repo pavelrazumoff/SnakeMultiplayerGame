@@ -5,14 +5,18 @@
 
 #include "Engine/GameWidget/GameWidgetManager.h"
 #include "Engine/Network/NetworkManager.h"
+#include "Engine/Level/LevelManager.h"
 
 #include "Core/RenderConsoleLibrary.h"
 
 #include "Engine/Player/PlayerManager.h"
-#include "SnakePlayer/LobbyPlayerState.h"
+#include "SnakePlayer/LobbyPlayerController.h"
+
+#include "PlayLevel.h"
 
 LobbyLevel::LobbyLevel()
 {
+	PlayerManager::GetInstance().SetPlayerControllerClass("LobbyPlayerController");
 	PlayerManager::GetInstance().SetPlayerStateClass("LobbyPlayerState");
 }
 
@@ -23,7 +27,12 @@ void LobbyLevel::OpenLevel()
 	if (!pLobbyWidget.Get())
 	{
 		if (NetworkManager::GetInstance().IsServer())
-			pLobbyWidget = CreateNewObject<LobbyServerWidget>(this);
+		{
+			LobbyServerWidget* lobbyServerWidget = CreateNewObject<LobbyServerWidget>(this);
+			pLobbyWidget = lobbyServerWidget;
+
+			lobbyServerWidget->OnStartGameClickEvent().Subscribe(this, &LobbyLevel::HandleStartGameBtnClicked);
+		}
 		else
 		{
 			LobbyClientWidget* lobbyClientWidget = CreateNewObject<LobbyClientWidget>(this);
@@ -33,6 +42,14 @@ void LobbyLevel::OpenLevel()
 		}
 
 		GameWidgetManager::GetInstance().PlaceUserWidgetOnScreen(pLobbyWidget.Get());
+	}
+
+	if (NetworkManager::GetInstance().IsClient())
+	{
+		if (LobbyPlayerController* playerState = dynamic_cast<LobbyPlayerController*>(PlayerManager::GetInstance().GetPlayerController()))
+		{
+			playerState->OnPlayerWaitGameEvent().Subscribe(this, &LobbyLevel::HandlePlayerWaitGameEvent);
+		}
 	}
 
 	ReconstructLevel();
@@ -54,11 +71,23 @@ void LobbyLevel::ReconstructLevel()
 	pLobbyWidget->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
 }
 
+void LobbyLevel::HandleStartGameBtnClicked()
+{
+	PlayLevel* playLevel = CreateNewObject<PlayLevel>();
+	LevelManager::GetInstance().OpenLevel(playLevel);
+}
+
 void LobbyLevel::HandleReadyToPlayBtnClicked(const char* playerName)
 {
-	if (LobbyPlayerState* playerState = dynamic_cast<LobbyPlayerState*>(PlayerManager::GetInstance().GetPlayerState()))
+	if (LobbyPlayerController* playerController = dynamic_cast<LobbyPlayerController*>(PlayerManager::GetInstance().GetPlayerController()))
 	{
-		playerState->SetPlayerName(playerName);
-		playerState->SetPlayerReady();
+		playerController->GetPlayerState()->SetPlayerName(playerName);
+		playerController->SetPlayerReady();
 	}
+}
+
+void LobbyLevel::HandlePlayerWaitGameEvent()
+{
+	if (auto lobbyClientWidget = dynamic_cast<LobbyClientWidget*>(pLobbyWidget.Get()))
+		lobbyClientWidget->SetWaitForGameStartMode();
 }

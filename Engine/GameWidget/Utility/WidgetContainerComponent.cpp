@@ -24,12 +24,10 @@ bool WidgetContainerComponent::RemoveWidgetFromContainer(GameWidget* widget)
 
 void WidgetContainerComponent::ClearContainer()
 {
-	for (auto widget : WidgetsInContainer)
+	while (!WidgetsInContainer.empty())
 	{
-		widget->Destroy();
+		WidgetsInContainer.front()->Destroy();
 	}
-
-	WidgetsInContainer.clear();
 }
 
 uint32_t WidgetContainerComponent::GetNumWidgetsInContainer() const

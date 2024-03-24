@@ -7,6 +7,7 @@
 #include "Engine/GameWidget/Components/TextEditBox.h"
 
 #include "Engine/GameWidget/Components/Button.h"
+#include "Engine/GameWidget/Components/PageContainer.h"
 
 #include "Engine/GameObject/GameObjectUtility.h"
 
@@ -15,6 +16,22 @@ LobbyClientWidget::LobbyClientWidget()
 	VerticalBox* MenuVerticalBox = CreateNewObject<VerticalBox>(this);
 	if (MenuVerticalBox)
 		Tree.PlaceWidgetOn(MenuVerticalBox, Canvas.Get());
+
+	LobbyPageContent = CreateNewObject<PageContainerWidget>(this);
+	if (LobbyPageContent.Get())
+	{
+		LobbyPageContent->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::NoAlignment;
+		LobbyPageContent->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::NoAlignment;
+		LobbyPageContent->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
+
+		Tree.PlaceWidgetOn(LobbyPageContent.Get(), MenuVerticalBox);
+	}
+
+	/** Login page content. */
+
+	VerticalBox* LoginPageVerticalBox = CreateNewObject<VerticalBox>(this);
+	if (LoginPageVerticalBox)
+		Tree.PlaceWidgetOn(LoginPageVerticalBox, LobbyPageContent.Get());
 
 	if (TextBlock* CaptionText = CreateNewObject<TextBlock>(this))
 	{
@@ -27,7 +44,7 @@ LobbyClientWidget::LobbyClientWidget()
 		CaptionText->GetText().SetText("Lobby (client)");
 		CaptionText->GetText().SetFontStyle({ 1, FontPrintType::LetterBig, RenderConstants::LightOrangePixelColorRGB });
 
-		Tree.PlaceWidgetOn(CaptionText, MenuVerticalBox);
+		Tree.PlaceWidgetOn(CaptionText, LoginPageVerticalBox);
 	}
 
 	HorizontalBox* PlayerNameBox = CreateNewObject<HorizontalBox>(this);
@@ -39,7 +56,7 @@ LobbyClientWidget::LobbyClientWidget()
 
 		PlayerNameBox->GetAlignment().Padding = { 0, 2, 0, 0 };
 
-		Tree.PlaceWidgetOn(PlayerNameBox, MenuVerticalBox);
+		Tree.PlaceWidgetOn(PlayerNameBox, LoginPageVerticalBox);
 	}
 
 	if (TextBlock* PlayerNameCaption = CreateNewObject<TextBlock>(this))
@@ -83,7 +100,7 @@ LobbyClientWidget::LobbyClientWidget()
 		ReadyButton->GetLayout().DimensionsOverride.cx = 18;
 		ReadyButton->GetLayout().DimensionsOverride.cy = 3;
 
-		Tree.PlaceWidgetOn(ReadyButton, MenuVerticalBox);
+		Tree.PlaceWidgetOn(ReadyButton, LoginPageVerticalBox);
 
 		ReadyButton->OnClickEvent().Subscribe(this, &LobbyClientWidget::HandleReady2PlayButtonClick);
 	}
@@ -99,6 +116,34 @@ LobbyClientWidget::LobbyClientWidget()
 
 		Tree.PlaceWidgetOn(ReadyButtonText, ReadyButton);
 	}
+
+	/** Wait game start page content. */
+
+	VerticalBox* WaitGamePageVerticalBox = CreateNewObject<VerticalBox>(this);
+	if (WaitGamePageVerticalBox)
+		Tree.PlaceWidgetOn(WaitGamePageVerticalBox, LobbyPageContent.Get());
+
+	TextBlock* WaitGameCaptionText = CreateNewObject<TextBlock>(this);
+	if (WaitGameCaptionText)
+	{
+		WaitGameCaptionText->GetAlignment().Horizontal = AlignmentSettings::HorizontalAlignment::Center;
+		WaitGameCaptionText->GetAlignment().Vertical = AlignmentSettings::VerticalAlignment::Center;
+		WaitGameCaptionText->GetAlignment().Stretch = AlignmentSettings::StretchMode::Fill;
+
+		WaitGameCaptionText->GetAlignment().Padding = { 0, 0, 0, 2 };
+
+		WaitGameCaptionText->GetText().SetText("Waiting for game to start...");
+		WaitGameCaptionText->GetText().SetFontStyle({ 1, FontPrintType::Simple, RenderConstants::DarkOrangePixelColorRGB });
+
+		Tree.PlaceWidgetOn(WaitGameCaptionText, WaitGamePageVerticalBox);
+	}
+
+	LobbyPageContent->SetCurrentPageIndex(0);
+}
+
+void LobbyClientWidget::SetWaitForGameStartMode()
+{
+	LobbyPageContent->SetCurrentPageIndex(1);
 }
 
 void LobbyClientWidget::HandleReady2PlayButtonClick(Button* instigator)

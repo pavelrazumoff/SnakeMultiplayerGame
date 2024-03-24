@@ -7,7 +7,15 @@
 
 #include "Engine/Events/EventDelegate.h"
 
+namespace NetworkState {
+	struct ClientNetStateWrapper;
+	struct RawClientStateInfo;
+} // namespace NetworkState
+
 DECLARE_EVENT_DELEGATE(ServerResponseDelegate);
+
+DECLARE_EVENT_DELEGATE(NewClientDelegate, NetworkState::ClientNetStateWrapper*);
+DECLARE_EVENT_DELEGATE(ClientDisconnectedDelegate, const NetworkState::RawClientStateInfo&);
 
 enum PacketType
 {
@@ -19,8 +27,9 @@ enum PacketType
 	PT_MAX,
 };
 
-class PlayerState;
+class PlayerController;
 class ServerReplicationValidation;
+class IReplicationObject;
 
 class NetworkManager
 {
@@ -42,7 +51,14 @@ public:
 	bool MakeListenServer();
 	void SendPackageToObjOwnerClient(uint32_t objNetworkId, const OutputMemoryBitStream& outStream);
 
+	void ReplicateCreateObjectListPacket(PacketType type,
+		std::vector<IReplicationObject*> objList, const NetworkState::ClientNetStateWrapper* netOwner = nullptr);
+	void MakeAndPushServerPackage(TCPSocketPtr clientSocket, const OutputMemoryBitStream& outStream);
+
 	bool IsServer() const;
+
+	NewClientDelegate& OnNewClientConnected();
+	ClientDisconnectedDelegate& OnClientDisconnected();
 
 	/** Client. */
 
@@ -67,12 +83,6 @@ protected:
 
 	void ReadServerMessages();
 
-	void DoSayHello(PlayerState* clientState);
-	void DoTeleportToHostLevel(const NetworkState::ClientNetStateWrapper* client);
-	void DoSayGoodbye(const NetworkState::ClientNetStateWrapper* client);
-
-	void MakeAndPushServerPackage(TCPSocketPtr clientSocket, const OutputMemoryBitStream& outStream);
-
 	/** Client. */
 
 	void StartClientLoop();
@@ -96,6 +106,9 @@ protected:
 protected:
 	ServerResponseDelegate JoinServerSuccessEvent;
 	ServerResponseDelegate JoinServerFailureEvent;
+
+	NewClientDelegate NewClientConnectedEvent;
+	ClientDisconnectedDelegate ClientDisconnectedEvent;
 
 private:
 	std::shared_ptr<ListenServer> listenServerObj;

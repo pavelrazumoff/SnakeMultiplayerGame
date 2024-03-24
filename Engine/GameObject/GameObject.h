@@ -79,9 +79,13 @@ private: \
 	uint64_t inClassName##_replicationPropertyMask = 0; \
 public: \
 	virtual void Serialize(MemoryBitStream& stream) override { \
-		Inherited::Serialize(stream);\
-		SerializeData(stream, &GetDataType(), reinterpret_cast<uint8_t*>(this), inClassName##_replicationPropertyMask);\
+		Inherited::Serialize(stream); \
+		SerializeData(stream, &GetDataType(), reinterpret_cast<uint8_t*>(this), inClassName##_replicationPropertyMask); \
 		inClassName##_replicationPropertyMask = 0; \
+	} \
+	virtual void SerializeCreate(MemoryBitStream& stream) override { \
+		Inherited::SerializeCreate(stream); \
+		SerializeData(stream, &GetDataType(), reinterpret_cast<uint8_t*>(this), (uint64_t)-1); \
 	}
 
 #define MAKE_REPLICATED(inClassName, inMemberVariable, inPrimitiveType, inCallback) \
@@ -97,7 +101,7 @@ public: \
 // TODO: Add some kind of conditional replication support.
 #define MARK_FOR_REPLICATION(inClassName, inMemberVariable) \
 	if (NetworkUtility::IsServer()) { \
-		int inClassName##index = GetDataType().GetMemberIndexByOffset(mvOffsetOf(inClassName, inMemberVariable));\
+		int inClassName##index = GetDataType().GetMemberIndexByOffset(mvOffsetOf(inClassName, inMemberVariable)); \
 		if (inClassName##index >= 0) \
 			inClassName##_replicationPropertyMask |= ((uint64_t)1 << (size_t)inClassName##index); \
 	}
@@ -133,7 +137,7 @@ public:
 	virtual [[nodiscard]] EngineGenericType* CloneGeneric() const override;
 	virtual std::string GetGenericTypeName() const override;
 
-	virtual void SafeDestroy() override;
+	virtual void ReplDestroy() override;
 
 public:
 	template<typename T>
@@ -159,10 +163,12 @@ protected:
 	static void RegisterReplicationMembers() {}
 
 	virtual void Serialize(MemoryBitStream& stream) {}
+	virtual void SerializeCreate(MemoryBitStream& stream) {}
 
 	/** IReplicationObject implementation. */
 
 	virtual void Write(OutputMemoryBitStream& outStream) override;
+	virtual void WriteCreate(OutputMemoryBitStream& outStream) override;
 	virtual void Read(InputMemoryBitStream& inStream) override;
 
 private:

@@ -132,6 +132,7 @@ void GameEngine::Initialize(GameLevel* StartupLevel)
 
 	CollisionManager::GetInstance().Initialize();
 
+	EngineFactory::GetInstance().RegisterType("PlayerController", new PlayerController());
 	EngineFactory::GetInstance().RegisterType("PlayerState", new PlayerState());
 	PlayerManager::GetInstance().Initialize();
 

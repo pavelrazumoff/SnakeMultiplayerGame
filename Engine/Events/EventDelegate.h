@@ -17,10 +17,9 @@ public:
 		});
 	}
 
-	template <typename T>
-	void Unsubscribe(T* instance) 
+	void Unsubscribe(void* instance) 
 	{
-		Listeners.erase(reinterpret_cast<void*>(instance));
+		Listeners.erase(instance);
 	}
 
 	void UnsubscribeAll() 
@@ -34,6 +33,11 @@ public:
 		for (const auto& listener : Listeners) {
 			listener.second(std::forward<Args>(args)...);
 		}
+	}
+
+	bool IsSubscribed(void* instance) const
+	{
+		return Listeners.find(instance) != Listeners.end();
 	}
 
 private:

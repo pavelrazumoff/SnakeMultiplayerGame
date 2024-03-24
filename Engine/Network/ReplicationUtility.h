@@ -68,3 +68,5 @@ void _MakeRMIPackage(OutputMemoryBitStream& outStream, IReplicationObject* obj, 
 		const uint32_t objNetworkId = ReplicationManager::GetInstance().GetNetworkIdForObject(this); \
 		NetworkManager::GetInstance().SendPackageToObjOwnerClient(objNetworkId, _outStream); \
 	}
+
+void DoReplicateDestroyObject(IReplicationObject* obj);

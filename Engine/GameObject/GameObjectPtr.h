@@ -50,7 +50,7 @@ public:
 	T* Get() { return ObjectPtr; }
 	const T* Get() const { return ObjectPtr; }
 
-	bool IsValid() const { return ObjectPtr != nullptr; }
+	bool IsValid() const { return /*!ObjectPtr->bWaitForDestroy && */ObjectPtr != nullptr; }
 
 private:
 	T* ObjectPtr = nullptr;

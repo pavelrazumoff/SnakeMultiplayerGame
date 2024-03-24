@@ -17,6 +17,7 @@
 
 StartupLevel::StartupLevel()
 {
+	PlayerManager::GetInstance().SetPlayerControllerClass("PlayerController"); // TODO.
 	PlayerManager::GetInstance().SetPlayerStateClass("SnakePlayerState");
 }
 

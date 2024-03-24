@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Engine/Player/PlayerState.h"
+#include "Engine/Events/EventDelegate.h"
+
+DECLARE_EVENT_DELEGATE(PlayerWaitGameDelegate);
 
 REGISTER_CLASS(LobbyPlayerState)
 class LobbyPlayerState : public PlayerState
@@ -14,16 +17,4 @@ public:
 
 	virtual [[nodiscard]] EngineGenericType* CloneGeneric() const override;
 	virtual std::string GetGenericTypeName() const override;
-
-public:
-	/** Networking. */
-
-	void SetPlayerReady();
-
-protected:
-	/** Replication. */
-
-	void Server_SetPlayerReady();
-	void Client_SetPlayerWaitForGameStart();
-	void Client_PlayerEnterWrongName();
 };

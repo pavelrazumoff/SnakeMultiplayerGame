@@ -2,6 +2,7 @@
 
 #include "Engine/MemoryReflectionSystem.h"
 #include "Engine/Network/NetworkEngineUtility.h"
+#include "Engine/Network/ReplicationUtility.h"
 
 #include "Serialization/MemoryBitStream.h"
 
@@ -72,6 +73,8 @@ void GameObject::NotifyChildDestroy(GameObject* Child)
 
 void GameObject::Destroy()
 {
+	DoReplicateDestroyObject(this);
+
 	if (!bWaitForDestroy)
 	{
 		PostDestroy();
@@ -95,7 +98,7 @@ std::string GameObject::GetGenericTypeName() const
 	return "GameObject";
 }
 
-void GameObject::SafeDestroy()
+void GameObject::ReplDestroy()
 {
 	Destroy();
 }
@@ -108,6 +111,12 @@ void GameObject::Write(OutputMemoryBitStream& outStream)
 {
 	if (NetworkUtility::IsServer())
 		Serialize(outStream);
+}
+
+void GameObject::WriteCreate(OutputMemoryBitStream& outStream)
+{
+	if (NetworkUtility::IsServer())
+		SerializeCreate(outStream);
 }
 
 void GameObject::Read(InputMemoryBitStream& inStream)

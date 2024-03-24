@@ -14,6 +14,7 @@
 #include "Engine/Player/PlayerManager.h"
 #include "Engine/Other/ProfilerManager.h"
 
+#include "SnakePlayer/LobbyPlayerController.h"
 #include "SnakePlayer/LobbyPlayerState.h"
 #include "SnakePlayer/SnakePlayerState.h"
 
@@ -25,6 +26,7 @@ int main()
 	gameProps.GameName = "Snake Game";
 
 	// TODO: Move out to the GameMode analogue class.
+	EngineFactory::GetInstance().RegisterType("LobbyPlayerController", new LobbyPlayerController());
 	EngineFactory::GetInstance().RegisterType("LobbyPlayerState", new LobbyPlayerState());
 	EngineFactory::GetInstance().RegisterType("SnakePlayerState", new SnakePlayerState());
 

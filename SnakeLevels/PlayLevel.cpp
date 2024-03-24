@@ -20,6 +20,8 @@
 
 PlayLevel::PlayLevel()
 {
+	PlayerManager::GetInstance().SetPlayerControllerClass("PlayerController"); // TODO.
+	PlayerManager::GetInstance().SetPlayerStateClass("SnakePlayerState");
 }
 
 PlayLevel::~PlayLevel()
