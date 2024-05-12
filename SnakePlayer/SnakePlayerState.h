@@ -10,13 +10,16 @@ class SnakePlayerState;
 DECLARE_EVENT_DELEGATE(ScoreUpdatedDelegate, SnakePlayerState*, uint32_t);
 DECLARE_EVENT_DELEGATE(PlayerLostDelegate, SnakePlayerState*);
 
+REGISTER_CLASS(SnakePlayerState)
+REGISTER_CLASS_FOR_REPLICATION(SnakePlayerState)
 class SnakePlayerState : public PlayerState
 {
-	typedef PlayerState Inherited;
+	GAMEOBJECT_BODY(SnakePlayerState, PlayerState)
+	ENABLE_REPLICATION(SnakePlayerState)
 
 public:
-	SnakePlayerState();
-	virtual ~SnakePlayerState();
+	SnakePlayerState() {}
+	virtual ~SnakePlayerState() {}
 
 	virtual [[nodiscard]] EngineGenericType* CloneGeneric() const override;
 	virtual std::string GetGenericTypeName() const override;
@@ -32,6 +35,12 @@ public:
 
 	ScoreUpdatedDelegate& OnScoreUpdatedEvent() { return ScoreUpdatedEvent; }
 	PlayerLostDelegate& OnPlayerLostEvent() { return PlayerLostEvent; }
+
+protected:
+
+	/** Replication. */
+
+	void OnReplicate_Score();
 
 protected:
 	/** Delegates. */

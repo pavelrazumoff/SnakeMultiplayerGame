@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ObjectComponent.h"
-#include "Engine/EngineTypes.h"
+#include "Engine/EngineTypes/EngineBasicTypes.h"
 #include "Engine/GameObject/GameObjectPtr.h"
 
 class GamePawn;

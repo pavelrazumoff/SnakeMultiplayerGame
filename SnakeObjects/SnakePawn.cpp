@@ -66,19 +66,6 @@ SnakePawn::SnakePawn()
 		TailCollisionComponent->OnCollisionStartEvent().Subscribe(this, &SnakePawn::HandleBodyCollisionStartEvent);
 	}
 
-	// Input Action bindings.
-	{
-		MoveUpDownAction.Inputs['W'].AxisValue = -1.0f;
-		MoveUpDownAction.Inputs['S'].AxisValue = 1.0f;
-
-		InputPawnComponent->BindAction(&MoveUpDownAction, this, &SnakePawn::MoveUpDown_Triggered);
-
-		MoveLeftRightAction.Inputs['A'].AxisValue = -1.0f;
-		MoveLeftRightAction.Inputs['D'].AxisValue = 1.0f;
-
-		InputPawnComponent->BindAction(&MoveLeftRightAction, this, &SnakePawn::MoveLeftRight_Triggered);
-	}
-
 	if (MovementPawnComponent.Get())
 		MovementPawnComponent->SetMovementSpeed({ 15.0f, 10.0f });
 }
@@ -127,6 +114,23 @@ void SnakePawn::Render(RCTexture* RenderTargetTexture)
 /*
 	Input Action bindings.
 */
+
+void SnakePawn::ApplyInputBindings()
+{
+	// Input Action bindings.
+	if (InputPawnComponent.IsValid())
+	{
+		MoveUpDownAction.Inputs['W'].AxisValue = -1.0f;
+		MoveUpDownAction.Inputs['S'].AxisValue = 1.0f;
+
+		InputPawnComponent->BindAction(&MoveUpDownAction, this, &SnakePawn::MoveUpDown_Triggered);
+
+		MoveLeftRightAction.Inputs['A'].AxisValue = -1.0f;
+		MoveLeftRightAction.Inputs['D'].AxisValue = 1.0f;
+
+		InputPawnComponent->BindAction(&MoveLeftRightAction, this, &SnakePawn::MoveLeftRight_Triggered);
+	}
+}
 
 void SnakePawn::MoveUpDown_Triggered(InputValue actionValue)
 {
@@ -237,4 +241,14 @@ void SnakePawn::UpdatePlayerStat()
 	if (!pPlayerState) return;
 
 	pPlayerState->IncrementScore();
+}
+
+EngineGenericType* SnakePawn::CloneGeneric() const
+{
+	return CreateNewObject<SnakePawn>();
+}
+
+std::string SnakePawn::GetGenericTypeName() const
+{
+	return "SnakePawn";
 }

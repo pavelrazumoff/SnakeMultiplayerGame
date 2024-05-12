@@ -3,12 +3,42 @@
 #include "Components/SceneComponent.h"
 #include "Components/InputComponent.h"
 
+#include "Engine/Level/LevelManager.h"
+#include "Engine/Network/ReplicationUtility.h"
+
 SceneObject::SceneObject()
 {
 }
 
 SceneObject::~SceneObject()
 {
+}
+
+void SceneObject::RegisterReplicationMembers()
+{
+	MAKE_REPLICATED(SceneObject, Location, EPrimitiveType::EPT_Vector2D, nullptr);
+	MAKE_REPLICATED_ARRAY(SceneObject, ChildComponentsNetIDs, EPrimitiveType::EPT_Array, EPrimitiveType::EPT_Int, nullptr);
+}
+
+void SceneObject::PostReplCreate()
+{
+	Inherited::PostReplCreate();
+
+	if (NetworkUtility::IsClient())
+	{
+		uint32_t numComponentIds = ChildComponentsNetIDs.Size();
+		engine_assert(numComponentIds == ChildComponentsReplicated.size());
+
+		for (uint32_t i = 0; i < numComponentIds; ++i)
+		{
+			uint32_t componentNetId = ChildComponentsNetIDs[i];
+			auto childComponent = ChildComponentsReplicated[i].Get();
+
+			ReplicationManager::GetInstance().AssignNetworkIdForReplicationObject(childComponent, componentNetId);
+		}
+	}
+
+	LevelManager::GetInstance().PlaceObjectOnLevel(this, Location);
 }
 
 void SceneObject::BeginPlay()
@@ -32,7 +62,10 @@ void SceneObject::Update(float DeltaTime)
 
 void SceneObject::SetLocation(const LV_COORD& newLocation)
 {
+	if (Location == newLocation) return;
+
 	Location = newLocation;
+	MARK_FOR_REPLICATION(SceneObject, Location);
 
 	for (auto& child : ChildComponents)
 	{
@@ -63,6 +96,17 @@ bool SceneObject::PassInput(const InputState& is)
 void SceneObject::AddObjectComponent(ObjectComponent* newComponent)
 {
 	ChildComponents.push_back(newComponent);
+
+	if (newComponent->IsReplicationEnabled())
+	{
+		if (NetworkUtility::IsServer())
+		{
+			ChildComponentsNetIDs.Add(
+				ReplicationManager::GetInstance().GetNetworkIdForObject(newComponent));
+		}
+
+		ChildComponentsReplicated.push_back(newComponent);
+	}
 }
 
 void SceneObject::RemoveObjectComponent(ObjectComponent* componentToRemove)

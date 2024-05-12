@@ -166,6 +166,12 @@
     <Filter Include="Source Files\Engine\Network">
       <UniqueIdentifier>{ee0cbaa8-5971-4868-97f4-0d3312ca7e75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Engine\EngineTypes">
+      <UniqueIdentifier>{aba3b00f-4f56-4a84-b2f4-51aa180c74a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\EngineTypes">
+      <UniqueIdentifier>{4f132f04-293c-42cf-bcec-d32b5ca787c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source.cpp">
@@ -372,6 +378,12 @@
     <ClCompile Include="Engine\Network\ReplicationUtility.cpp">
       <Filter>Source Files\Engine\Network</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Network\SerializationUtility.cpp">
+      <Filter>Source Files\Engine\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\EngineTypes\Array.cpp">
+      <Filter>Source Files\Engine\EngineTypes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\GameEngine.h">
@@ -478,9 +490,6 @@
     </ClInclude>
     <ClInclude Include="SnakeLevels\PlayLevel.h">
       <Filter>Header Files\SnakeLevels</Filter>
-    </ClInclude>
-    <ClInclude Include="Engine\EngineTypes.h">
-      <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\SceneObjects\Pawn\GamePawn.h">
       <Filter>Header Files\Engine\SceneObjects\Pawn</Filter>
@@ -625,6 +634,15 @@
     </ClInclude>
     <ClInclude Include="SnakePlayer\LobbyPlayerController.h">
       <Filter>Header Files\SnakePlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\EngineTypes\Array.h">
+      <Filter>Header Files\Engine\EngineTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\EngineTypes\EngineBasicTypes.h">
+      <Filter>Header Files\Engine\EngineTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Network\SerializationUtility.h">
+      <Filter>Header Files\Engine\Network</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -18,10 +18,13 @@
 #include "Engine/Other/TimeManager.h"
 #include "Engine/Other/ProfilerManager.h"
 
+#include "Engine/Network/NetworkEngineUtility.h"
+
 PlayLevel::PlayLevel()
 {
 	PlayerManager::GetInstance().SetPlayerControllerClass("PlayerController"); // TODO.
 	PlayerManager::GetInstance().SetPlayerStateClass("SnakePlayerState");
+	PlayerManager::GetInstance().SetPlayerPawnClass("SnakePawn");
 }
 
 PlayLevel::~PlayLevel()
@@ -42,27 +45,48 @@ void PlayLevel::OpenLevel()
 		ProfilerManager::GetInstance().OnEngineFeatureChangedEvent().Subscribe(this, &PlayLevel::HandleProfilerEngineFeatureChanged);
 	}
 
-	RC_SIZE screenDim = RenderConsoleLibrary::GetConsoleDimensions();
-
-	LV_COORD startPlayerCoord((float)screenDim.cx / 2.0f - 2.0f, (float)screenDim.cy / 2.0f - 2.0f);
-	pSnakePawn = LevelManager::GetInstance().SpawnSceneObject<SnakePawn>(startPlayerCoord);
-
-	if (!PlayerHUD.IsValid())
+	if (NetworkUtility::IsServer())
 	{
-		PlayerHUD = CreateNewObject<PlayerHUDWidget>(this);
+		RC_SIZE screenDim = RenderConsoleLibrary::GetConsoleDimensions();
 
-		PlayerHUD->OnMenuOpenClickEvent().Subscribe(this, &PlayLevel::HandleGameMenuOpenClicked);
+		const uint32_t numPlayers = PlayerManager::GetInstance().GetPlayerCount();
+		for (uint32_t i = 0; i < numPlayers; ++i)
+		{
+			PlayerController* pPlayerController = PlayerManager::GetInstance().GetPlayerController(i);
+			if (!pPlayerController) { DebugEngineTrap(); continue; }
+			
+			if (SnakePlayerState* pPlayerState = dynamic_cast<SnakePlayerState*>(pPlayerController->GetPlayerState()))
+				pPlayerState->ClearScore();
 
-		GameWidgetManager::GetInstance().PlaceUserWidgetOnScreen(PlayerHUD.Get());
+			// TODO: This depends on the server screen. Change to global.
+			LV_COORD startPlayerCoord((float)MathLibrary::GetRandomInRange(0, screenDim.cx),
+				(float)MathLibrary::GetRandomInRange(0, screenDim.cy));
+
+			// TODO: Move the pawn creation to game mode class.
+			auto pSnakePawn = dynamic_cast<SnakePawn*>(
+				PlayerManager::GetInstance().MakePawnForPlayer(pPlayerController, startPlayerCoord));
+		}
 	}
-
-	if (SnakePlayerState* pPlayerState = dynamic_cast<SnakePlayerState*>(PlayerManager::GetInstance().GetPlayerState()))
+	else
 	{
-		pPlayerState->ClearScore();
+		if (!PlayerHUD.IsValid())
+		{
+			PlayerHUD = CreateNewObject<PlayerHUDWidget>(this);
 
-		pPlayerState->OnScoreUpdatedEvent().Subscribe(this, &PlayLevel::HandleScoreChanged);
-		pPlayerState->OnPlayerLostEvent().Subscribe(this, &PlayLevel::HandlePlayerLost);
+			PlayerHUD->OnMenuOpenClickEvent().Subscribe(this, &PlayLevel::HandleGameMenuOpenClicked);
+
+			GameWidgetManager::GetInstance().PlaceUserWidgetOnScreen(PlayerHUD.Get());
+		}
+
+		if (SnakePlayerState* pPlayerState = dynamic_cast<SnakePlayerState*>(PlayerManager::GetInstance().GetPlayerState()))
+		{
+			pPlayerState->OnScoreUpdatedEvent().Subscribe(this, &PlayLevel::HandleScoreChanged);
+			pPlayerState->OnPlayerLostEvent().Subscribe(this, &PlayLevel::HandlePlayerLost);
+		}
 	}
+	
+	//LV_COORD startPlayerCoord((float)screenDim.cx / 2.0f - 2.0f, (float)screenDim.cy / 2.0f - 2.0f);
+	//pSnakePawn = LevelManager::GetInstance().SpawnSceneObject<SnakePawn>(startPlayerCoord);
 
 	ReconstructLevel();
 }
@@ -85,27 +109,32 @@ void PlayLevel::Update(float DeltaTime)
 {
 	Inherited::Update(DeltaTime);
 
-	if (SpawnNewFoodTimer >= SpawnNewFoodTimeValue)
+	if (NetworkUtility::IsServer())
 	{
-		SpawnNewFood();
-		SpawnNewFoodTimer = 0.0f;
+		if (SpawnNewFoodTimer >= SpawnNewFoodTimeValue)
+		{
+			SpawnNewFood();
+			SpawnNewFoodTimer = 0.0f;
+		}
+		else
+			SpawnNewFoodTimer += DeltaTime;
 	}
-	else
-		SpawnNewFoodTimer += DeltaTime;
 
 	CheckForBoundaries();
 }
 
 void PlayLevel::ReconstructLevel()
 {
+	RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
 	if (PlayerHUD.IsValid())
 	{
-		RC_SIZE consoleDim = RenderConsoleLibrary::GetConsoleDimensions();
 		PlayerHUD->SetCanvasDimensions(consoleDim.cx, consoleDim.cy);
 
 		RC_RECT screenRect = PlayerHUD->GetScreenFreeRect();
 		playAreaRect = { (float)screenRect.left, (float)screenRect.top, (float)screenRect.right, (float)screenRect.bottom };
 	}
+	else
+		playAreaRect = { 0.0f, 0.0f, (float)consoleDim.cx, (float)consoleDim.cy };
 
 	ReconstructDynamicMenu();
 }
@@ -128,6 +157,8 @@ void PlayLevel::ReconstructDynamicMenu()
 
 void PlayLevel::SpawnNewFood()
 {
+	if (!NetworkUtility::IsServer()) return;
+
 	LV_COORD spawnFoodCoord((float)MathLibrary::GetRandomInRange((int)playAreaRect.left, (int)playAreaRect.right),
 		(float)MathLibrary::GetRandomInRange((int)playAreaRect.top, (int)playAreaRect.bottom));
 	TObjectPtr<FoodObject> newFood = LevelManager::GetInstance().SpawnSceneObject<FoodObject>(spawnFoodCoord);
@@ -135,19 +166,28 @@ void PlayLevel::SpawnNewFood()
 
 void PlayLevel::CheckForBoundaries()
 {
-	if (!pSnakePawn.IsValid()) return;
+	const uint32_t numPlayers = PlayerManager::GetInstance().GetPlayerCount();
+	for (uint32_t i = 0; i < numPlayers; ++i)
+	{
+		PlayerController* pPlayerController = PlayerManager::GetInstance().GetPlayerController(i);
+		if (!pPlayerController) { DebugEngineTrap(); continue; }
 
-	LV_COORD snakeLocation = pSnakePawn->GetLocation();
-	if (snakeLocation.x <= playAreaRect.left)
-		snakeLocation.x = playAreaRect.right;
-	else if (snakeLocation.x > playAreaRect.right)
-		snakeLocation.x = playAreaRect.left;
-	else if (snakeLocation.y <= playAreaRect.top)
-		snakeLocation.y = playAreaRect.bottom;
-	else if (snakeLocation.y > playAreaRect.bottom)
-		snakeLocation.y = playAreaRect.top;
+		auto pSnakePawn = pPlayerController->GetPlayerPawn();
+		if (pSnakePawn)
+		{
+			LV_COORD snakeLocation = pSnakePawn->GetLocation();
+			if (snakeLocation.x <= playAreaRect.left)
+				snakeLocation.x = playAreaRect.right;
+			else if (snakeLocation.x > playAreaRect.right)
+				snakeLocation.x = playAreaRect.left;
+			else if (snakeLocation.y <= playAreaRect.top)
+				snakeLocation.y = playAreaRect.bottom;
+			else if (snakeLocation.y > playAreaRect.bottom)
+				snakeLocation.y = playAreaRect.top;
 
-	pSnakePawn->SetLocation(snakeLocation);
+			pSnakePawn->SetLocation(snakeLocation);
+		}
+	}
 }
 
 void PlayLevel::HandleScoreChanged(SnakePlayerState* /*Instigator*/, uint32_t newScore)

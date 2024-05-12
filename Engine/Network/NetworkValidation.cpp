@@ -9,6 +9,11 @@ bool ServerReplicationValidation::ValidateObjectOwnership(uint32_t networkId) co
 	return FindNetworkIdForClient(networkId, _currentCheckingClient);
 }
 
+bool ServerReplicationValidation::ValidateObjectOwnership(uint32_t networkId, TCPSocketPtr clientSocket) const
+{
+	return FindNetworkIdForClient(networkId, clientSocket);
+}
+
 void ServerReplicationValidation::RegisterObjectOwnershipForClient(uint32_t networkId, TCPSocketPtr clientSocket)
 {
 	if (FindNetworkIdForClient(networkId, clientSocket)) return; // Already registered.

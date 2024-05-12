@@ -152,6 +152,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\CollisionDetection\CollisionManager.cpp" />
     <ClCompile Include="Engine\CollisionDetection\QuadTree.cpp" />
     <ClCompile Include="Engine\EngineFactory.cpp" />
+    <ClCompile Include="Engine\EngineTypes\Array.cpp" />
     <ClCompile Include="Engine\GameEngine.cpp" />
     <ClCompile Include="Engine\GameObject\GameObject.cpp" />
     <ClCompile Include="Engine\GameWidget\Components\Button.cpp" />
@@ -185,6 +186,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClCompile Include="Engine\Network\NetworkManager.cpp" />
     <ClCompile Include="Engine\Network\NetworkValidation.cpp" />
     <ClCompile Include="Engine\Network\ReplicationUtility.cpp" />
+    <ClCompile Include="Engine\Network\SerializationUtility.cpp" />
     <ClCompile Include="Engine\Network\SocketHandler.cpp" />
     <ClCompile Include="Engine\Other\ProfilerManager.cpp" />
     <ClCompile Include="Engine\Other\TimeManager.cpp" />
@@ -224,7 +226,8 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\CollisionDetection\CollisionTypes.h" />
     <ClInclude Include="Engine\CollisionDetection\QuadTree.h" />
     <ClInclude Include="Engine\EngineFactory.h" />
-    <ClInclude Include="Engine\EngineTypes.h" />
+    <ClInclude Include="Engine\EngineTypes\Array.h" />
+    <ClInclude Include="Engine\EngineTypes\EngineBasicTypes.h" />
     <ClInclude Include="Engine\EngineUtility.h" />
     <ClInclude Include="Engine\Events\EventDelegate.h" />
     <ClInclude Include="Engine\Events\EventManager.h" />
@@ -268,6 +271,7 @@ xcopy /y /d "RenderCore\$(IntDir)RenderCore.dll" "$(OutDir)"</Command>
     <ClInclude Include="Engine\Network\NetworkEngineUtility.h" />
     <ClInclude Include="Engine\Network\NetworkValidation.h" />
     <ClInclude Include="Engine\Network\ReplicationUtility.h" />
+    <ClInclude Include="Engine\Network\SerializationUtility.h" />
     <ClInclude Include="Engine\Network\SocketHandler.h" />
     <ClInclude Include="Engine\Other\ProfilerManager.h" />
     <ClInclude Include="Engine\Other\TimeManager.h" />

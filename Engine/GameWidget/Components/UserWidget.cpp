@@ -11,6 +11,12 @@ UserWidget::UserWidget()
 
 UserWidget::~UserWidget()
 {
+	ProceedWidgetTreeRecursive(Tree.GetRootNode(), [](GameWidget* widget, bool& bProceedWithChildren) -> bool {
+
+		widget->Destroy();
+		bProceedWithChildren = true;
+		return false;
+	});
 }
 
 void UserWidget::Render(RCTexture* RenderTargetTexture)

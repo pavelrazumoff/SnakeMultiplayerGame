@@ -3,7 +3,7 @@
 #include "Engine/GameObject/GameObject.h"
 
 #include "Engine/Input/InputHandler.h"
-#include "Engine/EngineTypes.h"
+#include "Engine/EngineTypes/Array.h"
 
 #include "Engine/Render/Renderable.h"
 #include "Components/ObjectComponent.h"
@@ -12,9 +12,11 @@
 #include "Engine/GameObject/GameObjectUtility.h"
 
 REGISTER_CLASS(SceneObject)
+REGISTER_CLASS_FOR_REPLICATION(SceneObject)
 class SceneObject : public GameObject, public IInputHandler, public IRenderable
 {
 	GAMEOBJECT_BODY(SceneObject, GameObject)
+	ENABLE_REPLICATION(SceneObject)
 
 public:
 	SceneObject();
@@ -65,8 +67,16 @@ public:
 	}
 
 protected:
+	/** IReplicationObject implementation. */
+
+	virtual void PostReplCreate() override;
+
+protected:
 	LV_COORD Location = { 0, 0 };
 
 private:
 	std::vector<TObjectPtr<ObjectComponent>> ChildComponents;
+	std::vector<TObjectPtr<ObjectComponent>> ChildComponentsReplicated;
+
+	TArray<uint32_t> ChildComponentsNetIDs;
 };

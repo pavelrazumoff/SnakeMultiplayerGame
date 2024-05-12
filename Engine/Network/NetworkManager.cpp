@@ -47,6 +47,11 @@ void NetworkManager::Update()
 	ReadClientMessages();
 }
 
+void NetworkManager::Replicate()
+{
+	ReplicateObjectsChanges();
+}
+
 void NetworkManager::Cleanup()
 {
 	StopListenServer();
@@ -148,19 +153,111 @@ void NetworkManager::SendPackageToObjOwnerClient(uint32_t objNetworkId, const Ou
 	MakeAndPushServerPackage(clientSocket, outStream);
 }
 
-void NetworkManager::ReplicateCreateObjectListPacket(PacketType type,
-	std::vector<IReplicationObject*> objList, const NetworkState::ClientNetStateWrapper* netOwner)
+void NetworkManager::ReplicateObjectsChanges()
 {
-	if (!IsServer()) return;
+	for (auto clientNetState : clientNetStates)
+	{
+		OutputMemoryBitStream outStream;
+		PacketType type = PacketType::PT_ReplicationData;
+		outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
 
+		bool bReplicatedAny = false;
+		auto newClientIt = std::find(newClientNetStates.begin(), newClientNetStates.end(), clientNetState);
+		bool bNewClient = (newClientIt != newClientNetStates.end());
+		if (bNewClient)
+		{
+			newClientNetStates.erase(newClientIt);
+		}
+
+		for (auto item : replicationQueue)
+		{
+			IReplicationObject* obj = item.obj;
+			if (!obj ||
+				(!bNewClient && obj->GetReplicationPropertyMask() == 0)) continue;
+
+			const bool bOwner = serverValidation->ValidateObjectOwnership(
+				ReplicationManager::GetInstance().GetNetworkIdForObject(obj), clientNetState->GetSocket());
+
+			const ReplicationType replicationType = bOwner ? ReplicationType::Owner : ReplicationType::NotOwner;
+
+			OutputMemoryBitStream objOutStream;
+
+			ReplicationQueueAction replAction = item.action;
+			if (bNewClient) replAction = RQA_Create;
+
+			switch (replAction)
+			{
+				case RQA_Create:
+					{
+						ReplicationManager::GetInstance().ReplicateCreate(objOutStream, obj, replicationType);
+						outStream << objOutStream;
+						bReplicatedAny = true;
+					}
+					break;
+				case RQA_Update:
+					if (ReplicationManager::GetInstance().ReplicateUpdate(objOutStream, obj, replicationType))
+					{
+						outStream << objOutStream;
+						bReplicatedAny = true;
+					}
+					break;
+				case RQA_Destroy:
+					{
+						ReplicationManager::GetInstance().ReplicateDestroy(objOutStream, obj);
+						outStream << objOutStream;
+						bReplicatedAny = true;
+					}
+					break;
+				default:
+					break;
+			}
+		}
+
+		if (bReplicatedAny)
+		{
+			ReplicationManager::GetInstance().CloseReplicationPackage(outStream);
+			MakeAndPushServerPackage(clientNetState->GetSocket(), outStream);
+		}
+	}
+
+	replicationQueue.clear();
+}
+
+void NetworkManager::PutInReplicationQueue(IReplicationObject* obj, ReplicationQueueAction action)
+{
+	if (!obj) return;
+
+	// TODO: Potentially expensive operation. But we still need to do the search because we could put some objects earlier (e.g. when created them - the order matters here).
+	//if (std::find(replicationQueue.begin(), replicationQueue.end(), obj) == replicationQueue.end())
+	//	replicationQueue.push_back(obj);
+
+	auto it = std::find_if(replicationQueue.begin(), replicationQueue.end(),
+		[obj](const ReplicationQueueItem& item)
+		{
+			return item.obj == obj;
+		});
+
+	if (it != replicationQueue.end()) return;
+
+	replicationQueue.push_back({ obj, action });
+}
+
+void NetworkManager::ReplicateCreateObjectListPacket(PacketType type,
+	std::vector<IReplicationObject*> objList, const NetworkState::ClientNetStateWrapper* netOwner, bool bRegisterOwnership)
+{
+	if (!IsServer() || !netOwner) return;
+
+	// TODO: Rewrite.
 	OutputMemoryBitStream outStream;
 	outStream.Serialize(type, NetworkUtilityLibrary::GetRequiredBits<PacketType::PT_MAX>());
 
+	ReplicationType replicationType = ReplicationType::Owner;
+
 	for (auto obj : objList)
 	{
-		ReplicationManager::GetInstance().ReplicateCreate(outStream, obj);
+		ReplicationManager::GetInstance().ReplicateCreate(outStream, obj, replicationType);
 
-		if (netOwner)
+		if (bRegisterOwnership)
 		{
 			serverValidation->RegisterObjectOwnershipForClient(
 				ReplicationManager::GetInstance().GetNetworkIdForObject(obj), netOwner->GetSocket());
@@ -315,7 +412,9 @@ void NetworkManager::ReadServerMessages()
 void NetworkManager::ProcessNewClient(const NetworkState::RawClientStateInfo& clientInfo)
 {
 	using namespace NetworkState;
-	ClientNetStateWrapper* clientNetState = new ClientNetStateWrapper(clientInfo.GetSocket(), clientInfo.GetAddress());
+	auto clientNetState = std::make_shared<ClientNetStateWrapper>(clientInfo.GetSocket(), clientInfo.GetAddress());
+	clientNetStates.push_back(clientNetState);
+	newClientNetStates.push_back(clientNetState);
 
 	NewClientConnectedEvent.Trigger(clientNetState);
 }
@@ -323,6 +422,15 @@ void NetworkManager::ProcessNewClient(const NetworkState::RawClientStateInfo& cl
 void NetworkManager::ProcessClientDisconnected(const NetworkState::RawClientStateInfo& clientInfo)
 {
 	ClientDisconnectedEvent.Trigger(clientInfo);
+
+	auto it = std::find_if(clientNetStates.begin(), clientNetStates.end(),
+		[&clientInfo](const std::shared_ptr<NetworkState::ClientNetStateWrapper>& clientNetState)
+		{
+			return clientNetState->GetSocket() == clientInfo.GetSocket();
+		});
+
+	if (it != clientNetStates.end())
+		clientNetStates.erase(it);
 }
 
 void NetworkManager::ProcessClientPackage(NetworkState::RawClientPackageStateInfo& clientPackageInfo)

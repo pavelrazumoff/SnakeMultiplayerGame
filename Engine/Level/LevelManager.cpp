@@ -3,6 +3,7 @@
 #include "Engine/GameWidget/GameWidgetManager.h"
 
 #include "Engine/Player/PlayerManager.h"
+#include "Engine/Network/NetworkManager.h"
 
 #include "Engine/Other/TimeManager.h"
 #include "Engine/Other/ProfilerManager.h"
@@ -66,6 +67,14 @@ void LevelManager::Update()
 
 		if (ProfilerManager::GetInstance().IsEngineFeatureEnabled(ProfilerEngineFeature::RenderScene))
 			CurrentLevel->Render();
+
+		NetworkManager::GetInstance().PutInReplicationQueue(CurrentLevel.Get());
+
+		CurrentLevel->DoForEachObject([](GameObject* obj) {
+
+			if (obj->IsReplicationEnabled())
+				NetworkManager::GetInstance().PutInReplicationQueue(obj);
+		});
 	}
 
 	// Always update widgets no matter game is paused or not.
@@ -92,4 +101,18 @@ void LevelManager::PauseGame()
 void LevelManager::ResumeGame()
 {
 	bGameIsPaused = false;
+}
+
+void LevelManager::PlaceObjectOnLevel(SceneObject* sceneObject, const LV_COORD& Location)
+{
+	if (!sceneObject || !GetCurrentLevel()) { DebugEngineTrap(); return; }
+
+	CurrentLevel->PlaceObjectOnLevel(sceneObject);
+	sceneObject->SetLocation(Location);
+}
+
+void LevelManager::FinishSpawnObjectOnLevel(SceneObject* sceneObject, const LV_COORD& Location)
+{
+	NetworkManager::GetInstance().PutInReplicationQueue(sceneObject, RQA_Create);
+	PlaceObjectOnLevel(sceneObject, Location);
 }

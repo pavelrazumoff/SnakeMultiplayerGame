@@ -9,6 +9,7 @@ class ServerReplicationValidation : public IReplicationValidation
 {
 public:
 	virtual bool ValidateObjectOwnership(uint32_t networkId) const override;
+	virtual bool ValidateObjectOwnership(uint32_t networkId, TCPSocketPtr clientSocket) const;
 
 	void RegisterObjectOwnershipForClient(uint32_t networkId, TCPSocketPtr clientSocket);
 

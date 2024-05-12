@@ -10,8 +10,6 @@
 
 void PlayerState::RegisterReplicationMembers()
 {
-	//Inherited::RegisterReplicationMembers();
-
 	MAKE_REPLICATED(PlayerState, playerId, EPrimitiveType::EPT_Int, nullptr);
 	MAKE_REPLICATED(PlayerState, playerName, EPrimitiveType::EPT_String, &PlayerState::OnReplicate_PlayerName);
 	//ASSIGN_REPLICATION_CALLBACK(PlayerState, playerName, &PlayerState::OnReplicate_PlayerName);
@@ -21,7 +19,6 @@ void PlayerState::RegisterReplicationMembers()
 
 PlayerState::~PlayerState()
 {
-	if (netPlayerState) delete netPlayerState;
 }
 
 /*
@@ -70,11 +67,14 @@ std::string PlayerState::GetGenericTypeName() const
 	return "PlayerState";
 }
 
-void PlayerState::SetNetPlayerState(NetworkState::ClientNetStateWrapper* netState)
+void PlayerState::SetNetPlayerState(std::shared_ptr<NetworkState::ClientNetStateWrapper> netState)
 {
-	if (netPlayerState) delete netPlayerState;
-
 	netPlayerState = netState;
+}
+
+const NetworkState::ClientNetStateWrapper* PlayerState::GetNetPlayerInfo() const
+{
+	return netPlayerState.get();
 }
 
 void PlayerState::SetPlayerId(uint32_t id)

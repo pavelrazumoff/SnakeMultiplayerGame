@@ -6,6 +6,7 @@
 DECLARE_EVENT_DELEGATE(PlayerWaitGameDelegate);
 
 REGISTER_CLASS(LobbyPlayerState)
+REGISTER_CLASS_FOR_REPLICATION(LobbyPlayerState)
 class LobbyPlayerState : public PlayerState
 {
 	GAMEOBJECT_BODY(LobbyPlayerState, PlayerState)

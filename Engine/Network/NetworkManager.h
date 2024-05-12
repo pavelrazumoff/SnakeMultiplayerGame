@@ -14,7 +14,7 @@ namespace NetworkState {
 
 DECLARE_EVENT_DELEGATE(ServerResponseDelegate);
 
-DECLARE_EVENT_DELEGATE(NewClientDelegate, NetworkState::ClientNetStateWrapper*);
+DECLARE_EVENT_DELEGATE(NewClientDelegate, std::shared_ptr<NetworkState::ClientNetStateWrapper>);
 DECLARE_EVENT_DELEGATE(ClientDisconnectedDelegate, const NetworkState::RawClientStateInfo&);
 
 enum PacketType
@@ -27,9 +27,22 @@ enum PacketType
 	PT_MAX,
 };
 
+enum ReplicationQueueAction
+{
+	RQA_Create,
+	RQA_Update,
+	RQA_Destroy,
+};
+
 class PlayerController;
 class ServerReplicationValidation;
 class IReplicationObject;
+
+struct ReplicationQueueItem
+{
+	IReplicationObject* obj;
+	ReplicationQueueAction action;
+};
 
 class NetworkManager
 {
@@ -43,6 +56,7 @@ public:
 
 	void Initialize();
 	void Update();
+	void Replicate();
 
 	void Cleanup();
 
@@ -51,8 +65,10 @@ public:
 	bool MakeListenServer();
 	void SendPackageToObjOwnerClient(uint32_t objNetworkId, const OutputMemoryBitStream& outStream);
 
+	void PutInReplicationQueue(IReplicationObject* obj, ReplicationQueueAction action = RQA_Update);
+
 	void ReplicateCreateObjectListPacket(PacketType type,
-		std::vector<IReplicationObject*> objList, const NetworkState::ClientNetStateWrapper* netOwner = nullptr);
+		std::vector<IReplicationObject*> objList, const NetworkState::ClientNetStateWrapper* netOwner, bool bRegisterOwnership = true);
 	void MakeAndPushServerPackage(TCPSocketPtr clientSocket, const OutputMemoryBitStream& outStream);
 
 	bool IsServer() const;
@@ -98,6 +114,8 @@ protected:
 	void ProcessClientDisconnected(const NetworkState::RawClientStateInfo& clientInfo);
 	void ProcessClientPackage(NetworkState::RawClientPackageStateInfo& clientPackageInfo);
 
+	void ReplicateObjectsChanges();
+
 	/** Client. */
 
 	void ProcessServerPackage(NetworkState::RawServerPackageStateInfo& serverPackageInfo);
@@ -115,4 +133,8 @@ private:
 	std::shared_ptr<NetClient> netClientObj;
 
 	std::unique_ptr<ServerReplicationValidation> serverValidation;
+
+	std::vector<ReplicationQueueItem> replicationQueue;
+	std::vector<std::shared_ptr<NetworkState::ClientNetStateWrapper>> clientNetStates;
+	std::vector<std::shared_ptr<NetworkState::ClientNetStateWrapper>> newClientNetStates;
 };

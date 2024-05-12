@@ -4,7 +4,10 @@
 #include "Engine/GameObject/GameObjectPtr.h"
 #include "PlayerState.h"
 
+class GamePawn;
+
 REGISTER_CLASS(PlayerController)
+REGISTER_CLASS_FOR_REPLICATION(PlayerController)
 class PlayerController : public GameObject
 {
 	GAMEOBJECT_BODY(PlayerController, GameObject)
@@ -19,7 +22,8 @@ public:
 	virtual [[nodiscard]] EngineGenericType* CloneGeneric() const override;
 	virtual std::string GetGenericTypeName() const override;
 
-	PlayerState* GetPlayerState() { return playerState.Get(); }
+	PlayerState* GetPlayerState();
+	GamePawn* GetPlayerPawn();
 
 protected:
 	/** IReplicationObject implementation. */
@@ -28,10 +32,12 @@ protected:
 	virtual void ReplDestroy() override;
 
 	void SetPlayerState(PlayerState* _playerState);
+	void SetPlayerPawn(GamePawn* _playerPawn);
 
 protected:
 	friend class PlayerManager;
 
 protected:
 	TObjectPtr<PlayerState> playerState;
+	TObjectPtr<GamePawn> playerPawn;
 };

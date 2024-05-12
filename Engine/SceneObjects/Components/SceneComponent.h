@@ -1,12 +1,17 @@
 #pragma once
 
 #include "ObjectComponent.h"
-#include "Engine/EngineTypes.h"
+#include "Engine/EngineTypes/EngineBasicTypes.h"
 
 class RCTexture;
 
+REGISTER_CLASS(SceneComponent)
+REGISTER_CLASS_FOR_REPLICATION(SceneComponent)
 class SceneComponent : public ObjectComponent
 {
+	GAMEOBJECT_BODY(SceneComponent, ObjectComponent)
+	ENABLE_REPLICATION(SceneComponent)
+
 public:
 	virtual ~SceneComponent() {}
 

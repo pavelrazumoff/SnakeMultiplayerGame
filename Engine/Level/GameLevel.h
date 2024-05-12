@@ -30,6 +30,8 @@ public:
 
 	virtual bool PassInput(const InputState& is) override;
 
+	void DoForEachObject(std::function<void(GameObject*)> func);
+
 	void PlaceObjectOnLevel(GameObject* obj);
 
 	virtual void ReconstructLevel() {}

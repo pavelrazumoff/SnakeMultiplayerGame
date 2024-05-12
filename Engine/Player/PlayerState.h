@@ -1,14 +1,10 @@
 #pragma once
 
 #include "Engine/GameObject/GameObject.h"
-
-namespace NetworkState {
-
-struct ClientNetStateWrapper;
-
-} // namespace NetworkState
+#include "Engine/Network/NetworkEngineUtility.h"
 
 REGISTER_CLASS(PlayerState)
+REGISTER_CLASS_FOR_REPLICATION(PlayerState)
 class PlayerState : public GameObject
 {
 	GAMEOBJECT_BODY(PlayerState, GameObject)
@@ -46,8 +42,8 @@ protected:
 	friend class PlayerManager;
 	friend class NetworkManager;
 
-	void SetNetPlayerState(NetworkState::ClientNetStateWrapper* netState);
-	const NetworkState::ClientNetStateWrapper* GetNetPlayerInfo() const { return netPlayerState; }
+	void SetNetPlayerState(std::shared_ptr<NetworkState::ClientNetStateWrapper> netState);
+	const NetworkState::ClientNetStateWrapper* GetNetPlayerInfo() const;
 
 	void SetPlayerId(uint32_t id);
 
@@ -62,5 +58,5 @@ protected:
 	std::string playerName;
 
 private:
-	NetworkState::ClientNetStateWrapper* netPlayerState = nullptr;
+	std::shared_ptr<NetworkState::ClientNetStateWrapper> netPlayerState;
 };

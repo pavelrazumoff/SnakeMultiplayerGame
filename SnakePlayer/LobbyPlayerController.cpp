@@ -6,8 +6,6 @@
 
 void LobbyPlayerController::RegisterReplicationMembers()
 {
-	//Inherited::RegisterReplicationMembers();
-
 	REGISTER_REMOTE_INVOCATION(LobbyPlayerController::Server_SetPlayerReady);
 	REGISTER_REMOTE_INVOCATION(LobbyPlayerController::Client_SetPlayerWaitForGameStart);
 	REGISTER_REMOTE_INVOCATION(LobbyPlayerController::Client_PlayerEnterWrongName);

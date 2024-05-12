@@ -3,7 +3,10 @@
 #include "Engine/EngineFactory.h"
 #include "Engine/Network/NetworkManager.h"
 #include "Engine/Network/NetworkEngineUtility.h"
+#include "Replication/ReplicationManager.h"
+
 #include "Engine/Level/LevelManager.h"
+#include "Engine/SceneObjects/Pawn/GamePawn.h"
 
 PlayerManager::~PlayerManager()
 {
@@ -45,6 +48,14 @@ void PlayerManager::SetPlayerStateClass(const std::string& className)
 	PlayerStateClassName = className;
 }
 
+void PlayerManager::SetPlayerPawnClass(const std::string& className)
+{
+	if (PlayerPawnClassName == className)
+		return;
+
+	PlayerPawnClassName = className;
+}
+
 PlayerController* PlayerManager::MakeNewPlayer()
 {
 	if (auto playerController =
@@ -64,14 +75,10 @@ PlayerController* PlayerManager::MakeNewPlayer()
 	return nullptr;
 }
 
-PlayerController* PlayerManager::MakeNewPlayer(NetworkState::ClientNetStateWrapper*& netState)
+PlayerController* PlayerManager::MakeNewPlayer(std::shared_ptr<NetworkState::ClientNetStateWrapper> netState)
 {
 	PlayerController* _newPlayerController = MakeNewPlayer();
-	if (!_newPlayerController)
-	{
-		delete netState; netState = nullptr;
-		return nullptr;
-	}
+	if (!_newPlayerController) return nullptr;
 
 	if (netState)
 	{
@@ -83,6 +90,26 @@ PlayerController* PlayerManager::MakeNewPlayer(NetworkState::ClientNetStateWrapp
 	}
 
 	return _newPlayerController;
+}
+
+GamePawn* PlayerManager::MakePawnForPlayer(PlayerController* playerController, const LV_COORD& SpawnLocation)
+{
+	if (!playerController) { DebugEngineTrap(); return nullptr; }
+
+	if (auto playerPawn = 
+		dynamic_cast<GamePawn*>(EngineFactory::GetInstance().Create(PlayerPawnClassName)))
+	{
+		playerController->SetPlayerPawn(playerPawn);
+		playerPawn->SetControllerNetworkId(ReplicationManager::GetInstance().GetNetworkIdForObject(playerController));
+
+		NetworkManager::GetInstance().PutInReplicationQueue(playerPawn, RQA_Create);
+		LevelManager::GetInstance().PlaceObjectOnLevel(playerPawn, SpawnLocation);
+
+		return playerPawn;
+	}
+	else DebugEngineTrap();
+
+	return nullptr;
 }
 
 void PlayerManager::RegisterRemotePlayerController(PlayerController* playerController)
@@ -98,6 +125,18 @@ void PlayerManager::RegisterRemotePlayerState(PlayerState* playerState)
 		_playerController->SetPlayerState(playerState);
 	}
 	else DebugEngineTrap();
+}
+
+void PlayerManager::TryRegisterRemotePlayerPawn(GamePawn* pawn)
+{
+	if (!pawn) return;
+
+	PlayerController* ownerPC = dynamic_cast<PlayerController*>(
+		ReplicationManager::GetInstance().GetObjectFromNetworkId(pawn->GetControllerNetworkId()));
+	if (ownerPC)
+	{
+		ownerPC->SetPlayerPawn(pawn);
+	}
 }
 
 void PlayerManager::RemoveRemotePlayerController(PlayerController* playerController)
@@ -142,6 +181,16 @@ PlayerState* PlayerManager::GetPlayerState(uint16_t playerIndex)
 	return nullptr;
 }
 
+GamePawn* PlayerManager::GetPlayerPawn(uint16_t playerIndex)
+{
+	if (auto _playerController = GetPlayerController(playerIndex))
+	{
+		return _playerController->GetPlayerPawn();
+	}
+
+	return nullptr;
+}
+
 uint32_t PlayerManager::GetPlayerCount() const
 {
 	return (uint32_t)playerControllers.size();
@@ -153,15 +202,16 @@ uint32_t PlayerManager::GetPlayerCount() const
 
 // Listen Server.
 
-void PlayerManager::ProcessNewClient(NetworkState::ClientNetStateWrapper* netState)
+void PlayerManager::ProcessNewClient(std::shared_ptr<NetworkState::ClientNetStateWrapper> netState)
 {
 	auto newPlayerController = MakeNewPlayer(netState);
 	if (!newPlayerController) { DebugEngineTrap(); return; }
 
 	DoSayHello(newPlayerController);
-	DoTeleportToHostLevel(newPlayerController);
+	// We should do it when replicate object queue and figure out there are new clients (see NetworkManager::ReplicateObjectsChanges).
+	//DoTeleportToHostLevel(newPlayerController);
 
-	// TODO: Replicate all player states to connected clients.
+	// TODO: Replicate all player states to connected clients?
 }
 
 void PlayerManager::ProcessClientDisconnect(const NetworkState::RawClientStateInfo& clientState)
@@ -186,7 +236,7 @@ void PlayerManager::ProcessClientDisconnect(const NetworkState::RawClientStateIn
 
 void PlayerManager::DoSayHello(PlayerController* clientController)
 {
-	DoReplicatePlayerControllerToOwner(PacketType::PT_Hello, clientController);
+	DoReplicatePlayerControllerToOwner(true, clientController);
 }
 
 void PlayerManager::DoTeleportToHostLevel(PlayerController* clientController)
@@ -202,7 +252,7 @@ void PlayerManager::DoTeleportToHostLevel(PlayerController* clientController)
 	std::vector<IReplicationObject*> objList;
 	objList.push_back(currentLevel);
 
-	NetworkManager::GetInstance().ReplicateCreateObjectListPacket(PacketType::PT_ReplicationData, objList, client);
+	NetworkManager::GetInstance().ReplicateCreateObjectListPacket(PacketType::PT_ReplicationData, objList, client, false);
 }
 
 void PlayerManager::DoSayGoodbye(PlayerController* clientController)

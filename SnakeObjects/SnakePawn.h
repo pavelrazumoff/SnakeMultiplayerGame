@@ -25,6 +25,10 @@ public:
 	virtual void Render(RCTexture* RenderTargetTexture) override;
 
 protected:
+	/** Input. */
+
+	virtual void ApplyInputBindings() override;
+
 	/** Input Action bindings. */
 
 	void MoveUpDown_Triggered(InputValue actionValue);
@@ -48,7 +52,11 @@ protected:
 
 	void UpdatePlayerStat();
 
-protected:
+public:
+	/** override EngineGenericType. */
+
+	virtual [[nodiscard]] EngineGenericType* CloneGeneric() const override;
+	virtual std::string GetGenericTypeName() const override;
 
 protected:
 	TObjectPtr<ImageComponent> HeadImageComponent;

@@ -167,6 +167,8 @@ void GameEngine::Run()
 
 		RenderManager::GetInstance().Render();
 
+		NetworkManager::GetInstance().Replicate();
+
 		TimeManager::GetInstance().Update();
 		ProfilerManager::GetInstance().Update();
 	}

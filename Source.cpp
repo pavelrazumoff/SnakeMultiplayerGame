@@ -1,6 +1,9 @@
 #include <iostream>
 #include <vld.h>
 #include <memory>
+
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+
 #include <Windows.h>
 
 #include "Core/RenderConsoleLibrary.h"
@@ -18,6 +21,8 @@
 #include "SnakePlayer/LobbyPlayerState.h"
 #include "SnakePlayer/SnakePlayerState.h"
 
+#include "SnakeObjects/SnakePawn.h"
+
 #include "SnakeLevels/StartupLevel.h"
 
 int main()
@@ -29,6 +34,7 @@ int main()
 	EngineFactory::GetInstance().RegisterType("LobbyPlayerController", new LobbyPlayerController());
 	EngineFactory::GetInstance().RegisterType("LobbyPlayerState", new LobbyPlayerState());
 	EngineFactory::GetInstance().RegisterType("SnakePlayerState", new SnakePlayerState());
+	EngineFactory::GetInstance().RegisterType("SnakePawn", new SnakePawn());
 
 	ProfilerManager::GetInstance().EnableTrackCategory(ProfilerCategory::FPS, true);
 

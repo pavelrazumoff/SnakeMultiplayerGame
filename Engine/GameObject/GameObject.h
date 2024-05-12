@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/EngineTypes.h"
+#include "Engine/EngineTypes/EngineBasicTypes.h"
 #include "Engine/EngineUtility.h"
 
 #include "Replication/ReplicationObject.h"
@@ -22,7 +22,7 @@ void DestroyRootObject();
 template<typename T>
 T* CreateNewObject(GameObject* Owner = GetRootObject());
 
-void SerializeData(MemoryBitStream& stream, const DataType* inDataType, uint8_t* inData, uint64_t inProperties);
+bool SerializeData(MemoryBitStream& stream, const DataType* inDataType, uint8_t* inData, uint64_t inProperties, ReplicationType clientReplType);
 
 /*
 	Class Registration.
@@ -36,6 +36,16 @@ public: \
 	inClassName##_register() \
 	{ \
 		ObjectCreationRegistry::GetInstance().RegisterCreationFunction<inClassName>(); \
+	} \
+}; \
+inline inClassName##_register inClassName##_instance;
+
+#define REGISTER_CLASS_FOR_REPLICATION(inClassName) \
+class inClassName##_repl_register \
+{ \
+public: \
+	inClassName##_repl_register() \
+	{ \
 		RegisterReplication<inClassName>(); \
 	} \
 private:\
@@ -45,7 +55,7 @@ private:\
 		T::RegisterReplicationMembers(); \
 	} \
 }; \
-inline inClassName##_register inClassName##_instance;
+inline inClassName##_repl_register inClassName##_repl_instance;
 
 /*
 	Define the class body.
@@ -56,8 +66,9 @@ public: \
 	enum { kClassId = EngineUtilityLibrary::StringToUint32(#inClassName) }; \
 	virtual uint32_t GetClassId() const override { return kClassId; } \
 	static IReplicationObject* CreateReplicationInstance() { return CreateNewObject<inClassName>(); } \
-private:\
-	friend class inClassName##_register;
+private: \
+	friend class inClassName##_register; \
+	friend class inClassName##_repl_register;
 
 #define GAMEOBJECT_BODY(inClassName, inParentClassName) \
 	typedef inParentClassName Inherited; \
@@ -78,19 +89,29 @@ protected: \
 private: \
 	uint64_t inClassName##_replicationPropertyMask = 0; \
 public: \
-	virtual void Serialize(MemoryBitStream& stream) override { \
-		Inherited::Serialize(stream); \
-		SerializeData(stream, &GetDataType(), reinterpret_cast<uint8_t*>(this), inClassName##_replicationPropertyMask); \
+	virtual bool SerializeUpdate(MemoryBitStream& stream, ReplicationType clientReplType) override { \
+		bool bRes1 = Inherited::SerializeUpdate(stream, clientReplType); \
+		bool bRes2 = SerializeData(stream, &GetDataType(), reinterpret_cast<uint8_t*>(this), inClassName##_replicationPropertyMask, clientReplType); \
 		inClassName##_replicationPropertyMask = 0; \
+		return bRes1 || bRes2; \
 	} \
-	virtual void SerializeCreate(MemoryBitStream& stream) override { \
-		Inherited::SerializeCreate(stream); \
-		SerializeData(stream, &GetDataType(), reinterpret_cast<uint8_t*>(this), (uint64_t)-1); \
+	virtual void SerializeCreate(MemoryBitStream& stream, ReplicationType clientReplType) override { \
+		Inherited::SerializeCreate(stream, clientReplType); \
+		SerializeData(stream, &GetDataType(), reinterpret_cast<uint8_t*>(this), (uint64_t)-1, clientReplType); \
+	} \
+	virtual uint64_t GetReplicationPropertyMask() const override { return Inherited::GetReplicationPropertyMask() | inClassName##_replicationPropertyMask; } \
+	virtual bool IsReplicationEnabled() const override { return true; }
+
+#define MAKE_REPLICATED(inClassName, inMemberVariable, inPrimitiveType, inCallback, ...) \
+	{ \
+		auto mv = GetDataType().AddMemberVariable(MemberVariable(#inMemberVariable, inPrimitiveType, mvOffsetOf(inClassName, inMemberVariable), __VA_ARGS__)); \
+		if (inCallback) mv.SetReplicationCallback<inClassName>(inCallback); \
 	}
 
-#define MAKE_REPLICATED(inClassName, inMemberVariable, inPrimitiveType, inCallback) \
+#define MAKE_REPLICATED_ARRAY(inClassName, inMemberVariable, inPrimitiveType, inArrayPrimitiveType, inCallback, ...) \
 	{ \
-		auto mv = GetDataType().AddMemberVariable(MemberVariable(#inMemberVariable, inPrimitiveType, mvOffsetOf(inClassName, inMemberVariable))); \
+		MemberVariable& mv = GetDataType().AddMemberVariable(MemberVariable(#inMemberVariable, inPrimitiveType, mvOffsetOf(inClassName, inMemberVariable), __VA_ARGS__)); \
+		mv.SetPrimitiveSubType(inArrayPrimitiveType); \
 		if (inCallback) mv.SetReplicationCallback<inClassName>(inCallback); \
 	}
 
@@ -162,13 +183,13 @@ protected:
 
 	static void RegisterReplicationMembers() {}
 
-	virtual void Serialize(MemoryBitStream& stream) {}
-	virtual void SerializeCreate(MemoryBitStream& stream) {}
+	virtual void SerializeCreate(MemoryBitStream& stream, ReplicationType clientReplType) {}
+	virtual bool SerializeUpdate(MemoryBitStream& stream, ReplicationType clientReplType) { return false; }
 
 	/** IReplicationObject implementation. */
 
-	virtual void Write(OutputMemoryBitStream& outStream) override;
-	virtual void WriteCreate(OutputMemoryBitStream& outStream) override;
+	virtual void WriteCreate(OutputMemoryBitStream& outStream, ReplicationType clientReplType) override;
+	virtual bool WriteUpdate(OutputMemoryBitStream& outStream, ReplicationType clientReplType) override;
 	virtual void Read(InputMemoryBitStream& inStream) override;
 
 private:

@@ -31,7 +31,11 @@ void GameWidgetManager::RemoveUserWidgetFromScreen(UserWidget* userWidget)
 	});
 
 	if (it != UserWidgetList.end())
+	{
+		if (it->IsValid())
+			it->Get()->Destroy();
 		UserWidgetList.erase(it);
+	}
 }
 
 void GameWidgetManager::RequestWidgetReconstruction(GameWidget* Instigator)

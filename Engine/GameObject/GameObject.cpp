@@ -3,8 +3,7 @@
 #include "Engine/MemoryReflectionSystem.h"
 #include "Engine/Network/NetworkEngineUtility.h"
 #include "Engine/Network/ReplicationUtility.h"
-
-#include "Serialization/MemoryBitStream.h"
+#include "Engine/Network/SerializationUtility.h"
 
 static GameObject* g_RootObject = nullptr;
 
@@ -73,10 +72,10 @@ void GameObject::NotifyChildDestroy(GameObject* Child)
 
 void GameObject::Destroy()
 {
-	DoReplicateDestroyObject(this);
-
 	if (!bWaitForDestroy)
 	{
+		DoReplicateDestroyObject(this);
+
 		PostDestroy();
 		bWaitForDestroy = true;
 	}
@@ -107,22 +106,24 @@ void GameObject::ReplDestroy()
 	IReplicationObject implementation.
 */
 
-void GameObject::Write(OutputMemoryBitStream& outStream)
+void GameObject::WriteCreate(OutputMemoryBitStream& outStream, ReplicationType clientReplType)
 {
 	if (NetworkUtility::IsServer())
-		Serialize(outStream);
+		SerializeCreate(outStream, clientReplType);
 }
 
-void GameObject::WriteCreate(OutputMemoryBitStream& outStream)
+bool GameObject::WriteUpdate(OutputMemoryBitStream& outStream, ReplicationType clientReplType)
 {
 	if (NetworkUtility::IsServer())
-		SerializeCreate(outStream);
+		return SerializeUpdate(outStream, clientReplType);
+
+	return false;
 }
 
 void GameObject::Read(InputMemoryBitStream& inStream)
 {
 	if (NetworkUtility::IsClient())
-		Serialize(inStream);
+		SerializeUpdate(inStream, ReplicationType::All);
 }
 
 /*
@@ -148,10 +149,17 @@ void DestroyRootObject()
 	g_RootObject = nullptr;
 }
 
-void SerializeData(MemoryBitStream& stream, const DataType* inDataType,
-	uint8_t* inData, uint64_t inProperties)
+bool SerializeData(MemoryBitStream& stream, const DataType* inDataType,
+	uint8_t* inData, uint64_t inProperties, ReplicationType clientReplType)
 {
+	// TODO: Pass in the ReplicationType value to determine to whom we allowed to serialize the data.
+	// If the ReplicationType is Owner, then we should check the mv for the ReplicationType::Owner or All flag.
+
+	// TODO: If there won't be any properties to serialize, return false and not create the empty package.
+
 	stream.Serialize(inProperties);
+
+	bool bSerializedAny = false;
 
 	const auto& mvs = inDataType->GetMemberVariables();
 	for (size_t mvIndex = 0, c = mvs.size(); mvIndex < c; ++mvIndex)
@@ -159,28 +167,25 @@ void SerializeData(MemoryBitStream& stream, const DataType* inDataType,
 		if ((((uint64_t)1 << mvIndex) & inProperties) != 0)
 		{
 			const auto& mv = mvs[mvIndex];
+
+			if (clientReplType != ReplicationType::All)
+			{
+				if (mv.GetReplicationType() != ReplicationType::All &&
+					mv.GetReplicationType() != clientReplType)
+				{
+					continue;
+				}
+			}
+
 			void* mvData = inData + mv.GetOffset();
 
-			switch (mv.GetPrimitiveType())
-			{
-				case EPrimitiveType::EPT_Int:
-					stream.Serialize(*reinterpret_cast<int*>(mvData));
-					break;
-				case EPrimitiveType::EPT_Float:
-					stream.Serialize(*reinterpret_cast<float*>(mvData));
-					break;
-				case EPrimitiveType::EPT_Bool:
-					stream.Serialize(*reinterpret_cast<bool*>(mvData));
-					break;
-				case EPrimitiveType::EPT_String:
-					stream.Serialize(*reinterpret_cast<std::string*>(mvData));
-					break;
-				default:
-					break;
-			}
+			bSerializedAny = SerializePrimitiveType(stream, mvData, mv.GetPrimitiveType(), mv.GetPrimitiveSubType()) ||
+				bSerializedAny;
 
 			if (NetworkUtility::IsClient())
 				mv.DoReplicatedCallback(reinterpret_cast<IReplicationObject*>(inData));
 		}
 	}
+
+	return bSerializedAny;
 }

@@ -9,7 +9,6 @@ LobbyPlayerState::LobbyPlayerState()
 
 void LobbyPlayerState::RegisterReplicationMembers()
 {
-	//Inherited::RegisterReplicationMembers();
 }
 
 LobbyPlayerState::~LobbyPlayerState()

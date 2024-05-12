@@ -52,8 +52,6 @@ protected:
 	void HandleProfilerEngineFeatureChanged(ProfilerEngineFeature feature, bool bEnabled);
 
 protected:
-	TObjectPtr<SnakePawn> pSnakePawn;
-
 	TObjectPtr<PlayerHUDWidget> PlayerHUD;
 	TObjectPtr<GameMenuWidget> GameMenu;
 	TObjectPtr<PlayerLostMenuWidget> PlayerLostMenu;

@@ -3,7 +3,7 @@
 #include "GameLevel.h"
 
 #include "Engine/Events/EventDelegate.h"
-#include "Engine/EngineTypes.h"
+#include "Engine/EngineTypes/EngineBasicTypes.h"
 #include "Engine/EngineUtility.h"
 
 #include "Engine/SceneObjects/SceneObject.h"
@@ -51,14 +51,18 @@ public:
 		T* SpawnedObject = CreateNewObject<T>(CurrentLevel.Get());
 		if (SceneObject* sceneObject = dynamic_cast<SceneObject*>(SpawnedObject))
 		{
-			CurrentLevel->PlaceObjectOnLevel(sceneObject);
-			sceneObject->SetLocation(Location);
+			FinishSpawnObjectOnLevel(sceneObject, Location);
 		}
 		else
 			DebugEngineTrap();
 
 		return SpawnedObject;
 	}
+
+	void PlaceObjectOnLevel(SceneObject* sceneObject, const LV_COORD& Location);
+
+protected:
+	void FinishSpawnObjectOnLevel(SceneObject* sceneObject, const LV_COORD& Location);
 
 protected:
 	LevelActionDelegate LevelOpenEvent;

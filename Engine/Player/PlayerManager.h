@@ -39,12 +39,17 @@ public:
 
 	void SetPlayerControllerClass(const std::string& className);
 	void SetPlayerStateClass(const std::string& className);
+	void SetPlayerPawnClass(const std::string& className);
 
 	PlayerController* MakeNewPlayer();
-	PlayerController* MakeNewPlayer(NetworkState::ClientNetStateWrapper*& netState);
+	PlayerController* MakeNewPlayer(std::shared_ptr<NetworkState::ClientNetStateWrapper> netState);
+
+	GamePawn* MakePawnForPlayer(PlayerController* playerController, const LV_COORD& SpawnLocation = LV_COORD::Zero());
 
 	void RegisterRemotePlayerController(PlayerController* playerController);
 	void RegisterRemotePlayerState(PlayerState* playerState);
+	void TryRegisterRemotePlayerPawn(GamePawn* pawn);
+
 	void RemoveRemotePlayerController(PlayerController* playerController);
 
 	void DestroyPlayer(uint16_t playerIndex = 0);
@@ -56,6 +61,7 @@ public:
 	 */
 	PlayerController* GetPlayerController(uint16_t playerIndex = 0);
 	PlayerState* GetPlayerState(uint16_t playerIndex = 0);
+	GamePawn* GetPlayerPawn(uint16_t playerIndex = 0);
 	uint32_t GetPlayerCount() const;
 
 	/** Networking. */
@@ -71,7 +77,7 @@ protected:
 	/** Networking. */
 
 	// Listen Server.
-	void ProcessNewClient(NetworkState::ClientNetStateWrapper* netState);
+	void ProcessNewClient(std::shared_ptr<NetworkState::ClientNetStateWrapper> netState);
 	void ProcessClientDisconnect(const NetworkState::RawClientStateInfo& clientState);
 
 	void DoSayHello(PlayerController* clientController);
@@ -105,6 +111,7 @@ protected:
 private:
 	std::string PlayerControllerClassName = "";
 	std::string PlayerStateClassName = "";
+	std::string PlayerPawnClassName = "";
 
 	uint32_t localPlayerId = 0;
 };

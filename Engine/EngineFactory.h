@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EngineTypes.h"
+#include "EngineTypes/EngineBasicTypes.h"
 #include "EngineUtility.h"
 
 #include <map>

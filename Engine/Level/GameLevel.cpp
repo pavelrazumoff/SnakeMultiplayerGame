@@ -65,6 +65,16 @@ bool GameLevel::PassInput(const InputState& is)
 	return false;
 }
 
+void GameLevel::DoForEachObject(std::function<void(GameObject*)> func)
+{
+	for (auto& obj : ObjectsOnLevel)
+	{
+		if (obj->IsWaitingForDestroy()) continue;
+
+		func(obj.Get());
+	}
+}
+
 void GameLevel::PlaceObjectOnLevel(GameObject* obj)
 {
 	auto it = std::find_if(ObjectsOnLevel.begin(), ObjectsOnLevel.end(), [obj](TObjectPtr<GameObject>& Other) -> bool {

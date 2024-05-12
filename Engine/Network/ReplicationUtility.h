@@ -61,8 +61,15 @@ void _MakeRMIPackage(OutputMemoryBitStream& outStream, IReplicationObject* obj, 
 		NetworkManager::GetInstance().SendPackageToServer(_outStream); \
 	}
 
+/*
+	We should call Replicate() every time we call a remote method from a server side.
+	This is because the method itself can be applied to the object, that couldn't be created on the remote client yet.
+	So we replicate all of the objects that is waiting for it (on this stage it should be only just created objects).
+*/
+
 #define CALL_REMOTE_INVOCATION_ON_OWNING_CLIENT(inUnwrapMethod, ...) \
 	if (NetworkUtility::IsServer()) { \
+		NetworkManager::GetInstance().Replicate(); \
 		OutputMemoryBitStream _outStream; \
 		_MakeRMIPackage(_outStream, this, #inUnwrapMethod, __VA_ARGS__); \
 		const uint32_t objNetworkId = ReplicationManager::GetInstance().GetNetworkIdForObject(this); \

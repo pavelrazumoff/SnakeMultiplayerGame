@@ -6,6 +6,7 @@
 DECLARE_EVENT_DELEGATE(PlayerWaitGameDelegate);
 
 REGISTER_CLASS(LobbyPlayerController)
+REGISTER_CLASS_FOR_REPLICATION(LobbyPlayerController)
 class LobbyPlayerController : public PlayerController
 {
 	GAMEOBJECT_BODY(LobbyPlayerController, PlayerController)
