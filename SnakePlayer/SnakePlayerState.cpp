@@ -5,7 +5,7 @@
 
 void SnakePlayerState::RegisterReplicationMembers()
 {
-	MAKE_REPLICATED(SnakePlayerState, Score, EPrimitiveType::EPT_Int, &SnakePlayerState::SetPlayerLost);
+	MAKE_REPLICATED(SnakePlayerState, Score, EPrimitiveType::EPT_Int, &SnakePlayerState::OnReplicate_Score);
 }
 
 EngineGenericType* SnakePlayerState::CloneGeneric() const

@@ -104,7 +104,7 @@ public: \
 
 #define MAKE_REPLICATED(inClassName, inMemberVariable, inPrimitiveType, inCallback, ...) \
 	{ \
-		auto mv = GetDataType().AddMemberVariable(MemberVariable(#inMemberVariable, inPrimitiveType, mvOffsetOf(inClassName, inMemberVariable), __VA_ARGS__)); \
+		MemberVariable& mv = GetDataType().AddMemberVariable(MemberVariable(#inMemberVariable, inPrimitiveType, mvOffsetOf(inClassName, inMemberVariable), __VA_ARGS__)); \
 		if (inCallback) mv.SetReplicationCallback<inClassName>(inCallback); \
 	}
 

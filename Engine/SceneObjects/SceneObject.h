@@ -71,6 +71,8 @@ protected:
 
 	virtual void PostReplCreate() override;
 
+	void OnReplicate_SetLocationCallback();
+
 protected:
 	LV_COORD Location = { 0, 0 };
 

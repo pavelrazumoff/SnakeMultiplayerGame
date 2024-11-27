@@ -28,13 +28,14 @@ void LevelManager::OpenLevel(GameLevel* level)
 	}
 
 	CurrentLevel = level;
+
+	// Move all connected clients from one level to another.
+	PlayerManager::GetInstance().TransferPlayersBetweenLevels();
+
 	if (CurrentLevel.Get())
 	{
 		CurrentLevel->OpenLevel();
 	}
-
-	// Move all connected clients from one level to another.
-	PlayerManager::GetInstance().TransferPlayersBetweenLevels();
 
 	LevelOpenEvent.Trigger(level);
 }

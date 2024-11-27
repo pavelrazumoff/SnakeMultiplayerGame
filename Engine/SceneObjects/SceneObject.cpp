@@ -16,7 +16,7 @@ SceneObject::~SceneObject()
 
 void SceneObject::RegisterReplicationMembers()
 {
-	MAKE_REPLICATED(SceneObject, Location, EPrimitiveType::EPT_Vector2D, nullptr);
+	MAKE_REPLICATED(SceneObject, Location, EPrimitiveType::EPT_Vector2D, &SceneObject::OnReplicate_SetLocationCallback);
 	MAKE_REPLICATED_ARRAY(SceneObject, ChildComponentsNetIDs, EPrimitiveType::EPT_Array, EPrimitiveType::EPT_Int, nullptr);
 }
 
@@ -67,6 +67,15 @@ void SceneObject::SetLocation(const LV_COORD& newLocation)
 	Location = newLocation;
 	MARK_FOR_REPLICATION(SceneObject, Location);
 
+	for (auto& child : ChildComponents)
+	{
+		if (auto sceneComp = dynamic_cast<SceneComponent*>(child.Get()))
+			sceneComp->UpdateSceneLocation(Location);
+	}
+}
+
+void SceneObject::OnReplicate_SetLocationCallback()
+{
 	for (auto& child : ChildComponents)
 	{
 		if (auto sceneComp = dynamic_cast<SceneComponent*>(child.Get()))
